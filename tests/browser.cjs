@@ -31,6 +31,9 @@ const record = (test, passed, detail = '') => results.push({ test, status: passe
     });
     await page.goto('http://127.0.0.1:8877/wp-admin/upload.php?page=wp-seed-pixel');
     await page.locator('#pixel-start').waitFor();
+    await page.locator('#pixel-preset').selectOption('balanced');
+    record('Balanced intent selectable without technical quality entry', await page.locator('#pixel-preset').inputValue() === 'balanced');
+    await page.locator('.wp-seed-pixel details').first().evaluate(el => { el.open = true; });
     for (const width of [1440, 820, 390, 320]) {
         await page.setViewportSize({ width, height: 1000 });
         const metrics = await page.evaluate(() => ({ overflow: document.documentElement.scrollWidth > window.innerWidth, labelled: [...document.querySelectorAll('.wp-seed-pixel input:not([type="hidden"]):not([type="submit"]),.wp-seed-pixel select')].every(el => el.labels.length > 0) }));

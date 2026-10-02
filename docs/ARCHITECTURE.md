@@ -4,6 +4,12 @@
 
 `Presets -> Engine -> WP_Image_Editor -> Files -> Store`
 
+0.2.0 Balanced adds `Adaptive` inside Engine. At most three independent candidates
+per size, intent-specific local gates and source reuse share the same atomic
+publication and batch pipeline. `files` includes non-owned `kind=master` resources;
+they are never renamed or deleted, and add zero disk bytes. Fixed/custom profiles
+remain compatible. See ADAPTIVE-ALGORITHM.md for the exact versioned contract.
+
 The admin controller, automation and batch controller call the same PHP API.
 WordPress owns the attachment, master, native metadata and URLs. Pixel only adds
 `seed-pixel-*` size entries to native attachment metadata. Its internal manifest

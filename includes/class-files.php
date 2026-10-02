@@ -51,7 +51,7 @@ final class WP_Seed_Pixel_Files {
             return $markers;
         }
         if (isset($info['channels']) && $info['channels'] !== 3) {
-            return new WP_Error('pixel_color_unsupported', 'CMYK and non-RGB JPEGs are not supported in 0.1.0.');
+            return new WP_Error('pixel_color_unsupported', 'CMYK and non-RGB JPEGs are not supported.');
         }
         // Fail closed; profile-aware conversion is deliberately outside this release.
         if ($markers['icc']) {
@@ -120,7 +120,8 @@ final class WP_Seed_Pixel_Files {
                     $flags['exif'] = true;
                 }
                 $technical_comment = $marker === 0xfe && preg_match('/^CREATOR: gd-jpeg v[0-9.]{1,8} \(using IJG JPEG v[0-9a-z]{1,8}\), quality = (?:[1-9]|[1-9][0-9]|100)\n$/D', $payload);
-                if ($marker >= 0xe1 && $marker <= 0xef || $marker === 0xfe && !$technical_comment || $marker === 0xe0 && strncmp($payload, "JFIF\0", 5) !== 0) {
+                $canonical_jfif = strlen($payload) === 14 && strncmp($payload, "JFIF\0", 5) === 0 && ord($payload[5]) === 1 && ord($payload[7]) <= 2 && $payload[12] === "\0" && $payload[13] === "\0";
+                if ($marker >= 0xe1 && $marker <= 0xef || $marker === 0xfe && !$technical_comment || $marker === 0xe0 && !$canonical_jfif) {
                     $flags['private'] = true;
                 }
             }
@@ -167,6 +168,9 @@ final class WP_Seed_Pixel_Files {
     }
 
     public static function owned_delete(array $file, $id, $master) {
+        if (isset($file['kind']) && $file['kind'] === 'master') {
+            return false;
+        }
         if (!isset($file['path'], $file['sha256']) || !preg_match('/^[a-f0-9]{64}$/D', $file['sha256'])) {
             return false;
         }

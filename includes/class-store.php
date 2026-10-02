@@ -70,6 +70,9 @@ final class WP_Seed_Pixel_Store {
             foreach ($history as $generation => $state) {
                 $retained = false;
                 foreach ($state['files'] as $file) {
+                    if (isset($file['kind']) && $file['kind'] === 'master') {
+                        continue;
+                    }
                     WP_Seed_Pixel_Files::owned_delete($file, $id, $master);
                     $retained = $retained || is_file($file['path']);
                 }
@@ -183,6 +186,9 @@ final class WP_Seed_Pixel_Store {
                     // Previous URLs are retained; already reserved before native commit.
                 } else {
                     foreach ($journal['files'] as $file) {
+                        if (isset($file['kind']) && $file['kind'] === 'master') {
+                            continue;
+                        }
                         WP_Seed_Pixel_Files::owned_delete($file, $id, $master);
                         if (is_file($file['path'])) {
                             return new WP_Error('pixel_recovery_ownership', 'A journal file changed or remains referenced; it was retained.');

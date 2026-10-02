@@ -1,4 +1,4 @@
-# WP Seed Pixel 0.1.0
+# WP Seed Pixel 0.2.0
 
 Local JPEG derivatives for the existing WordPress media library. No cloud,
 telemetry, frontend assets, additional media library or required runtime package.
@@ -6,7 +6,7 @@ The original master is never an output destination.
 
 ## Install
 
-Upload `wp-seed-pixel-0.1.0.zip` through Plugins > Add New > Upload Plugin.
+Upload `wp-seed-pixel-0.2.0.zip` through Plugins > Add New > Upload Plugin.
 Activate on one site. Open Media > WP Seed Pixel. Automatic processing defaults
 to OFF. Back up the database and uploads before a library-wide batch.
 
@@ -21,7 +21,8 @@ The batch interface requires JavaScript; frontend rendering does not.
 
 | Preset | Derivatives | JPEG quality |
 | --- | --- | --- |
-| web (default) | maximum 1600 x 1600, proportional | 82 |
+| balanced (new installation default) | THUMB 640; VIEW target 1920 | local quality/byte selection, source reuse |
+| web (legacy/API default) | maximum 1600 x 1600, proportional | 82 |
 | participant_album (example) | THUMB maximum 640; VIEW maximum 2048 | 80; 90 |
 
 No cropping, enlargement, sharpening or aesthetic alteration. Preset dimensions
@@ -30,7 +31,17 @@ master independently, never from a previous compressed derivative.
 
 **Smaller transfer is not guaranteed.** A Q90 re-encode can be larger than an
 already-compressed source. The result reports negative transfer savings honestly.
-Disk use increases because the master and native WordPress sizes remain.
+Disk use can increase because the master and native WordPress sizes remain.
+
+The recommended `balanced` intent tries at most three independent qualities
+per output, checks sampled local structure and RGB error, and retains a safe
+MASTER when encoding has no material gain. It never exposes an original carrying
+private metadata. A reused resource has `kind=master`, `quality=null` and adds
+zero disk bytes; it is not a duplicate file. A source retained after quality
+rejection can exceed the dimension/soft weight target. See [algorithm](docs/ADAPTIVE-ALGORITHM.md).
+Existing settings and fixed/custom profiles stay unchanged on upgrade. Select
+Balanced explicitly to regenerate existing images; there is no upgrade-wide batch.
+The quality metric is a bounded heuristic, not a human visual certification.
 
 ## Safety and compatibility
 
@@ -43,7 +54,7 @@ Disk use increases because the master and native WordPress sizes remain.
 - PNG, GIF (including animation), WebP, AVIF and SVG are skipped, not overwritten.
 - Source files must be regular local files inside this site's uploads directory,
   without symlink components. Remote/offloaded/private external storage is not
-  supported by 0.1.0; this plugin is not a private-album access-control system.
+  supported by this release; this plugin is not a private-album access-control system.
 - Preflight limits: 40 megapixels, 64 MB source, bounded JPEG header, estimated
   decode memory and staging disk budget. Host resource failures remain possible.
 - File locks and metadata compare-and-swap prevent two Pixel jobs and concurrent

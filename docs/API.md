@@ -4,7 +4,7 @@ Call after `plugins_loaded`. All entry points are trusted PHP, not public HTTP.
 Return values are a structured array or `WP_Error`.
 
 ```php
-$result = wp_seed_pixel_optimize(123, 'participant_album', false);
+$result = wp_seed_pixel_optimize(123, 'balanced', false);
 if (is_wp_error($result)) {
     // Record the non-sensitive error code; do not silently retry forever.
 } elseif ($result['status'] === 'success') {
@@ -23,6 +23,16 @@ The success result includes `attachment_id`, `preset`, `generation`,
 `seconds` and `created`. Each file includes local path (trusted PHP only), SHA,
 width, height, bytes, quality, backend and transfer savings relative to master.
 Negative savings mean a larger file, not a bug hidden by clamping.
+
+0.2.0 also reports `strategy`, `algorithm_version`, `candidates`; resource entries
+include `kind`, `reason`, `metric`, `soft_target_exceeded` for Balanced. A resource
+can be an existing safe MASTER (`kind=master`, quality null), not a generated JPEG.
+`files` therefore means served resources; added disk bytes exclude master reuse.
+Native image sizes/srcset and the existing getter work for both kinds. The getter
+does not hash a MASTER on every frontend request. Processing still hashes before
+and after. Legacy manifests without `kind` remain readable. No automatic upgrade
+regeneration. API default `web` stays fixed for signature/behavior compatibility;
+select `balanced` explicitly. Registering a custom `balanced` remains fixed.
 
 ```php
 wp_seed_pixel_register_preset('catalogue', array(

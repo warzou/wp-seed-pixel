@@ -57,7 +57,9 @@ final class WP_Seed_Pixel_Engine {
                 return self::error($id, new WP_Error('pixel_master_layout', 'The original and attached files must share a local upload directory.'));
             }
             $master_hash = hash_file('sha256', $master);
-            $config_hash = hash('sha256', WP_SEED_PIXEL_VERSION . $preset_name . wp_json_encode($preset));
+            $adaptive = WP_Seed_Pixel_Presets::adaptive($preset_name);
+            $backend = wp_json_encode(array('gd' => function_exists('gd_info') ? gd_info() : null, 'imagick' => class_exists('Imagick') ? Imagick::getVersion() : null, 'editors' => apply_filters('wp_image_editors', array('WP_Image_Editor_Imagick', 'WP_Image_Editor_GD')), 'wordpress' => $GLOBALS['wp_version']));
+            $config_hash = hash('sha256', WP_SEED_PIXEL_VERSION . $preset_name . wp_json_encode($preset) . ($adaptive ? WP_Seed_Pixel_Adaptive::VERSION . WP_Seed_Pixel_Adaptive::SSIM_FLOOR . WP_Seed_Pixel_Adaptive::PSNR_FLOOR . WP_Seed_Pixel_Adaptive::THUMB_SSIM_FLOOR . WP_Seed_Pixel_Adaptive::THUMB_PSNR_FLOOR . $backend : 'fixed'));
             $old = WP_Seed_Pixel_Store::manifest($id);
             if (!$force && is_array($old) && isset($old['master_sha256'], $old['config_sha256']) && $old['master_sha256'] === $master_hash && $old['config_sha256'] === $config_hash && self::valid_files($old['files']) && WP_Seed_Pixel_Store::matches($old['files'], $metadata)) {
                 $old['status'] = 'success';
@@ -95,28 +97,45 @@ final class WP_Seed_Pixel_Engine {
             add_filter('image_editor_output_format', array('WP_Seed_Pixel_Files', 'output_map'), PHP_INT_MAX);
             try {
                 foreach ($preset['sizes'] as $name => $size) {
-                    $editor = wp_get_image_editor($master);
-                    if (is_wp_error($editor)) {
-                        return self::error($id, $editor);
-                    }
-                    $rotated = $editor->maybe_exif_rotate();
-                    if (is_wp_error($rotated)) {
-                        return self::error($id, $rotated);
-                    }
-                    $dimensions = $editor->get_size();
-                    $resized = ($dimensions['width'] > $size['width'] || $dimensions['height'] > $size['height']) ? $editor->resize($size['width'], $size['height'], false) : true;
-                    if (is_wp_error($resized)) {
-                        return self::error($id, $resized);
-                    }
-                    // WordPress resizing can reset quality; enforce it after resizing.
-                    $quality = $editor->set_quality($size['quality']);
-                    if (is_wp_error($quality) || $editor->get_quality() !== $size['quality']) {
-                        return self::error($id, new WP_Error('pixel_quality', 'The requested JPEG quality was not accepted by the image editor.'));
-                    }
                     $stage = $dir . '/' . $name . '.jpg';
-                    $saved = $editor->save($stage, 'image/jpeg');
-                    if (is_wp_error($saved)) {
-                        return self::error($id, $saved);
+                    $decision = $adaptive ? WP_Seed_Pixel_Adaptive::select($master, $size, $stage) : null;
+                    if (is_wp_error($decision)) {
+                        return self::error($id, $decision);
+                    }
+                    if ($decision && $decision['kind'] === 'master') {
+                        $files[$name] = array_merge($decision, array('path' => $master, 'sha256' => $master_hash, 'bytes' => filesize($master), 'transfer_saving_bytes_vs_master' => 0, 'transfer_saving_percent_vs_master' => 0));
+                        $sizes['seed-pixel-' . $name] = array('file' => basename($master), 'width' => $decision['width'], 'height' => $decision['height'], 'mime-type' => 'image/jpeg', 'filesize' => filesize($master));
+                        continue;
+                    }
+                    if (!$adaptive) {
+                        $editor = wp_get_image_editor($master);
+                        if (is_wp_error($editor)) {
+                            return self::error($id, $editor);
+                        }
+                        $rotated = $editor->maybe_exif_rotate();
+                        if (is_wp_error($rotated)) {
+                            return self::error($id, $rotated);
+                        }
+                        $dimensions = $editor->get_size();
+                        $resized = ($dimensions['width'] > $size['width'] || $dimensions['height'] > $size['height']) ? $editor->resize($size['width'], $size['height'], false) : true;
+                        if (is_wp_error($resized)) {
+                            return self::error($id, $resized);
+                        }
+                        // WordPress resizing can reset quality; enforce it after resizing.
+                        $quality = $editor->set_quality($size['quality']);
+                        if (is_wp_error($quality) || $editor->get_quality() !== $size['quality']) {
+                            return self::error($id, new WP_Error('pixel_quality', 'The requested JPEG quality was not accepted by the image editor.'));
+                        }
+                        $saved = $editor->save($stage, 'image/jpeg');
+                        if (is_wp_error($saved)) {
+                            return self::error($id, $saved);
+                        }
+                        $engine = get_class($editor);
+                        unset($editor);
+                    } else {
+                        $saved = array('path' => $stage);
+                        $size['quality'] = $decision['quality'];
+                        $engine = $decision['engine'];
                     }
                     $output = @getimagesize($stage);
                     if (!isset($saved['path']) || wp_normalize_path($saved['path']) !== wp_normalize_path($stage) || !$output || $output[2] !== IMAGETYPE_JPEG || filesize($stage) < 1 || $output[0] > $size['width'] || $output[1] > $size['height'] || $output[0] * $output[1] > $info[0] * $info[1]) {
@@ -132,20 +151,23 @@ final class WP_Seed_Pixel_Engine {
                     if (is_wp_error($safe) || file_exists($dest)) {
                         return self::error($id, new WP_Error('pixel_destination', 'Unsafe or occupied output destination.'));
                     }
-                    $files[$name] = array('path' => $safe, 'sha256' => hash_file('sha256', $stage), 'bytes' => filesize($stage), 'width' => $output[0], 'height' => $output[1], 'quality' => $size['quality'], 'engine' => get_class($editor), 'transfer_saving_bytes_vs_master' => filesize($master) - filesize($stage), 'transfer_saving_percent_vs_master' => round(100 * (1 - filesize($stage) / filesize($master)), 2));
+                    $files[$name] = array_merge($decision ?: array('kind' => 'derived', 'candidates' => 1, 'reason' => 'Explicit legacy/custom fixed preset.'), array('path' => $safe, 'sha256' => hash_file('sha256', $stage), 'bytes' => filesize($stage), 'width' => $output[0], 'height' => $output[1], 'quality' => $size['quality'], 'engine' => $engine, 'transfer_saving_bytes_vs_master' => filesize($master) - filesize($stage), 'transfer_saving_percent_vs_master' => round(100 * (1 - filesize($stage) / filesize($master)), 2)));
                     $sizes['seed-pixel-' . $name] = array('file' => basename($safe), 'width' => $output[0], 'height' => $output[1], 'mime-type' => 'image/jpeg', 'filesize' => filesize($stage));
                     unset($editor);
                 }
             } finally {
                 remove_filter('image_editor_output_format', array('WP_Seed_Pixel_Files', 'output_map'), PHP_INT_MAX);
             }
-            $result = array('status' => 'success', 'attachment_id' => $id, 'preset' => $preset_name, 'generation' => $generation, 'master_sha256' => $master_hash, 'master_bytes' => filesize($master), 'config_sha256' => $config_hash, 'files' => $files, 'added_disk_bytes' => array_sum(array_column($files, 'bytes')), 'seconds' => round(microtime(true) - $start, 4), 'created' => time());
+            $result = array('status' => 'success', 'attachment_id' => $id, 'preset' => $preset_name, 'strategy' => $adaptive ? 'bounded-adaptive' : 'fixed', 'algorithm_version' => $adaptive ? WP_Seed_Pixel_Adaptive::VERSION : 'legacy-fixed-1', 'generation' => $generation, 'master_sha256' => $master_hash, 'master_bytes' => filesize($master), 'config_sha256' => $config_hash, 'files' => $files, 'added_disk_bytes' => array_sum(array_column(array_filter($files, function ($f) { return $f['kind'] !== 'master'; }), 'bytes')), 'candidates' => array_sum(array_column($files, 'candidates')), 'seconds' => round(microtime(true) - $start, 4), 'created' => time());
             $journal = WP_Seed_Pixel_Store::journal($dir, array('generation' => $generation, 'files' => $files, 'manifest' => $result));
             if (is_wp_error($journal)) {
                 return self::error($id, $journal);
             }
             do_action('wp_seed_pixel_checkpoint', 'before_publish', $id);
             foreach ($files as $name => $file) {
+                if (isset($file['kind']) && $file['kind'] === 'master') {
+                    continue;
+                }
                 if (!rename($dir . '/' . $name . '.jpg', $file['path'])) {
                     return self::error($id, new WP_Error('pixel_publish', 'Atomic derivative publication failed.'));
                 }

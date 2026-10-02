@@ -1,5 +1,19 @@
 # WP Seed Pixel
 
+## 0.2.0 adaptive candidate
+
+Branch codex/adaptive-v0.2.0, based on local 77d86ef. No consuming-site action.
+Balanced is the fresh-install intent; upgrades preserve all existing settings
+and legacy outputs until explicit processing. Local bounded Q78/Q86/Q94 search,
+intent-specific sampled block SSIM/RGB PSNR, source-safe reuse and immutable
+masters replace inflation for the recommended workflow. No AI or remote service.
+Protected native metadata/CAS/journals/history remain the single pipeline.
+Evidence, self-review and human comparisons: ignored reports/adaptive.
+The original 0.1.0 ZIP remains available for upgrade and comparison tests.
+Final benchmark and matrix are factual deliverables, not production certification.
+Imagick/Linux/MySQL/multisite and minimum-version matrices remain uncertified.
+Next step is human visual review; no PDE pilot, push, tag or release is implied.
+
 ## 0.1.0 candidate
 
 Local-only WordPress JPEG derivatives. Masters remain immutable. One pipeline

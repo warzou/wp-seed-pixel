@@ -40,13 +40,13 @@ for relative in paths:
             findings.append({"file": relative, "issue": "PHP_lint"})
     if re.search(r"(?i)(\.codex-|askpass|\.zip$|\.patch$|\.exe$|\.pdb$|\.jpe?g$|\.png$|\.webp$|\.sql$)", relative):
         findings.append({"file": relative, "issue": "non_source_artifact"})
-report_files = list((root / "reports/final").glob("*.md")) + list((root / "reports/final").glob("*.json"))
+report_files = [f for f in (root / "reports").rglob("*") if f.suffix in {'.md','.json','.html','.csv'}]
 for file in report_files:
     text = file.read_text(encoding="utf-8")
     for name, pattern in patterns.items():
         if name != "absolute_machine_path" and pattern.search(text):
             findings.append({"file": file.name, "issue": name})
-archive = root / "dist/wp-seed-pixel-0.1.0.zip"
+archive = root / "dist/wp-seed-pixel-0.2.0.zip"
 with zipfile.ZipFile(archive) as source:
     for entry in source.infolist():
         if not entry.filename.startswith("wp-seed-pixel/") or ".." in Path(entry.filename).parts or re.search(r"(?i)(\.codex-|askpass|\.zip$|\.patch$|\.exe$|\.pdb$|\.jpe?g$|\.png$|\.webp$|\.sql$|/tests/|/tools/|/reports/|\.runtime|\.git/)", entry.filename):
@@ -58,6 +58,6 @@ with zipfile.ZipFile(archive) as source:
     if source.testzip() is not None:
         findings.append({"issue": "CRC"})
 result = {"source_paths": len(paths), "php_linted": sum(Path(path).suffix == ".php" for path in paths), "secret_scan": "PASS" if not any(row["issue"] in patterns for row in findings) else "FAIL", "findings": findings, "archive_crc": "PASS"}
-(root / "reports/final/static-audit.json").write_text(json.dumps(result, indent=2), encoding="utf-8")
+(root / "reports/adaptive/data/static-audit.json").write_text(json.dumps(result, indent=2), encoding="utf-8")
 print(json.dumps(result, indent=2))
 sys.exit(bool(findings))

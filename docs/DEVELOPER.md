@@ -4,6 +4,13 @@ Runtime: WordPress >=6.6, PHP >=8.1, JPEG-capable GD or Imagick. EXIF is require
 for sources carrying EXIF. No Composer or Node dependency in the installed plugin.
 The development suite additionally uses Python/Pillow and Playwright/Chrome.
 
+Adaptive R&D also uses NumPy in development only. `tools/adaptive-research.py`
+generates redistributable synthetic research and independent holdout fixtures.
+`tools/adaptive-benchmark.py` executes the actual PHP plugin and compares guarded
+fixed baselines. It requires explicit private-source and output paths; private
+photos/results never enter source Git or the ZIP. Run `tests/adaptive.php` with
+outbound socket functions disabled as well as WordPress HTTP blocked.
+
 ## Isolated tests
 
 Never run the suite against a live site. Download official WordPress and the

@@ -16,6 +16,9 @@ for orientation in range(1, 9):
     exif[274] = orientation
     image.save(root / f"orientation-{orientation}.jpg", quality=96, exif=exif)
 image.resize((200, 120)).save(root / "small.jpg", quality=96)
+small = (root / 'small.jpg').read_bytes()
+payload = b'JFIF\0\x01\x01\x00\x00\x01\x00\x01\x00\x00SYNTHETIC PRIVATE APP0'
+(root / 'app0-private.jpg').write_bytes(small[:2] + b'\xff\xe0' + (len(payload)+2).to_bytes(2,'big') + payload + small[2:])
 image.resize((3600, 2400)).save(root / "big.jpg", quality=96)
 image.convert("CMYK").save(root / "cmyk.jpg", quality=90)
 image.save(root / "icc.jpg", quality=90, icc_profile=b"synthetic-untrusted-ICC-profile")

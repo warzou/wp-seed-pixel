@@ -3,7 +3,7 @@ defined('ABSPATH') || exit;
 
 final class WP_Seed_Pixel_Plugin {
     public static function settings() {
-        return array_merge(array('automatic' => false, 'preset' => 'web', 'cleanup_on_uninstall' => false), (array) get_option('wp_seed_pixel_settings', array()));
+        return array_merge(array('automatic' => false, 'preset' => 'balanced', 'cleanup_on_uninstall' => false), (array) get_option('wp_seed_pixel_settings', array()));
     }
 
     public static function boot() {
@@ -41,9 +41,9 @@ final class WP_Seed_Pixel_Plugin {
     public static function activate($network_wide = false) {
         if ($network_wide) {
             deactivate_plugins(plugin_basename(WP_SEED_PIXEL_FILE));
-            wp_die(esc_html__('Network activation is not supported in 0.1.0. Activate separately on each site.', 'wp-seed-pixel'));
+            wp_die(esc_html__('Network activation is not supported. Activate separately on each site.', 'wp-seed-pixel'));
         }
-        add_option('wp_seed_pixel_settings', array('automatic' => false, 'preset' => 'web', 'cleanup_on_uninstall' => false), '', false);
+        add_option('wp_seed_pixel_settings', array('automatic' => false, 'preset' => 'balanced', 'cleanup_on_uninstall' => false), '', false);
     }
 
     public static function deactivate() {

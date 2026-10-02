@@ -38,3 +38,10 @@ investigation, rather than being deleted on assumptions.
 
 See the delivered security review for tests and untested environments. This
 candidate has not been audited by an independent security professional.
+# Adaptive source reuse
+
+Balanced may serve the existing MASTER only after JPEG marker checks exclude
+private metadata and ICC. It never treats a master reference as owned output.
+Quality failure on an unsafe source refuses publication; it does not leak EXIF.
+The local sampled metric is not a privacy classifier or an AI model. Production
+optimization requires no network or remote scoring. Human review remains required.

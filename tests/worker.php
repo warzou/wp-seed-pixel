@@ -11,6 +11,6 @@ if ($mode === 'crash-after-native') {
 if ($mode === 'hold') {
     add_action('wp_seed_pixel_checkpoint', function ($phase) { if ($phase === 'before_publish') { echo "LOCK_HELD\n"; flush(); usleep(2000000); } });
 }
-$result = wp_seed_pixel_optimize($id, 'participant_album', true);
+$result = wp_seed_pixel_optimize($id, isset($argv[3]) ? $argv[3] : 'participant_album', true);
 echo wp_json_encode(is_wp_error($result) ? array('error' => $result->get_error_code()) : array('status' => $result['status'], 'generation' => $result['generation']));
 exit(is_wp_error($result) ? 1 : 0);

@@ -4,7 +4,7 @@ Tags: images, jpeg, media, optimization
 Requires at least: 6.6
 Tested up to: 7.1
 Requires PHP: 8.1
-Stable tag: 0.1.0
+Stable tag: 0.2.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -16,10 +16,12 @@ WP Seed Pixel adds owned JPEG derivatives to the existing WordPress media
 library. It uses WP_Image_Editor, with no cloud or telemetry. Automatic processing
 defaults to OFF. Manual and batch actions use the same pipeline.
 
-Generic web preset: maximum 1600 pixels, quality 82. Optional participant_album
-example: maximum 640 / Q80 and 2048 / Q90. No upscaling or cropping.
+Balanced intent is the new-install default: thumbnail 640, view target 1920,
+bounded local quality/byte selection and metadata-safe source reuse. No AI,
+cloud, external scoring or network is required. Legacy fixed/custom profiles
+remain compatible. Upgrades do not regenerate the library or change settings.
 
-Masters and native sizes remain. Disk use increases. Re-encoding at higher
+Masters and native sizes remain. Disk use can increase. Re-encoding at higher
 quality can increase transferred bytes; gains are never guaranteed.
 
 Unprofiled RGB JPEGs only. ICC, CMYK, grayscale and other formats are skipped.
@@ -59,6 +61,10 @@ No. They use protected postmeta, separate from WordPress public media details.
 WordPress still provides normal public derivative URLs for public attachments.
 
 == Changelog ==
+
+= 0.2.0 =
+Adaptive Balanced intent, independent bounded candidates, sampled quality gates,
+safe master reuse, explicit decision statistics and legacy upgrade compatibility.
 
 = 0.1.0 =
 Initial local-only JPEG engine, presets, manual actions, automation, resumable

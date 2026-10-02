@@ -10,8 +10,9 @@ No release publication is authorized by this candidate delivery.
 
 1. Profile-aware JPEG/ICC and CMYK handling with reviewed reference profiles and
    verified backend behavior; preserve correct color before broadening support.
-2. Optional rule to skip re-encodes that increase transfer bytes, with explicit
-   orientation/metadata semantics rather than copying sensitive originals.
+2. Broader calibration of the shipped Balanced quality heuristic, more independent
+   real-world/public reference sets and human review; source reuse is now shipped
+   with explicit metadata/orientation semantics, not a blind copy shortcut.
 3. WP-CLI commands and server-driven queue with cancellation, stale job recovery
    and retention independent from an open browser.
 4. Offloaded/private storage adapter with a contract owned by the consuming site.

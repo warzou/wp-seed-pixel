@@ -43,6 +43,10 @@ final class WP_Seed_Pixel_Admin {
         }
         $state = get_post_meta($id, '_seed_pixel_job', true);
         echo esc_html(isset($state['status']) ? $state['status'] : __('Not processed', 'wp-seed-pixel'));
+        $manifest = WP_Seed_Pixel_Store::manifest($id);
+        if ($manifest && (!isset($manifest['strategy']) || $manifest['strategy'] === 'fixed')) {
+            echo '<br>' . esc_html__('Fixed result - optional adaptive regeneration', 'wp-seed-pixel');
+        }
     }
 
     public static function row_actions($actions, $post) {
@@ -145,9 +149,9 @@ final class WP_Seed_Pixel_Admin {
                 <input type="hidden" name="action" value="wp_seed_pixel_settings">
                 <?php wp_nonce_field('wp_seed_pixel_settings'); ?>
                 <p><label><input type="checkbox" name="automatic" <?php checked($settings['automatic']); ?>> <?php esc_html_e('Optimize new JPEG uploads automatically', 'wp-seed-pixel'); ?></label></p>
-                <p><label for="pixel-preset"><?php esc_html_e('Preset', 'wp-seed-pixel'); ?></label> <select name="preset" id="pixel-preset">
+                <p><label for="pixel-preset"><?php esc_html_e('Optimization intent', 'wp-seed-pixel'); ?></label> <select name="preset" id="pixel-preset">
                     <?php foreach (WP_Seed_Pixel_Presets::all() as $name => $preset) { ?>
-                        <option value="<?php echo esc_attr($name); ?>" <?php selected($settings['preset'], $name); ?>><?php echo esc_html($name); ?></option>
+                        <option value="<?php echo esc_attr($name); ?>" <?php selected($settings['preset'], $name); ?>><?php echo esc_html($name === 'balanced' ? __('Balanced - adaptive', 'wp-seed-pixel') : $name . ' (fixed / compatibility)'); ?></option>
                     <?php } ?>
                 </select></p>
                 <p><label><input type="checkbox" name="cleanup_on_uninstall" <?php checked($settings['cleanup_on_uninstall']); ?>> <?php esc_html_e('Remove plugin settings and owned derivatives on uninstall (masters remain)', 'wp-seed-pixel'); ?></label></p>
@@ -174,6 +178,14 @@ final class WP_Seed_Pixel_Admin {
             <label for="pixel-progress"><?php esc_html_e('Progress', 'wp-seed-pixel'); ?></label>
             <progress id="pixel-progress" max="1" value="0"></progress>
             <pre id="pixel-result" role="status" aria-live="polite" aria-atomic="true"></pre>
+            <h2><?php esc_html_e('Recent results', 'wp-seed-pixel'); ?></h2>
+            <?php $recent = get_posts(array('post_type' => 'attachment', 'post_status' => 'inherit', 'posts_per_page' => 10, 'meta_key' => WP_Seed_Pixel_Store::KEY)); ?>
+            <?php foreach ($recent as $item) { $manifest = WP_Seed_Pixel_Store::manifest($item->ID); if (!$manifest || !isset($manifest['files'])) { continue; } ?>
+                <details><summary><?php echo esc_html($item->post_title); ?></summary>
+                    <p><?php echo esc_html(sprintf(__('Source: %s bytes | Added disk: %s bytes | %s', 'wp-seed-pixel'), number_format_i18n($manifest['master_bytes']), number_format_i18n($manifest['added_disk_bytes']), isset($manifest['algorithm_version']) ? $manifest['algorithm_version'] : 'legacy-fixed')); ?></p>
+                    <ul><?php foreach ($manifest['files'] as $name => $file) { ?><li><?php echo esc_html(sprintf('%s: %d x %d | %s bytes | %s | %s', $name, $file['width'], $file['height'], number_format_i18n($file['bytes']), isset($file['kind']) ? $file['kind'] : 'derived', isset($file['reason']) ? $file['reason'] : 'Legacy fixed preset')); ?><br><?php echo esc_html(sprintf('Quality: %s | Engine: %s | Transfer saving: %s%%', $file['quality'] === null ? 'source' : $file['quality'], $file['engine'], $file['transfer_saving_percent_vs_master'])); ?></li><?php } ?></ul>
+                </details>
+            <?php } ?>
         </div>
         <?php
     }

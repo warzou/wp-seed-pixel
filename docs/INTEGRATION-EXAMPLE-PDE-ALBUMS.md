@@ -3,6 +3,11 @@
 This is documentation only. No PDE code, data, credential, image or deployment is
 included. The `participant_album` preset is a demonstration, not a site change.
 
+For a future authorized pilot, prefer `balanced`. The legacy example remains
+available for comparisons only. A resource with `kind=master` refers to the
+existing original; the private gateway must authorize that canonical source just
+as strictly as generated files. Do not make private uploads public to enable reuse.
+
 An authorized consuming site can call the PHP API on its own attachment IDs,
 select `seed-pixel-thumb` for a grid and `seed-pixel-view` for a viewer. Its gallery
 must supply correct responsive `sizes`; this plugin does not fix Divi markup.
