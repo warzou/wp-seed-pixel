@@ -1,0 +1,8 @@
+.wp-seed-pixel { max-width: 920px; }
+.wp-seed-pixel .pixel-actions { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0; }
+.wp-seed-pixel #pixel-single { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+.wp-seed-pixel #pixel-id { width: 120px; }
+.wp-seed-pixel progress { display: block; width: 100%; height: 22px; }
+.wp-seed-pixel pre { white-space: pre-wrap; overflow-wrap: anywhere; background: #fff; border: 1px solid #c3c4c7; padding: 12px; }
+.wp-seed-pixel :is(button, input, select):focus-visible { outline: 2px solid #1d2327; outline-offset: 3px; }
+.row-actions .pixel-media-status { display: block; font-size: 13px; line-height: 1.5; }

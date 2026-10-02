@@ -1,0 +1,19 @@
+# External example: participant albums
+
+This is documentation only. No PDE code, data, credential, image or deployment is
+included. The `participant_album` preset is a demonstration, not a site change.
+
+An authorized consuming site can call the PHP API on its own attachment IDs,
+select `seed-pixel-thumb` for a grid and `seed-pixel-view` for a viewer. Its gallery
+must supply correct responsive `sizes`; this plugin does not fix Divi markup.
+
+The existing private-album gateway remains responsible for passwords, cookies,
+authorization, media protection, delivery headers and cache rules. 0.1.0 accepts
+local regular uploads only; do not move a private master into public uploads to
+work around that boundary. A future storage adapter needs its own security review.
+
+Keep iFolders classification, ShortPixel settings, attachment ownership and all
+531 source photos unchanged until a separate authorized integration pilot.
+Never modify a third-party plugin from the consuming site project. Any handoff
+must include backup, rollback, MIME/color checks, measured transfer results and
+human review. No automatic deployment is implied by this example.

@@ -1,0 +1,7 @@
+.runtime/
+reports/
+dist/
+*.log
+.env*
+node_modules/
+__pycache__/
