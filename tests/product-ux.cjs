@@ -1,0 +1,153 @@
+const {chromium} = require('playwright');
+const {execFileSync} = require('node:child_process');
+const fs = require('node:fs');
+const path = require('node:path');
+const root = path.resolve(__dirname, '..');
+const report = path.join(root, 'reports/product-ux');
+const php = process.env.PIXEL_QA_PHP;
+if (!php) throw Error('PIXEL_QA_PHP required');
+const args = ['-d', `extension_dir=${path.dirname(php)}/ext`, '-d','extension=gd','-d','extension=exif','-d','extension=mbstring','-d','extension=pdo_sqlite','-d','extension=mysqli','-d','memory_limit=512M'];
+execFileSync(php,[...args,path.join(__dirname,'product-qa-state.php'),'reset']);
+const auth = JSON.parse(execFileSync(php,[...args,path.join(__dirname,'auth.php')],{encoding:'utf8'}));
+const fixture = JSON.parse(fs.readFileSync(path.join(report,'fixtures.json')));
+const results=[];
+const check=(name,pass)=>{results.push({test:name,status:pass?'PASS':'FAIL'});if(!pass)throw Error(name);};
+const base='http://127.0.0.1:8877';
+process.env.TEMP=process.env.TMP=path.join(root,'.runtime/browser-temp');
+fs.mkdirSync(process.env.TEMP,{recursive:true});
+let browser;
+(async()=>{
+  browser=await chromium.launch({channel:'chrome',headless:true});
+  const context=await browser.newContext();
+  await context.addCookies(auth.cookies.map(c=>({...c,url:base,httpOnly:true,sameSite:'Lax'})));
+  const external=[],errors=[];
+  await context.route('**/*',r=>{if(new URL(r.request().url()).hostname!=='127.0.0.1'){external.push(new URL(r.request().url()).hostname);return r.abort();}return r.continue();});
+  const page=await context.newPage();
+  page.on('pageerror',e=>errors.push(e.message));
+  const ajax=async (values,ctx=context)=>{
+    const response=await ctx.request.post(base+'/wp-admin/admin-ajax.php',{form:{action:'wp_seed_pixel',nonce:auth.nonce,...values}});
+    return {status:response.status(),data:await response.text()};
+  };
+  async function captures(screen,url,prepare){
+    await page.goto(url);
+    if(prepare)await prepare();
+    for(const width of [1440,820,390,320]){
+      await page.setViewportSize({width,height:1000});
+      if(screen==='media'&&width<783){
+        const toggle=page.locator('#post-'+fixture.optimized+' .toggle-row');
+        if(await toggle.count()&&!(await page.locator('#post-'+fixture.optimized).getAttribute('class')).includes('is-expanded'))await toggle.click();
+      }
+      check(screen+' '+width+' no horizontal overflow',await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
+      await page.evaluate(()=>window.scrollTo(0,0));
+      await page.screenshot({path:path.join(report,screen+'-'+width+'.png'),fullPage:true});
+    }
+  }
+  await captures('settings',base+'/wp-admin/upload.php?page=wp-seed-pixel',async()=>{
+    await page.locator('#pixel-result').filter({hasText:'No processing started'}).waitFor();
+    check('Automatic disabled initially',!await page.locator('[name=automatic]').isChecked());
+    check('Attachment ID hidden from primary workflow',!await page.locator('#pixel-id').isVisible());
+    check('Balanced selected',await page.locator('#pixel-preset').inputValue()==='balanced');
+    check('No batch starts on page load',await page.locator('#pixel-result').innerText().then(t=>t.includes('No processing')));
+  });
+  await page.setViewportSize({width:1440,height:1000});
+  await page.locator('#pixel-confirm').check();
+  await page.locator('#pixel-start').focus();
+  check('Focus visible',await page.locator('#pixel-start').evaluate(e=>getComputedStyle(e).outlineStyle!=='none'));
+  await page.locator('.pixel-diagnostic summary').click();
+  check('Diagnostic reachable',await page.locator('#pixel-id').isVisible());
+  await captures('media',base+'/wp-admin/upload.php?mode=list&s=UX%20demo');
+  const optimize=page.locator('#post-'+fixture.manual+' .pixel-regenerate');
+  await page.setViewportSize({width:1440,height:1000});
+  await optimize.focus();
+  check('Unprocessed media offers optimize',await optimize.getAttribute('data-force')==='0');
+  const manualResponse=page.waitForResponse(r=>r.url().includes('admin-ajax.php')&&(r.request().postData()||'').includes('operation=optimize'));
+  await page.keyboard.press('Enter');
+  check('Existing image optimized from Media Library',(await(await manualResponse).json()).success);
+  const action=page.locator('#post-'+fixture.optimized+' .pixel-regenerate');
+  await action.focus();
+  const response=page.waitForResponse(r=>r.url().includes('admin-ajax.php')&&(r.request().postData()||'').includes('operation=optimize'));
+  await page.keyboard.press('Enter');
+  const result=await(await response).json();
+  check('Keyboard regeneration succeeds',result.success);
+  check('Action retains focus',await action.evaluate(e=>e===document.activeElement));
+  await captures('detail',base+'/wp-admin/post.php?post='+fixture.optimized+'&action=edit',async()=>{
+    await page.locator('.pixel-media-panel').waitFor();
+    check('Benefit distinguishes disk usage',await page.locator('.pixel-media-panel').innerText().then(t=>t.includes('not a disk saving')));
+  });
+  await page.locator('.pixel-media-panel details summary').click();
+  check('Details show algorithm only after disclosure',await page.locator('.pixel-media-panel details').innerText().then(t=>t.includes('bounded-rgb-3')));
+  await captures('exception',base+'/wp-admin/post.php?post='+fixture.skipped+'&action=edit');
+  await page.goto(base+'/wp-admin/upload.php?mode=list&s=UX%20demo');
+  await page.locator('#cb-select-'+fixture.optimized).check();
+  await page.locator('#cb-select-'+fixture.skipped).check();
+  await page.locator('#cb-select-'+fixture.error).check();
+  await page.locator('#bulk-action-selector-bottom').selectOption('wp_seed_pixel');
+  await page.locator('#doaction2').click();
+  await page.waitForURL('**page=wp-seed-pixel**');
+  await page.locator('#pixel-result').filter({hasText:'Paused'}).waitFor();
+  check('Selection queued without immediate processing',(await page.locator('#pixel-result').innerText()).includes('0/3'));
+  await page.locator('#pixel-resume').click();
+  await page.locator('#pixel-result').filter({hasText:'Finished with errors'}).waitFor({timeout:60000});
+  check('Partial bulk is not presented as success',(await page.locator('#pixel-result').innerText()).includes('1 need attention'));
+  await captures('bulk',base+'/wp-admin/upload.php?page=wp-seed-pixel',async()=>{
+    await page.locator('#pixel-result').filter({hasText:'Finished with errors'}).waitFor();
+    await page.locator('#pixel-failures summary').click();
+    check('Failed media links available',await page.locator('#pixel-failure-items a').count()===1);
+    check('Failed title contains decoded text',!(await page.locator('#pixel-failure-items').innerText()).includes('&#'));
+  });
+  const anon=await browser.newContext();
+  check('Anonymous request denied',(await ajax({operation:'start',preset:'balanced',confirmed:'1'},anon)).status>=400);
+  await anon.close();
+  check('Wrong nonce denied',(await ajax({operation:'status',nonce:'wrong'})).status===403);
+  check('Array attachment denied',(await ajax({operation:'optimize','attachment_id[]':'1',preset:'balanced'})).status>=400);
+  const low=JSON.parse(execFileSync(php,[...args,path.join(__dirname,'auth.php'),'author'],{encoding:'utf8'}));
+  const author=await browser.newContext();
+  await author.addCookies(low.cookies.map(c=>({...c,url:base,httpOnly:true,sameSite:'Lax'})));
+  check('Author cannot start whole-library batch',(await ajax({operation:'start',preset:'balanced',confirmed:'1',nonce:low.nonce},author)).status===403);
+  check('Author cannot process another users attachment',(await ajax({operation:'optimize',attachment_id:String(fixture.optimized),preset:'balanced',nonce:low.nonce},author)).status===403);
+  await author.close();
+  await page.goto(base+'/wp-admin/upload.php?page=wp-seed-pixel');
+  await page.locator('.wp-seed-pixel form').first().locator('[type=submit]').click();
+  await page.waitForURL('**saved=1');
+  check('Settings saved with clear feedback',await page.locator('.notice-success').innerText().then(t=>t.includes('Existing images have not been reprocessed')));
+  check('Settings fields labelled',await page.evaluate(()=>Array.from(document.querySelectorAll('.wp-seed-pixel input:not([type=hidden]):not([type=submit]),.wp-seed-pixel select')).every(e=>e.labels.length>0)));
+  const nojs=await browser.newContext({javaScriptEnabled:false});
+  await nojs.addCookies(auth.cookies.map(c=>({...c,url:base,httpOnly:true,sameSite:'Lax'})));
+  await nojs.route('**/*',r=>new URL(r.request().url()).hostname==='127.0.0.1'?r.continue():r.abort());
+  const fallback=await nojs.newPage();
+  await fallback.goto(base+'/wp-admin/upload.php?page=wp-seed-pixel');
+  await fallback.locator('.pixel-diagnostic summary').click();
+  await fallback.locator('#pixel-id').fill(String(fixture.optimized));
+  await fallback.locator('#pixel-single button').click();
+  await fallback.waitForURL('**pixel_status=success');
+  check('Diagnostic native POST works without JavaScript',true);
+  await nojs.close();
+  execFileSync(php,[...args,path.join(__dirname,'product-qa-state.php'),'warning']);
+  try {
+    await page.setViewportSize({width:1440,height:1000});
+    await page.goto(base+'/wp-admin/upload.php?page=wp-seed-pixel');
+    check('Simulated optimizer coexistence warning shown',await page.locator('.notice-warning').innerText().then(t=>t.includes('Another image optimizer')));
+    await page.screenshot({path:path.join(report,'warning-1440.png'),fullPage:true});
+  } finally { execFileSync(php,[...args,path.join(__dirname,'product-qa-state.php'),'restore']); }
+  await page.goto(base+'/wp-admin/upload.php?mode=grid&s=UX%20demo');
+  await page.setViewportSize({width:1440,height:1000});
+  await page.locator('.attachments .attachment').first().click();
+  await page.locator('.media-modal .pixel-media-panel').waitFor({timeout:30000});
+  await page.waitForFunction(()=>Array.from(document.querySelectorAll('.media-modal img')).some(i=>i.complete&&i.naturalWidth>0));
+  check('Grid modal uses native attachment details',true);
+  await page.screenshot({path:path.join(report,'grid-1440.png'),fullPage:false});
+  await page.keyboard.press('Escape');
+  await page.goto(base+'/');
+  check('No global frontend assets',!(await page.content()).includes('/wp-seed-pixel/assets/'));
+  check('No plugin JS errors',errors.length===0);
+  check('No external requests',external.length===0);
+  await page.goto(base+'/wp-admin/upload.php?page=wp-seed-pixel');
+  await page.setViewportSize({width:720,height:500});
+  await page.emulateMedia({reducedMotion:'reduce'});
+  check('Zoom equivalent and reduced motion usable',await page.locator('#pixel-resume').isVisible()&&await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
+})().catch(e=>{results.push({test:'Browser scenario completed: '+e.message.split('\n')[0],status:'FAIL'});console.error(e.message);process.exitCode=1;}).finally(async()=>{
+  if(browser)await browser.close();
+  auth.cookies.forEach(c=>c.value='');auth.nonce='';
+  fs.writeFileSync(path.join(report,'browser-tests.json'),JSON.stringify(results,null,2));
+  console.log(JSON.stringify({PASS:results.filter(t=>t.status==='PASS').length,FAIL:results.filter(t=>t.status==='FAIL').length}));
+});

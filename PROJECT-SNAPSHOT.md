@@ -1,5 +1,15 @@
 # WP Seed Pixel
 
+## 0.3.0 product UX candidate
+
+Branch codex/product-ux-v0.3.0, based on 7949399. No consuming-site action.
+Native media actions, list/grid attachment panels and selected resumable bulk
+jobs replace numeric IDs in normal use. Simplified settings and text progress
+separate skips, errors, current results, transfer reduction and disk growth.
+The 0.2.0 engine and its human visual pass remain unchanged. QA uses only local
+WordPress/SQLite and synthetic fixtures. Owner acceptance and publication remain
+separate. See ignored reports/product-ux for final evidence and limitations.
+
 ## 0.2.0 adaptive candidate
 
 Branch codex/adaptive-v0.2.0, based on local 77d86ef. No consuming-site action.

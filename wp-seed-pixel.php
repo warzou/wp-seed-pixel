@@ -2,7 +2,7 @@
 /**
  * Plugin Name: WP Seed Pixel
  * Description: Local, reversible JPEG derivatives with immutable masters and resumable batches.
- * Version: 0.2.0
+ * Version: 0.3.0
  * Requires at least: 6.6
  * Requires PHP: 8.1
  * Author: WP Seed
@@ -10,9 +10,9 @@
  * Text Domain: wp-seed-pixel
  */
 defined('ABSPATH') || exit;
-define('WP_SEED_PIXEL_VERSION', '0.2.0');
+define('WP_SEED_PIXEL_VERSION', '0.3.0');
 define('WP_SEED_PIXEL_FILE', __FILE__);
-foreach (array('presets', 'files', 'store', 'adaptive', 'engine', 'batch', 'admin', 'plugin') as $component) {
+foreach (array('presets', 'files', 'store', 'adaptive', 'engine', 'batch', 'media', 'admin', 'plugin') as $component) {
     require_once __DIR__ . '/includes/class-' . $component . '.php';
 }
 require_once __DIR__ . '/includes/api.php';

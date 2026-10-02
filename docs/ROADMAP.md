@@ -2,7 +2,8 @@
 
 ## Before deployment
 
-Human benchmark review, GD/Imagick comparison, real MySQL/MariaDB and Linux
+The 0.2.0 image-engine human benchmark passed. Owner acceptance of 0.3.0 UX,
+GD/Imagick comparison, real MySQL/MariaDB and Linux
 filesystem/permission tests, host memory limits and selected optimizer coexistence.
 No release publication is authorized by this candidate delivery.
 

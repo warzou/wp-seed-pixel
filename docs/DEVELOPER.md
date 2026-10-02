@@ -1,5 +1,13 @@
 # Development
 
+## Product UX tests (0.3.0)
+
+After preparing the disposable local WordPress runtime and synthetic fixtures,
+run `tests/product-ux.php`, then `tests/product-ux.cjs` against localhost:8877.
+The browser suite needs `PIXEL_QA_PHP` and Playwright on `NODE_PATH`. It writes
+only ignored product-ux reports and screenshots. Never point tests at a real
+site. Inspect every final screenshot separately; DOM assertions are not visual QA.
+
 Runtime: WordPress >=6.6, PHP >=8.1, JPEG-capable GD or Imagick. EXIF is required
 for sources carrying EXIF. No Composer or Node dependency in the installed plugin.
 The development suite additionally uses Python/Pillow and Playwright/Chrome.

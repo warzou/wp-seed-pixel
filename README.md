@@ -1,4 +1,4 @@
-# WP Seed Pixel 0.2.0
+# WP Seed Pixel 0.3.0
 
 Local JPEG derivatives for the existing WordPress media library. No cloud,
 telemetry, frontend assets, additional media library or required runtime package.
@@ -6,16 +6,22 @@ The original master is never an output destination.
 
 ## Install
 
-Upload `wp-seed-pixel-0.2.0.zip` through Plugins > Add New > Upload Plugin.
+Upload `wp-seed-pixel-0.3.0.zip` through Plugins > Add New > Upload Plugin.
 Activate on one site. Open Media > WP Seed Pixel. Automatic processing defaults
 to OFF. Back up the database and uploads before a library-wide batch.
 
-Use the Media list row action or a single attachment ID for manual processing.
+Choose an image in Media > Library and use **Optimize with WP Seed Pixel**.
+Native attachment details in list and grid show status, benefit and optional
+technical details. **Regenerate web versions** uses the preserved original.
+For several images, use the list view bulk action, then **Resume** on the Pixel
+page. A selection is capped at 1000 items; larger libraries can use several
+selections or the separate explicitly confirmed whole-library action.
 A batch processes one attachment per authenticated POST and can be paused,
 resumed after reload, and retried twice per failed attachment. Keep the admin
 page open to advance it; this is not a background worker daemon.
-Single-attachment processing and settings also work without admin JavaScript.
-The batch interface requires JavaScript; frontend rendering does not.
+Image buttons and batch progress require JavaScript. Settings and the diagnostic
+single-image fallback work without it. Numeric IDs are confined to developer
+tools, not normal use. Frontend rendering does not require JavaScript.
 
 ## Presets
 
@@ -92,4 +98,7 @@ manually remove locks while workers may be running.
 - [External album integration example](docs/INTEGRATION-EXAMPLE-PDE-ALBUMS.md)
 - [Security](SECURITY.md)
 
-This candidate requires human visual review. No claim of production readiness.
+Image-engine visual review passed for 0.2.0; its engine is unchanged. The 0.3.0
+admin UX is subject to owner acceptance, not a production certification. Linux,
+Imagick, MySQL/MariaDB and multisite remain uncertified. English source strings
+are translatable; a French catalogue is not shipped yet.

@@ -1,5 +1,12 @@
 # Architecture
 
+## Admin workflow (0.3.0)
+
+The media presentation class adds native list actions, attachment fields (also
+used by the grid modal), and a bulk selection adapter. Selected jobs use the
+existing batch cursor, lock, counters, pause/resume and retry mechanism. Every
+route calls the same image engine. No frontend presentation assets are added.
+
 ## Components
 
 `Presets -> Engine -> WP_Image_Editor -> Files -> Store`

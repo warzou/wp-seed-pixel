@@ -8,10 +8,29 @@ final class WP_Seed_Pixel_Batch {
         return get_option(self::OPTION, array());
     }
 
-    public static function start($preset, $confirmed) {
+    public static function start($preset, $confirmed, $ids = null) {
         global $wpdb;
         if ($confirmed !== true) {
             return new WP_Error('pixel_confirmation', 'Confirm the whole-library operation first.');
+        }
+        if ($ids !== null) {
+            if (!is_array($ids) || !$ids || count($ids) > 1000) {
+                return new WP_Error('pixel_selection', 'Select between 1 and 1000 media items.');
+            }
+            foreach ($ids as $id) {
+                if (!is_scalar($id) || !ctype_digit((string) $id) || (int) $id < 1) {
+                    return new WP_Error('pixel_selection', 'The selection contains an unavailable media item.');
+                }
+            }
+            $ids = array_values(array_unique(array_map('intval', $ids)));
+            sort($ids, SORT_NUMERIC);
+            // Prime the post cache once; capability checks must not query per selected item.
+            get_posts(array('post_type' => 'attachment', 'post_status' => 'inherit', 'post__in' => $ids, 'posts_per_page' => count($ids), 'update_post_meta_cache' => false, 'update_post_term_cache' => false));
+            foreach ($ids as $id) {
+                if (get_post_type($id) !== 'attachment' || !current_user_can('edit_post', $id)) {
+                    return new WP_Error('pixel_selection', 'The selection contains an unavailable media item.');
+                }
+            }
         }
         $valid = WP_Seed_Pixel_Presets::get($preset);
         if (is_wp_error($valid)) {
@@ -29,6 +48,11 @@ final class WP_Seed_Pixel_Batch {
             $ceiling = (int) $wpdb->get_var("SELECT MAX(ID) FROM {$wpdb->posts} WHERE post_type='attachment' AND post_mime_type LIKE 'image/%'");
             $total = (int) $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM {$wpdb->posts} WHERE post_type='attachment' AND post_mime_type LIKE 'image/%%' AND ID <= %d", $ceiling));
             $batch = array('id' => bin2hex(random_bytes(8)), 'status' => 'running', 'preset' => $preset, 'ceiling' => $ceiling, 'total' => $total, 'cursor' => 0, 'active' => 0, 'processed' => 0, 'success' => 0, 'failed' => 0, 'skipped' => 0, 'failed_ids' => array(), 'retry_counts' => array(), 'started' => time(), 'added_disk_bytes' => 0, 'last' => null);
+            $batch['unchanged'] = 0;
+            if ($ids !== null) {
+                $batch['selection'] = $ids;
+                $batch['total'] = count($ids);
+            }
             update_option(self::OPTION, $batch, false);
             return $batch;
         } finally {
@@ -47,12 +71,22 @@ final class WP_Seed_Pixel_Batch {
             if (!$batch || $batch['status'] !== 'running') {
                 return $batch;
             }
-            $id = $batch['active'] ?: (int) $wpdb->get_var($wpdb->prepare("SELECT ID FROM {$wpdb->posts} WHERE post_type='attachment' AND post_mime_type LIKE 'image/%%' AND ID > %d AND ID <= %d ORDER BY ID LIMIT 1", $batch['cursor'], $batch['ceiling']));
+            if (isset($batch['selection'])) {
+                $remaining = array_values(array_filter($batch['selection'], function ($item) use ($batch) { return $item > $batch['cursor']; }));
+                $id = $batch['active'] ?: (isset($remaining[0]) ? $remaining[0] : 0);
+            } else {
+                $id = $batch['active'] ?: (int) $wpdb->get_var($wpdb->prepare("SELECT ID FROM {$wpdb->posts} WHERE post_type='attachment' AND post_mime_type LIKE 'image/%%' AND ID > %d AND ID <= %d ORDER BY ID LIMIT 1", $batch['cursor'], $batch['ceiling']));
+            }
             if (!$id) {
                 $batch['status'] = 'complete';
                 $batch['finished'] = time();
                 update_option(self::OPTION, $batch, false);
                 return $batch;
+            }
+            if (isset($batch['selection']) && !current_user_can('edit_post', $id)) {
+                $batch['status'] = 'paused';
+                update_option(self::OPTION, $batch, false);
+                return new WP_Error('pixel_batch_permission', 'The next media item is no longer editable. Review the selection before resuming.');
             }
             $batch['active'] = $id;
             update_option(self::OPTION, $batch, false);
@@ -62,6 +96,9 @@ final class WP_Seed_Pixel_Batch {
                 return new WP_Error('pixel_batch_busy', 'The selected attachment is busy; resume later.');
             }
             ++$batch[$status];
+            if (!is_wp_error($result) && !empty($result['unchanged'])) {
+                $batch['unchanged'] = isset($batch['unchanged']) ? $batch['unchanged'] + 1 : 1;
+            }
             ++$batch['processed'];
             $batch['cursor'] = $id;
             $batch['active'] = 0;

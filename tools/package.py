@@ -3,6 +3,7 @@ from pathlib import Path
 import hashlib
 import json
 import zipfile
+import re
 
 root = Path(__file__).resolve().parents[1]
 files = [root / name for name in ["wp-seed-pixel.php", "uninstall.php", "README.md", "readme.txt", "CHANGELOG.md", "LICENSE", "SECURITY.md"]]
@@ -14,8 +15,9 @@ for directory, suffixes in [("includes", {".php"}), ("assets", {".css", ".js"}),
             files.append(file)
 dist = root / "dist"
 dist.mkdir(exist_ok=True)
-archive = dist / "wp-seed-pixel-0.2.0.zip"
-temporary = dist / "wp-seed-pixel-0.2.0.zip.tmp"
+version = re.search(r"define\('WP_SEED_PIXEL_VERSION', '([0-9.]+)'\)", (root / 'wp-seed-pixel.php').read_text(encoding='utf-8')).group(1)
+archive = dist / ("wp-seed-pixel-" + version + ".zip")
+temporary = dist / (archive.name + ".tmp")
 if any(not file.is_file() or file.is_symlink() for file in files):
     raise ValueError("Missing or symlinked release input")
 manifest = []
@@ -39,6 +41,7 @@ with zipfile.ZipFile(temporary) as check:
         raise ValueError("Archive CRC validation failed")
 temporary.replace(archive)
 result = {"archive": archive.name, "bytes": archive.stat().st_size, "sha256": hashlib.sha256(archive.read_bytes()).hexdigest(), "files": manifest}
-(root / "reports/adaptive/data/package-manifest.json").write_text(json.dumps(result, indent=2), encoding="utf-8")
+(root / "reports/product-ux").mkdir(parents=True, exist_ok=True)
+(root / "reports/product-ux/package-manifest.json").write_text(json.dumps(result, indent=2), encoding="utf-8")
 (dist / (archive.name + ".sha256")).write_text(result["sha256"] + "  " + archive.name + "\n", encoding="ascii")
 print(json.dumps({key: value for key, value in result.items() if key != "files"}, indent=2))

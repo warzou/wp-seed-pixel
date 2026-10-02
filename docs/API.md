@@ -1,5 +1,12 @@
 # PHP API
 
+## Admin adapters (0.3.0)
+
+The trusted optimization contracts are unchanged. Selected jobs use
+`WP_Seed_Pixel_Batch::start($preset, true, $ids)` with 1..1000 editable attachment
+IDs. HTTP routes still require capabilities and nonces. An authorized admin
+response may include escaped presentation HTML, never filesystem paths.
+
 Call after `plugins_loaded`. All entry points are trusted PHP, not public HTTP.
 Return values are a structured array or `WP_Error`.
 

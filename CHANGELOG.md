@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.3.0 - 2026-10-02
+
+- Add native Media Library actions, attachment detail panels and selected bulk jobs.
+- Reuse the existing resumable engine pipeline; cap selections at 1000 editable items.
+- Distinguish current results, skips and failures using human-readable progress.
+- Simplify settings and move numeric IDs and engine diagnostics behind disclosure.
+- Separate transfer reduction from additional disk usage and source reuse.
+- Improve scoped responsive controls and warn about known active optimizers.
+- Keep the 0.2.0 image engine and its profiles unchanged.
+
 ## 0.2.0 - 2026-10-02
 
 - Add a bounded local Balanced intent instead of automatic high-quality inflation.

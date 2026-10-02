@@ -1,0 +1,61 @@
+<?php
+require __DIR__ . '/runtime.php';
+$results = array();
+function ux_test($name, $pass) {
+    global $results;
+    $results[] = array('test' => $name, 'status' => $pass ? 'PASS' : 'FAIL');
+    if (!$pass) { throw new RuntimeException($name); }
+}
+update_option('wp_seed_pixel_settings', array('automatic' => false, 'preset' => 'balanced', 'cleanup_on_uninstall' => false), false);
+update_option(WP_Seed_Pixel_Batch::OPTION, array(), false);
+$id = pixel_fixture('rgb.jpg');
+wp_update_post(array('ID' => $id, 'post_title' => 'UX demo - studio textures and gradients'));
+$master = wp_get_original_image_path($id);
+$hash = hash_file('sha256', $master);
+ux_test('Unprocessed JPEG status', WP_Seed_Pixel_Media::state($id) === 'new');
+ux_test('Individual action is optimize, not regeneration', strpos(WP_Seed_Pixel_Media::button($id), 'data-force="0"') !== false);
+$optimized = wp_seed_pixel_optimize($id, 'balanced');
+ux_test('Individual shared engine succeeds', !is_wp_error($optimized));
+ux_test('Optimized human status', WP_Seed_Pixel_Media::state($id) === 'success');
+ux_test('Regeneration action after optimization', strpos(WP_Seed_Pixel_Media::button($id), 'data-force="1"') !== false);
+ux_test('Technical disclosure present', strpos(WP_Seed_Pixel_Media::details($id), '<details>') !== false);
+ux_test('No source path disclosed', strpos(WP_Seed_Pixel_Media::details($id), ABSPATH) === false);
+$second = pixel_fixture('rgb.jpg');
+wp_update_post(array('ID' => $second, 'post_title' => 'UX demo - a-long-file-name-that-must-wrap-without-losing-actions-or-result-text'));
+$skip = pixel_fixture('png.png');
+wp_update_post(array('ID' => $skip, 'post_title' => 'UX demo - unsupported format kept intact'));
+$error = pixel_fixture('rgb.jpg', false);
+wp_update_post(array('ID' => $error, 'post_title' => 'UX demo - missing source needs attention'));
+delete_post_meta($error, '_wp_attachment_metadata');
+wp_seed_pixel_optimize($error, 'balanced');
+ux_test('Error status distinct from skip', WP_Seed_Pixel_Media::state($error) === 'failed');
+$selection = array($id, $second, $skip, $error);
+$batch = WP_Seed_Pixel_Batch::start('balanced', true, $selection);
+ux_test('Selection batch uses existing pipeline', !is_wp_error($batch) && $batch['total'] === 4);
+WP_Seed_Pixel_Batch::pause(true);
+ux_test('Paused queue does not process on refresh', WP_Seed_Pixel_Batch::step()['processed'] === 0);
+WP_Seed_Pixel_Batch::pause(false);
+for ($i = 0; $i < 5; ++$i) { $batch = WP_Seed_Pixel_Batch::step(); }
+ux_test('Selected bulk completed', $batch['status'] === 'complete' && $batch['processed'] === 4);
+ux_test('Already current counted separately', $batch['unchanged'] === 1);
+ux_test('Bulk distinguishes successful, skipped and failed', $batch['success'] === 2 && $batch['skipped'] === 1 && $batch['failed'] === 1);
+ux_test('MASTER remains unchanged', hash_file('sha256', $master) === $hash);
+ux_test('Oversized selection rejected', is_wp_error(WP_Seed_Pixel_Batch::start('balanced', true, array_fill(0, 1001, $id))));
+ux_test('Malformed selection rejected', is_wp_error(WP_Seed_Pixel_Batch::start('balanced', true, array(array('bad')))));
+$auto = WP_Seed_Pixel_Plugin::settings();
+$auto['automatic'] = true;
+update_option('wp_seed_pixel_settings', $auto, false);
+$automatic = pixel_fixture('rgb.jpg');
+ux_test('New upload schedules automatic processing', (bool) wp_next_scheduled('wp_seed_pixel_auto', array($automatic)));
+WP_Seed_Pixel_Plugin::automatic($automatic);
+ux_test('Automatic processing succeeds through engine', WP_Seed_Pixel_Media::state($automatic) === 'success');
+$auto['automatic'] = false;
+update_option('wp_seed_pixel_settings', $auto, false);
+wp_update_post(array('ID' => $automatic, 'post_title' => 'UX demo - automatic upload complete'));
+update_post_meta($skip, '_seed_pixel_job', array('status' => 'skipped', 'reason' => '<script>alert(1)</script>'));
+ux_test('Technical reasons escaped', strpos(WP_Seed_Pixel_Media::details($skip), '<script>') === false);
+update_post_meta($skip, '_seed_pixel_job', array('status' => 'skipped', 'reason' => 'Unsupported format; original retained.'));
+update_option(WP_Seed_Pixel_Batch::OPTION, array(), false);
+file_put_contents(dirname(__DIR__) . '/reports/product-ux/fixtures.json', wp_json_encode(array('optimized' => $id, 'new' => $second, 'skipped' => $skip, 'error' => $error, 'automatic' => $automatic)));
+file_put_contents(dirname(__DIR__) . '/reports/product-ux/product-tests.json', wp_json_encode($results, JSON_PRETTY_PRINT));
+echo count($results) . " product tests passed.\n";

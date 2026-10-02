@@ -4,7 +4,7 @@ Tags: images, jpeg, media, optimization
 Requires at least: 6.6
 Tested up to: 7.1
 Requires PHP: 8.1
-Stable tag: 0.2.0
+Stable tag: 0.3.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -32,8 +32,9 @@ This is a human-review candidate, not a production certification.
 
 1. Back up uploads and the database.
 2. Upload the ZIP through Plugins > Add New and activate on one site.
-3. Open Media > WP Seed Pixel, choose a preset and test a single attachment.
-4. Confirm explicitly before starting the current-library batch.
+3. Open Media > WP Seed Pixel; Balanced is recommended, automation is off.
+4. Choose an image in the Media Library and use Optimize with WP Seed Pixel.
+5. For several images, use the list view bulk action, then Resume the selection.
 
 == Frequently Asked Questions ==
 
@@ -61,6 +62,10 @@ No. They use protected postmeta, separate from WordPress public media details.
 WordPress still provides normal public derivative URLs for public attachments.
 
 == Changelog ==
+
+= 0.3.0 =
+Human-readable media status, native attachment details in list and grid, selected
+bulk processing, simplified settings and progress. Image engine unchanged.
 
 = 0.2.0 =
 Adaptive Balanced intent, independent bounded candidates, sampled quality gates,

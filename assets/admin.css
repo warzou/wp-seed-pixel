@@ -10,3 +10,20 @@
 .wp-seed-pixel details { max-width: 800px; margin: 8px 0; overflow-wrap: anywhere; }
 .wp-seed-pixel summary { cursor: pointer; }
 .wp-seed-pixel summary:focus-visible { outline: 2px solid #2271b1; outline-offset: 2px; }
+.pixel-media-panel { max-width: 760px; overflow-wrap: anywhere; }
+.pixel-media-panel p { margin: 10px 0; }
+.pixel-media-panel .pixel-media-status { display: block; margin-top: 8px; }
+.pixel-media-panel summary { cursor: pointer; }
+.pixel-media-panel :is(button, summary):focus-visible,
+.row-actions .pixel-regenerate:focus-visible { outline: 2px solid #2271b1; outline-offset: 3px; }
+.wp-seed-pixel .pixel-diagnostic { margin: 24px 0; }
+.column-wp_seed_pixel { width: 15%; }
+@media(max-width:782px) {
+    .wp-seed-pixel .button, .pixel-media-panel .button, .row-actions .pixel-regenerate { min-height: 44px; white-space: normal; line-height: 1.5; padding: 10px 12px; }
+    .wp-seed-pixel .pixel-actions .button { flex: 1 1 130px; }
+    .pixel-media-panel .button { max-width: 100%; }
+    .compat-field-wp_seed_pixel > th, .compat-field-wp_seed_pixel > td { display: block; width: 100%; box-sizing: border-box; text-align: left; }
+}
+@media(max-width:360px) {
+    .wp-seed-pixel .pixel-actions .button { flex-basis: 100%; }
+}
