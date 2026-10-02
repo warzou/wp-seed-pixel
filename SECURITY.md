@@ -1,7 +1,8 @@
 # Security
 
-Report vulnerabilities privately to the repository maintainer through the
-channel used to obtain this candidate. No public reporting endpoint is claimed.
+Use GitHub's private vulnerability reporting on this repository's Security tab
+when available. If it is unavailable, open a public issue requesting a private
+contact channel without including exploit details or sensitive information.
 Include a minimal reproduction, versions, impact and non-sensitive logs.
 Never send passwords, tokens, private photographs or database backups.
 
@@ -36,8 +37,8 @@ journals are processed when that attachment is retried. There is no global
 automatic orphan collector. Changed/shared derivative files remain for manual
 investigation, rather than being deleted on assumptions.
 
-See the delivered security review for tests and untested environments. This
-candidate has not been audited by an independent security professional.
+See docs/COMPATIBILITY.md for tested and untested environments. This preview
+has not been audited by an independent security professional.
 # Adaptive source reuse
 
 Balanced may serve the existing MASTER only after JPEG marker checks exclude

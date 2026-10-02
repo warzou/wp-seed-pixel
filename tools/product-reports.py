@@ -45,7 +45,7 @@ for relative in paths:
 assert not findings, 'Credential-like material found (paths only): ' + str(findings)
 with zipfile.ZipFile(archive) as z:
     assert z.testzip() is None
-    assert not any(n.endswith(('.jpg', '.png', '.webp', '.sql', '.zip', '.patch', '.log')) or '/reports/' in n or '/tests/' in n or '.runtime' in n for n in z.namelist())
+    assert not any(n.endswith(('.jpg', '.webp', '.sql', '.zip', '.patch', '.log')) or (n.endswith('.png') and not n.startswith('wp-seed-pixel/screenshots/')) or '/reports/' in n or '/tests/' in n or '.runtime' in n for n in z.namelist())
     for entry in package['files']:
         assert hashlib.sha256(z.read('wp-seed-pixel/' + entry['file'])).hexdigest() == entry['sha256']
 subprocess.check_call(['git', '-c', 'safe.directory=' + ROOT.as_posix(), '-C', str(ROOT), 'diff', '--check'])
@@ -203,7 +203,8 @@ from AJAX resources. Details panel is admin-authorized, no new public REST surfa
 Anonymous, invalid nonce, array ID, lower-privilege bulk and foreign-attachment
 requests tested. No frontend assets; browser external requests: 0. Engine components
 byte-identical to 0.2.0. Credential-pattern scan: 0 findings; final ZIP contains
-no images, runtime, test credentials, private benchmark or report.
+only selected synthetic screenshots, no private images, runtime, test credentials,
+private benchmark or report.
 ''')
 write('FINAL-REPORT.md', f'''# WP Seed Pixel 0.3.0
 

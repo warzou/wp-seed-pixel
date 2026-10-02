@@ -2,13 +2,14 @@
 
 ## 0.3.0 product UX candidate
 
-Branch codex/product-ux-v0.3.0, based on 7949399. No consuming-site action.
+Owner acceptance passed. First public release is a Tech Preview, not universal
+production certification. No consuming-site action is included in publication.
 Native media actions, list/grid attachment panels and selected resumable bulk
 jobs replace numeric IDs in normal use. Simplified settings and text progress
 separate skips, errors, current results, transfer reduction and disk growth.
 The 0.2.0 engine and its human visual pass remain unchanged. QA uses only local
-WordPress/SQLite and synthetic fixtures. Owner acceptance and publication remain
-separate. See ignored reports/product-ux for final evidence and limitations.
+WordPress/SQLite and synthetic fixtures. Internal review reports stay local and
+ignored. Public support limits are documented in docs/COMPATIBILITY.md.
 
 ## 0.2.0 adaptive candidate
 
@@ -22,13 +23,13 @@ Evidence, self-review and human comparisons: ignored reports/adaptive.
 The original 0.1.0 ZIP remains available for upgrade and comparison tests.
 Final benchmark and matrix are factual deliverables, not production certification.
 Imagick/Linux/MySQL/multisite and minimum-version matrices remain uncertified.
-Next step is human visual review; no PDE pilot, push, tag or release is implied.
+The image-engine human visual review passed before the 0.3.0 product UX phase.
 
 ## 0.1.0 candidate
 
 Local-only WordPress JPEG derivatives. Masters remain immutable. One pipeline
 serves PHP API, administrator actions, upload automation and resumable batches.
-No external service, frontend asset, optimizer replacement or PDE deployment.
+No external service, frontend asset, optimizer replacement or site deployment.
 
 Implementation is complete as a human-review candidate, not a production release.
 Protected manifests, native metadata compare-and-swap, relative recovery journals
@@ -45,5 +46,5 @@ Masters, native sizes and historical generations remain; stored bytes increase.
 
 Final evidence and visual review are in ignored reports/final. Distribution is
 allowlisted under dist. Tests/tools are development source only, never installed.
-No PDE/DEV deployment, GitHub remote, push, tag or release is authorized here.
-Next action: Guillaume and ChatGPT human review, then a separately authorized pilot.
+Public GitHub publication is now authorized for 0.3.0 after its release gate.
+Any consuming-site pilot remains a separate operation requiring authorization.

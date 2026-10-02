@@ -7,6 +7,9 @@ import re
 
 root = Path(__file__).resolve().parents[1]
 files = [root / name for name in ["wp-seed-pixel.php", "uninstall.php", "README.md", "readme.txt", "CHANGELOG.md", "LICENSE", "SECURITY.md"]]
+files.append(root / 'CONTRIBUTING.md')
+for name in ['settings.png', 'media-library.png', 'attachment-details.png', 'bulk.png']:
+    files.append(root / 'screenshots' / name)
 for directory, suffixes in [("includes", {".php"}), ("assets", {".css", ".js"}), ("docs", {".md"})]:
     for file in sorted((root / directory).rglob("*")):
         if file.is_file():
@@ -22,7 +25,7 @@ if any(not file.is_file() or file.is_symlink() for file in files):
     raise ValueError("Missing or symlinked release input")
 manifest = []
 with zipfile.ZipFile(temporary, "w", compression=zipfile.ZIP_DEFLATED, compresslevel=9) as target:
-    for directory in ["wp-seed-pixel/", "wp-seed-pixel/includes/", "wp-seed-pixel/assets/", "wp-seed-pixel/docs/"]:
+    for directory in ["wp-seed-pixel/", "wp-seed-pixel/includes/", "wp-seed-pixel/assets/", "wp-seed-pixel/docs/", "wp-seed-pixel/screenshots/"]:
         entry = zipfile.ZipInfo(directory, (2026, 10, 2, 0, 0, 0))
         entry.create_system = 3
         entry.external_attr = (0o40755 << 16) | 0x10

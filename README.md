@@ -1,12 +1,19 @@
 # WP Seed Pixel 0.3.0
 
-Local JPEG derivatives for the existing WordPress media library. No cloud,
-telemetry, frontend assets, additional media library or required runtime package.
-The original master is never an output destination.
+Local, non-destructive JPEG optimization for the WordPress Media Library.
+No cloud upload, service quota, AI runtime or telemetry. The original is kept.
+Use automatic uploads, individual actions or selected bulk processing, with a
+bounded local Adaptive strategy. No extra runtime package or second library.
+
+**0.3.0 is a Tech Preview.** Owner acceptance passed; this is not a universal
+production certification. Review [tested compatibility](docs/COMPATIBILITY.md)
+and back up the site before a pilot.
 
 ## Install
 
 Upload `wp-seed-pixel-0.3.0.zip` through Plugins > Add New > Upload Plugin.
+Download that installable asset from the GitHub release, not GitHub's automatic
+Source code ZIP or tar.gz archives.
 Activate on one site. Open Media > WP Seed Pixel. Automatic processing defaults
 to OFF. Back up the database and uploads before a library-wide batch.
 
@@ -68,7 +75,7 @@ The quality metric is a bounded heuristic, not a human visual certification.
 - Other optimizers are neither disabled nor rewritten. Coexistence with each
   commercial optimizer requires a separate real-site validation.
 - PHP minimum 8.1, WordPress minimum 6.6 are declared API floors, not an assertion
-  that every combination was tested. See the delivered compatibility report.
+  that every combination was tested. See [compatibility](docs/COMPATIBILITY.md).
 - Network activation is refused. Per-site multisite behavior is not certified.
 
 ## Deactivation and removal
@@ -95,10 +102,34 @@ manually remove locks while workers may be running.
 - [PHP API and hooks](docs/API.md)
 - [Development and tests](docs/DEVELOPER.md)
 - [Roadmap](docs/ROADMAP.md)
-- [External album integration example](docs/INTEGRATION-EXAMPLE-PDE-ALBUMS.md)
+- [External album integration example](docs/INTEGRATION-EXAMPLE-ALBUMS.md)
+- [Compatibility](docs/COMPATIBILITY.md)
+- [Contributing](CONTRIBUTING.md)
 - [Security](SECURITY.md)
 
 Image-engine visual review passed for 0.2.0; its engine is unchanged. The 0.3.0
-admin UX is subject to owner acceptance, not a production certification. Linux,
+admin UX passed owner acceptance, not a production certification. Linux,
 Imagick, MySQL/MariaDB and multisite remain uncertified. English source strings
 are translatable; a French catalogue is not shipped yet.
+
+## Administration screenshots
+
+These are real local WordPress screens with generated synthetic media only.
+
+### Settings
+![Settings](screenshots/settings.png)
+
+### Media Library
+![Native Media Library integration](screenshots/media-library.png)
+
+### Attachment details
+![Per-image results and regeneration](screenshots/attachment-details.png)
+
+### Selected bulk result
+![Bulk processing with distinct skipped and failed items](screenshots/bulk.png)
+
+## License
+
+GPL-2.0-or-later; see [LICENSE](LICENSE). No third-party code, font, image
+corpus or licensed WordPress theme is bundled. Synthetic fixtures and public
+screenshots are original project test material, distributed under the same license.

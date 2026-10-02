@@ -20,7 +20,7 @@ No release publication is authorized by this candidate delivery.
 5. Per-site multisite certification and bounded network orchestration.
 6. PNG lossless, optional WebP/AVIF only after animation/transparency/color tests.
 7. More accessible summarized progress/error controls, translations and optimizer
-   compatibility matrix. Never embed PDE-specific paths or album auth in core.
+   compatibility matrix. Never embed site-specific paths or album auth in core.
 
 Deferred intentionally: cloud services, automatic artistic corrections, a media
 catalogue, mandatory external binaries and automatic replacement of other plugins.

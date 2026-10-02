@@ -1,5 +1,4 @@
 === WP Seed Pixel ===
-Contributors: wpseed
 Tags: images, jpeg, media, optimization
 Requires at least: 6.6
 Tested up to: 7.1
@@ -26,7 +25,9 @@ quality can increase transferred bytes; gains are never guaranteed.
 
 Unprofiled RGB JPEGs only. ICC, CMYK, grayscale and other formats are skipped.
 Local uploads only. No offloaded storage or network activation support.
-This is a human-review candidate, not a production certification.
+This release is a Tech Preview with owner acceptance completed, not a universal
+production certification. PHP 8.4.23 / GD / Windows / SQLite / WordPress 7.1.2
+were tested. Other backends and platforms remain uncertified.
 
 == Installation ==
 
