@@ -24,7 +24,7 @@ if not (site / "wp-load.php").exists():
     shutil.copyfile(site / "wp-content/plugins/sqlite-database-integration/db.copy", site / "wp-content/db.php")
 plugin = site / "wp-content/plugins/wp-seed-pixel"
 plugin.mkdir(parents=True, exist_ok=True)
-for relative in ["wp-seed-pixel.php", "uninstall.php", "includes", "assets"]:
+for relative in ["wp-seed-pixel.php", "uninstall.php", "includes", "assets", "languages"]:
     source, destination = ROOT / relative, plugin / relative
     if source.is_dir():
         shutil.copytree(source, destination, dirs_exist_ok=True)

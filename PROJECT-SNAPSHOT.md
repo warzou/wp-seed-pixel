@@ -1,5 +1,352 @@
 # WP Seed Pixel
 
+## 2026-10-05 - Private 0.4.0 V1 candidate frozen; next gate is PDE 6354
+
+Accepted M1-M5.1 JPEG/storage primitives are preserved. M6 now supports bounded
+lossless PNG through the same jobs/authority/budget/native recovery lifecycle;
+unsafe profiles/formats or no net benefit are unchanged for review. No conversion,
+cloud dependency, automatic existing-media run or unattended real-site processing.
+EN/fr_FR administration and truthful attachment recovery/status labels are complete.
+
+Two independent clean disposable cycles pass 1,000 primary checks each, excluding
+duplicated evidence; their runtime manifests and current source match. Isolated
+headless admin QA passes 39 checks; 125 PHP sources and five runtime JS files lint.
+Ten bounded review passes finish with zero Critical/Major findings. Inherited PHP
+8.5 GD deprecation is minor. Current WP 7.1.2/PHP 8.5.4/MariaDB 11.8.6 results are
+not a new minimum-version, full MySQL/NFS or screen-reader certification. Accepted
+separate MySQL/NFS authority evidence remains applicable to unchanged primitives.
+
+Private runtime-only ZIP: 159,228 bytes, 542,880 installed bytes, 50 files,
+zero development files; SHA-256
+`1d45e519b84b837a9f6d54ccc5f779c235896e2b02050042c217b28d19b55e08`.
+Compared with the measured real-pilot package: +10,208 ZIP / +38,505 installed
+bytes and one runtime file. Stable 0.3.2 ZIP remains byte-identical.
+New native operations stop at 10,000 records; journals retain at most 32 events;
+restore/purge still work at that ceiling. No automatic recovery expiry or hidden
+log growth; scan/plan history grows only by explicit requests.
+
+Owned disposable lab, processes, browser profiles and abandoned failure captures
+are physically absent. No AskPass was created. Evidence and package stay ignored
+under reports/storage-v1; local isolated commit is authorized, never push/tag/release.
+Attachment 4395's accepted JPEG lifecycle/purge is closed; no second real image
+or remote operation followed purge verification. PDE remains entirely untouched.
+NEXT HUMAN VALIDATION: PDE DEV attachment 6354 eligibility/status-label test.
+Do not perform it automatically; no real-site automation is enabled by this gate.
+
+## 2026-10-05 - First real JPEG lifecycle certified; targeted purge complete
+
+Attachment 4395 HUMAN PASS is accepted. Fresh scoped M4 gates passed; only its
+verified 1,957,818-byte source quarantine was permanently purged via Pixel.
+State purged / Restore unavailable / current 1,139,878-byte master healthy;
+native derivatives, REST, URLs, srcset, site and 69 unrelated witnesses pass.
+Active saving 817,940 bytes; retained journal 5,601 bytes; net logical reclaim
+812,339 bytes. No provider-quota claim. Targeted checkpoint/SQL overheads are
+separately recorded in reports/storage-m5.1/first-real-pilot/FINAL-REPORT.md.
+Endpoint physically deleted; automation OFF; no second real image.
+TherapsyCorporel is read-only; ongoing V1 work is local/disposable only.
+
+## 2026-10-05 - Pilot visual acceptance; targeted purge and local V1 authorized
+
+Guillaume accepts attachment 4395's A/B comparison: QUALITY HUMAN PASS PASS.
+Only its verified original quarantine may be permanently purged through M4,
+after fresh scoped identity/generation/restore/conflict gates. No other entry
+or real attachment is authorized. After this gate, TherapsyCorporel is read-only.
+Local/disposable V1 completion is authorized using the accepted M1-M5.1 design,
+bounded lossless PNG if feasible, product UX/EN-FR/security/resource regression,
+two independent final cycles and a private runtime-only 0.4.0 candidate.
+A local commit is allowed only if all Pixel work is safely isolated; no push,
+tag or public release. PDE and attachment 6354 stay untouched: the latter is
+the explicitly deferred next real validation after candidate freeze.
+
+## 2026-10-05 - First real one-JPEG pilot: ready for human A/B pass
+
+Guillaume's new explicit OVH baseline (624 decimal MB used, 1,000 MB quota,
+700 MB Pixel operational ceiling) supersedes the earlier 600 MB refusal below.
+No general hosting/storage investigation was reopened. The frozen M1-M5.1
+runtime is unchanged; 146 required fresh local regression checks pass.
+The runtime-only private ZIP contains 49 files: 149,020 ZIP / 504,375 installed
+bytes. Header remains 0.3.2, not a released 0.4.0. Stable ZIP is unchanged.
+
+TherapsyCorporel received exactly one ordinary REST media upload: attachment
+4395, one DB-authoritative replacement job (1), completed and retained.
+The generic generated photographic A is 1,957,818 bytes; actual retained B is
+1,139,878 bytes, 41.7781% smaller, both 1536x1024 with sRGB/orientation preserved.
+All 69 preexisting attachments, including 3474/3487/3485/3940/3462, have identical
+post/meta/native-file hashes. Old-media jobs and mutations are zero.
+
+Future uploads and legacy automation are OFF at closure. A private per-pilot
+adapter restricts enrollment/accounting to the authorized run; its trusted
+human baseline plus live owned additions/reserves is not a provider API gauge.
+The pre-processing conservative peak is 677,977,705 bytes, below 700 MB.
+Original quarantine and journal remain verified; no permanent purge. Logical
+image/journal hosting footprint grows by 1,145,277 bytes while recovery remains;
+quarantined bytes are not reclaimed. Physical allocated/quota delta is unmeasured.
+
+REST/native metadata, four unchanged derivatives, srcset, canonical URL/cache
+and bounded HTTP health pass. Five isolated headless public-image checks pass.
+Privileged Media Library UI was not tested; no privileged session was minted.
+The remote harness/ZIP/stage and owned local lab/profiles/processes are absent.
+Only intentional plugin/adapter/attachment/recovery and final evidence remain.
+PDE, unrelated plugins/site media and M6 are untouched; no commit/push/tag/release.
+Evidence and actual A/B: ignored reports/storage-m5.1/first-real-pilot/.
+STOP for Guillaume's visual HUMAN PASS; no second image or purge.
+
+## 2026-10-05 - First real future-upload pilot: admission refused
+
+The authorized TherapsyCorporel one-new-JPEG pilot stopped before any remote
+mutation. One HTTPS preflight passes 200; the established FTP server advertises
+no quota capability and rejects SITE QUOTA with 500. Complete live account
+usage remains UNKNOWN, so safe peak admission below 600 decimal MB cannot be
+proved. The 1,000 MB provider limit is not usage; no arbitrary reserve fills
+that evidence gap and no ceiling is weakened. No upload, processing, activation,
+consumer configuration, cache purge or media change occurred. PDE is untouched.
+
+The frozen M1-M5.1 private candidate was packaged locally: version 0.3.2 remains,
+79 files, 601,160 bytes, SHA-256
+`b5a331ccd6aaab7cded70a502a51d8cb1d3e87ce501bd82525fe6d93cccb27d4`.
+Runtime is byte-identical to the certified manifest; the stable ZIP is unchanged.
+No new regression execution or consumer image-write PASS is claimed. Reusable
+read-only admission and private packaging controls are retained. A/B comparison
+images do not yet exist. Evidence: ignored
+reports/storage-m5.1/first-real-pilot/FINAL-REPORT.md.
+STOP pending a complete live accounting mechanism, before pilot resumption.
+No M6, commit, push, tag or release.
+
+## 2026-10-05 - M5.1 final DB and real NFS authority gate
+
+M5.1 is CERTIFIED FOR CONTROLLED FUTURE-UPLOAD PILOT PLANNING, not for image
+writes or consumer deployment. Actual MariaDB 11.8.6 and MySQL 8.4.11 lab gates
+pass 194 checks each on the unchanged candidate runtime. Actual CAS/transactions,
+InnoDB deadlock, 2/10 process ownership, leases/ABA, SIGKILL, connection failure
+and targeted M2/M5 regressions pass. Test recovery roots are isolated per engine.
+
+The explicitly authorized TherapsyCorporel synthetic NFS gate observes all
+2/10 flock attempts succeeding but exactly one authoritative SQL owner per group.
+PHP 8.5.7 / Percona Server 8.4.11-11 and one observed server UUID hash; twelve
+real token/CAS/transaction/release checks pass. A temporary harness DROP guard
+failure was corrected through exact-source cleanup-only recovery; no Pixel
+runtime change was needed. Twelve offline harness regression checks then pass.
+All ephemeral remote files/directory, DB table and locks are verified absent.
+
+No real media, WordPress content/options, installed plugin, future mode or
+cache was intentionally changed. PDE was not used. No image replacement,
+quarantine, purge, quality or current provider usage is certified. Quota 1,000
+decimal MB, ceiling 600 MB, usage UNKNOWN; live accounting and host eligibility
+remain prerequisites. No M6, rebuild, commit, push, tag or release.
+Evidence: ignored reports/storage-m5.1/authority-gate/FINAL-REPORT.md.
+Older milestone entries below retain their historical scope and status.
+
+## 2026-10-05 - M5.1 generic host hardening
+
+Implementation remains isolated in WP Seed Pixel. PDE and TherapsyCorporel are
+not connected or modified. The real-host synthetic flock overlap supersedes
+filesystem authority: MySQL/MariaDB session locks now supplement existing M2
+tokens, leases, CAS and reconciliation. Connection identity and owner-only
+release fence stale handles; stage boundaries renew only the current token.
+
+Operational ceiling, provider information, uncertainty and safety reserves use
+integer bytes. Missing complete live accounting blocks configured-ceiling work;
+quarantine and pending candidates remain counted. Physical disk checks remain
+independent. No delete-first or automatic permanent purge is introduced.
+
+Explicit future-upload opt-in freezes an ID cutoff and generation. Only proven
+normal new uploads are asynchronously enrolled into the same M2/M3/M4 jobs;
+metadata updates/imports without provenance and preexisting media are excluded.
+No M6, release, tag, package rebuild or consumer enabling occurs.
+
+M5.1 is READY FOR REVIEW within the documented generic/local scope. Two final
+cycles pass 105 checks each on byte-identical runtime manifests. MariaDB session
+contention, lying flock, actual process death, connection loss, ceiling,
+verified purge, upload metadata timing and contention wakeups are exercised.
+Bulk-import protection passes 11 checks; isolated French browser QA passes 24.
+Relevant M1-M5, stable 0.3, Adaptive, GD/color and presentation regressions pass.
+MySQL executable coverage and real NFS retest remain separate host gates.
+Complete live account evidence and the existing bounded M1 sibling inventory
+remain mandatory prerequisites; no unsafe partial usage or incomplete inventory
+is accepted. No Critical/Major remains within the certified local scope.
+
+Certification and review results: ignored reports/storage-m5.1/FINAL-REPORT.md.
+Architecture: docs/STORAGE-HOST-HARDENING.md and docs/adr/M5.1-HOST-AUTHORITY.md.
+The inherited uncommitted M1-M5 work remains preserved; no broad commit is safe.
+
+## 2026-10-05 - M5 bulk storage saver local convergence
+
+M5 is READY FOR REVIEW, not released or authorized for a real-site pilot.
+Existing M2 schema-2 jobs/items, locks/leases/CAS and M3/M4 per-item executor
+remain authoritative. Frozen inventory/policy/peak/capacity, bounded one-image
+default, stale-peer review, safe pause/resume/cancel/retry and explicit separate
+item-scoped purge are implemented. No second queue, destructive cron or M6.
+
+Native English/fr_FR bulk administration includes plan/progress/reasons/audit,
+20-row pagination and separate quarantine actions. Accounting separates active
+reduction, recovery still on disk, potential purge and verified removal;
+audit/temporary escrow costs are deducted. Incomplete evidence shows Unknown,
+not an apparently complete partial saving. Hosting quota is never inferred.
+
+The prior PARTIAL 38 checks / 2,005 relations remain historical evidence.
+Two final cycles on one 42-file runtime freeze pass 154 and 90 checks, including
+actual worker death/no replay, controlled concurrency/external writers, real
+loop/ext4 low disk, EN/FR headless UI and a fresh 2,005-relation mixed inventory
+with two actual JPEG replacements/restore/purge. Relevant fresh M1/M2/M3/M4/
+stable regressions pass 100/144/210/217/330 checks. No Critical/Major M5 defect
+remains; actual host/minimum-version/owner-quality gates remain separate.
+
+Documentation: docs/STORAGE-BULK.md; ignored reports/storage-m5/FINAL-REPORT.md
+and PRE-PILOT-GATE-CLOSURE.md. Owned local services/profiles/laboratory are cleaned
+at closure. Plugin 0.3.2, signature 0.3.1 and accepted ZIP remain unchanged.
+Inherited dirty work preserved, index empty, no commit/push/tag/release.
+PDE/TherapsyCorporel/production/private media untouched. STOP for Guillaume +
+ChatGPT M5 review; older milestone entries retain historical status.
+
+## 2026-10-05 - M4 quarantine / restore / purge local review candidate
+
+M4 reuses M2's existing tables, fenced leases/CAS and attachment/site locks around
+M3's verified recovery input. Private source identity is anchored in M2 as well
+as a checksummed file journal. Exact restoration and a separate explicit irreversible
+purge do not encode, introduce another queue or delete attachments/native sizes.
+The healthy big-image original can be escrowed, reconciled out of `original_image`
+while it still exists, then moved privately without changing operational bytes.
+
+Same-disk conservation is not reclaimed space. Completed purge needs physical
+absence plus private audit and M2 state. File-only net deltas deduct remaining
+audit files; database/provider quota is not claimed. Native EN/FR forms expose
+restoration only when current evidence permits it, and irreversible acknowledgment
+is enforced server-side even without JavaScript.
+
+Execution stays explicitly opted-in on localhost Linux/InnoDB, outside real sites.
+Synthetic Linux ext4 / WordPress 7.1.2 / PHP 8.5.4 / MariaDB 11.8.6 and isolated
+headless QA are recorded in ignored reports/storage-m4/FINAL-REPORT.md. Remaining
+hosting, power-loss, cache/CDN and version-matrix gates remain separate from local
+review readiness. Documentation: docs/QUARANTINE-LIFECYCLE.md.
+
+Plugin 0.3.2, processing signature 0.3.1 and accepted ZIP remain unchanged. All
+preexisting work is preserved. No mixed commit, push, tag, release, real-site
+connection, private media or deployment. M5/bulk is not started. STOP for
+Guillaume + ChatGPT M4 review. Older entries retain their historical status.
+
+## 2026-10-04 - M3 single-JPEG replacement review candidate
+
+M1 and M2 are human accepted. M3 now implements a trusted, explicit one-attachment
+local execution path on M2's existing tables, locks, leases and CAS. Separate
+processor/storage/native adapter/executor create an immutable private recovery
+input, verify a same-format JPEG candidate, publish at the same pathname, reconcile
+native dimensions/filesize, and verify or restore exact original state. Healthy
+native sizes and the separate big-image uploaded original are preserved. No purge,
+bulk, PNG mutation, conversion, automatic job, real-site access or deployment.
+
+Execution is gated to explicitly enabled localhost Linux/InnoDB storage with
+private same-device recovery and a known capacity budget. WordPress 7.1.2,
+PHP 8.5.4, Linux ext4, MariaDB 11.8.6, GD and Imagick/LittleCMS are exercised on
+synthetic fixtures. Actual process death/OOM, lease/lock competition, metadata and
+file corruption, rollback interruption, real low disk and headless cold-Pixel
+deactivation/removal are tested. Exact final results and remaining matrix limits
+are in ignored reports/storage-m3/FINAL-REPORT.md, not production certification.
+
+Documentation: docs/MASTER-REPLACEMENT.md. Plugin 0.3.2, signature 0.3.1, accepted
+artifacts and preexisting engine work remain unchanged. No mixed local commit,
+push, tag or release. STOP for Guillaume + ChatGPT M3 review; M4 is not started.
+Historical milestone entries below retain their original dates/status.
+
+## 2026-10-04 - M2 persistent simulation infrastructure review candidate
+
+M1 is accepted. M2 adds independent normalized policies, immutable hashed plans,
+schema-2 extensions to M1's two tables, durable per-item stages/CAS, shared Pixel
+flock plus owned leases, bounded journals and deterministic simulation recovery.
+Admin-only EN/FR UI provides explicit plan/run/pause/resume/cancel/retry with
+20-row pagination. Its only concrete executor simulates: no canonical image,
+attachment metadata, replacement, retirement, quarantine or purge operation.
+
+Documentation: docs/STORAGE-JOBS.md; ignored evidence: reports/storage-m2.
+Synthetic WordPress 7.1.2 / PHP 8.4.23 / Windows / SQLite QA covers 2,008 relations,
+real process interruption, live-lock/expired-lease exclusion, SQL failure injection,
+policy/plan invariance, stale SHA-256 evidence and isolated headless EN/FR controls.
+M1 and existing Adaptive/GD/i18n regressions pass. Minimum versions, Linux/MySQL,
+real multisite/offload, Imagick and real destructive recovery are not certified.
+
+Plugin 0.3.2, processing signature 0.3.1, accepted ZIP and preexisting work remain
+unchanged apart from documented bootstrap/presentation additions. No consumer
+site connection, deployment, real media, commit, push, tag or release. M3 has
+not started. STOP for Guillaume + ChatGPT review; historical entries below retain
+their original milestone status.
+
+## 2026-10-04 - M1 read-only storage analyzer review candidate
+
+The approved 0.4 architecture has now been applied to M1 only. A separate native
+Media admin entry provides explicit, resumable quick analysis with EN/FR reasons,
+20-item pagination and no destructive controls. Read-only graph inspection and
+owned scan persistence are separate from the unchanged 0.3.2 processing pipeline.
+Operational/original/scaled/native-size/Pixel/edit-backup relationships are
+accounted by unique physical identity. Potential bytes remain conditional;
+reclaimed space is zero and allocated/quota bytes remain unknown.
+
+Documentation: docs/STORAGE-ANALYZER.md. Synthetic WordPress 7.1.2 / PHP 8.4.23 /
+Windows / SQLite tests prove exact accounting and zero canonical media mutation
+across 2,008 attachment relationships. GD-only ICC, Adaptive and presentation
+regressions pass; isolated headless EN/FR QA covers responsive/zoom/keyboard and
+scan controls. Exact evidence and self-review remain ignored in reports/storage-m1.
+Minimum versions, Linux/MySQL, real multisite/offload and Imagick are not certified.
+
+All preexisting engine work is preserved. Plugin version 0.3.2, processing
+signature 0.3.1 and existing ZIP remain unchanged. No real site was contacted,
+no real media processed, no consumer changes, commit, push, tag or release.
+M2 has not started. STOP for Guillaume + ChatGPT M1 review. Earlier entries below
+describe their historical runs, not the current implementation state.
+
+## 2026-10-04 - 0.4.0 architecture and research only
+
+Architecture ready for implementation review, NOT implemented or packaged.
+Documentation: docs/PIXEL-0.4-ARCHITECTURE.md,
+docs/PIXEL-0.4-WORDPRESS-IMAGE-LIFECYCLE.md,
+docs/PIXEL-0.4-COMPETITOR-RESEARCH.md,
+docs/PIXEL-0.4-ROADMAP.md and docs/adr/PIXEL-0.4-DECISIONS.md.
+The roadmap includes the prepared M1 read-only storage-analyzer prompt; it has
+not been executed. Nine ADRs recommend evolving the existing local engine,
+same-format/path verified JPEG replacement, independent original/scaled retirement,
+private recovery then explicit purge, durable job/item state and honest net-byte
+accounting. PNG is bounded lossless; modern conversion/offload are deferred.
+
+Official WordPress 6.6/7.1.2 source and competitor documentation were researched.
+No new runtime/backend/hosting certification is claimed. The accepted consumer
+0.3.2 baseline and all preexisting candidate work remain untouched; earlier entries
+below retain their historical status. No processing-signature/version change,
+ZIP rebuild, implementation, credential use, site connection/mutation, real-media
+processing, commit, push, tag or release. STOP for Guillaume + ChatGPT review.
+
+## 2026-10-04 - 0.3.2 i18n candidate, consumer remote phase blocked
+
+181 English-source messages have bundled French POT/PO/MO translations.
+JS localization uses WordPress-resolved strings and plural counter variants.
+Engine decision/error evidence is translated only at the admin boundary, never
+rewritten in stored manifests. Processing signature version remains0.3.1 while
+the UI/plugin version is0.3.2. Eight engine/API files match the accepted0.3.1 ZIP,
+with only the equivalent version-constant substitution in the config hash.
+No algorithm, ICC, thresholds or generation policy changes.
+
+Local GNU MO checks,22 stubbed presentation contracts and14 isolated headless
+preview checks PASS in en_US/fr_FR; PHP/JS lint PASS. These are NOT real
+WordPress textdomain/database integration or consumer DEV certification.
+Consumer HTTPS preflight failed with refused/reset/unavailable transport;
+no SSH, AskPass, snapshot, deployment, ShortPixel change or real processing.
+The0.3.1 ZIP is untouched.0.3.2 stays an unpublished local candidate pending
+real WordPress/DEV QA. Preexisting ICC work remains unstaged and preserved;
+no commit/push/tag/release in this lot.
+
+
+## 0.3.1 bounded RGB ICC candidate
+
+Unpublished patch candidate, based on public 0.3.0. RGB ICC JPEGs use an
+Imagick/LittleCMS transform to standard sRGB in a lossless working PNG. MASTER
+hashes, native mappings/CAS, independent candidate selection and rollback stay
+authoritative. Private source profiles are not included in Git or distribution.
+GD-only environments and malformed/non-RGB profiles remain fail-closed. No
+upgrade-wide processing or settings mutation is introduced.
+
+Local QA: WordPress 7.1.2 / PHP 8.4.23 / Windows / SQLite, 77 managed-ICC checks,
+30 GD-only safe-skip checks, five independent CMS RGB-rounding comparisons and
+112 existing adaptive regression checks. Imagick 3.8.1 / ImageMagick 7.1.1-46
+with LittleCMS was used. Hosting/backend support must be verified independently
+before deployment. No public release or generic production certification.
+
 ## 0.3.0 product UX candidate
 
 Owner acceptance passed. First public release is a Tech Preview, not universal

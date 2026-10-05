@@ -1,0 +1,1300 @@
+msgid ""
+msgstr "Project-Id-Version: WP Seed Pixel 0.4.0\nMIME-Version: 1.0\nContent-Type: text/plain; charset=UTF-8\nContent-Transfer-Encoding: 8bit\nLanguage: fr_FR\nPlural-Forms: nplurals=2; plural=(n > 1);\nX-Domain: wp-seed-pixel\n"
+
+msgid "%1$s: %2$s x %3$s | Quality: %4$s | Engine: %5$s"
+msgstr "%1$s : %2$s x %3$s | Qualité : %4$s | Moteur : %5$s"
+
+msgid "%d image already up to date"
+msgid_plural "%d images already up to date"
+msgstr[0] "%d image déjà à jour"
+msgstr[1] "%d images déjà à jour"
+
+msgid "%d image kept without changes"
+msgid_plural "%d images kept without changes"
+msgstr[0] "%d image conservée sans modification"
+msgstr[1] "%d images conservées sans modification"
+
+msgid "%d image needs attention"
+msgid_plural "%d images need attention"
+msgstr[0] "%d image à vérifier"
+msgstr[1] "%d images à vérifier"
+
+msgid "%d image optimized"
+msgid_plural "%d images optimized"
+msgstr[0] "%d image optimisée"
+msgstr[1] "%d images optimisées"
+
+msgid "%s%% less transfer than the original"
+msgstr "%s%% de données transférées en moins que l’original"
+
+msgid "A completed plan is required."
+msgstr "Un plan terminé est nécessaire."
+
+msgid "A journal file changed or remains referenced; it was retained."
+msgstr "Un fichier du journal a changé ou reste référencé ; il a été conservé."
+
+msgid "A metadata filter changed the proposed result; no metadata was committed."
+msgstr "Un filtre de métadonnées a changé le résultat proposé ; aucune métadonnée n’a été enregistrée."
+
+msgid "A new method or profile is available. Regeneration is optional."
+msgstr "Une nouvelle méthode ou un nouveau profil est disponible. La régénération est facultative."
+
+msgid "A preset requires one to four derivatives."
+msgstr "Un profil nécessite entre une et quatre versions dérivées."
+
+msgid "A referenced file cannot be read"
+msgstr "Un fichier référencé est illisible"
+
+msgid "A referenced file is missing"
+msgstr "Un fichier référencé est manquant"
+
+msgid "A safe, sufficiently sized ICC workspace is required."
+msgstr "Un espace de travail ICC sûr et suffisamment grand est requis."
+
+msgid "A safety check failed. Review technical details."
+msgstr "Un contrôle de sécurité a échoué. Consultez les détails techniques."
+
+msgid "Active source bytes saved"
+msgstr "Octets économisés sur les sources utilisées"
+
+msgid "Additional bytes"
+msgstr "octets supplémentaires"
+
+msgid "Additional disk usage: %s. This is not a disk saving."
+msgstr "Espace disque supplémentaire utilisé : %s. Il ne s’agit pas d’une économie d’espace disque."
+
+msgid "Advanced settings"
+msgstr "Réglages avancés"
+
+msgid "Algorithm: %s | Profile: %s | Original: %s"
+msgstr "Algorithme : %s | Profil : %s | Original : %s"
+
+msgid "All states"
+msgstr "Tous les états"
+
+msgid "Allocated blocks removed (not hosting quota)"
+msgstr "Blocs alloués supprimés (hors quota d’hébergement)"
+
+msgid "Ambiguous protected manifest."
+msgstr "Le manifeste protégé est ambigu."
+
+msgid "An existing image size uses this plugin key without proven ownership."
+msgstr "Une taille d’image existante utilise cette clé sans preuve qu’elle appartient à l’extension."
+
+msgid "Analysis complete"
+msgstr "Analyse terminée"
+
+msgid "Analysis controls require JavaScript. No image processing starts on this page."
+msgstr "Les commandes d’analyse nécessitent JavaScript. Aucun traitement d’image ne démarre sur cette page."
+
+msgid "Analysis is busy. Resume later."
+msgstr "Une analyse est en cours. Reprenez plus tard."
+
+msgid "Analysis not found."
+msgstr "Analyse introuvable."
+
+msgid "Analysis only. Images and their WordPress data are not changed."
+msgstr "Analyse uniquement. Les images et leurs données WordPress restent inchangées."
+
+msgid "Analysis state could not be saved."
+msgstr "L’état de l’analyse n’a pas pu être enregistré."
+
+msgid "Analyze image storage"
+msgstr "Analyser le stockage des images"
+
+msgid "Analyze library"
+msgstr "Analyser la médiathèque"
+
+msgid "Analyze only"
+msgstr "Analyser uniquement"
+
+msgid "Analyzed"
+msgstr "Analysé"
+
+msgid "Analyzing"
+msgstr "Analyse en cours"
+
+msgid "Another image optimizer is active. Both may process the same images. Review their automatic settings; nothing has been disabled."
+msgstr "Un autre optimiseur d’images est actif. Les deux extensions pourraient traiter les mêmes images. Vérifiez leurs réglages automatiques ; aucun réglage n’a été désactivé automatiquement."
+
+msgid "Another job reserves this image."
+msgstr "Un autre traitement réserve cette image."
+
+msgid "Another operation owns the lock."
+msgstr "Une autre opération est en cours sur ce média."
+
+msgid "Another optimizer conflicts with this operation."
+msgstr "Un autre optimiseur est en conflit avec cette opération."
+
+msgid "Another worker owns this operation. Try later."
+msgstr "Une autre exécution détient cette opération. Réessayez plus tard."
+
+msgid "Atomic derivative publication failed."
+msgstr "La publication atomique de la version dérivée a échoué."
+
+msgid "Attachment ID"
+msgstr "Identifiant du média"
+
+msgid "Attachment metadata changed concurrently or is ambiguous."
+msgstr "Les métadonnées du média ont été modifiées simultanément ou sont ambiguës."
+
+msgid "Attachment not found."
+msgstr "Le média est introuvable."
+
+msgid "Available"
+msgstr "Disponible"
+
+msgid "Balanced (recommended)"
+msgstr "Équilibré (recommandé)"
+
+msgid "Balanced is recommended. It adapts web versions to the image. Compatibility profiles keep the earlier fixed method."
+msgstr "Le profil Équilibré est recommandé. Il adapte les versions web à l’image. Les profils de compatibilité conservent l’ancienne méthode fixe."
+
+msgid "Baseline ID / activation UTC"
+msgstr "ID de référence / activation UTC"
+
+msgid "Batch controls require JavaScript. Single-attachment processing and settings remain available."
+msgstr "Les commandes de traitement par lot nécessitent JavaScript. Le traitement d’un média et les réglages restent accessibles."
+
+msgid "Blocked"
+msgstr "Bloqué"
+
+msgid "Build plan from latest analysis"
+msgstr "Préparer le plan de la dernière analyse"
+
+msgid "Bulk storage saver"
+msgstr "Réduction du stockage par lots"
+
+msgid "CMYK and non-RGB JPEGs are not supported."
+msgstr "Les JPEG CMJN ou non RVB ne sont pas pris en charge."
+
+msgid "Cancel"
+msgstr "Annuler"
+
+msgid "Cancel analysis"
+msgstr "Annuler l’analyse"
+
+msgid "Cancelled"
+msgstr "Annulée"
+
+msgid "Candidate rejected"
+msgstr "Candidat refusé"
+
+msgid "Cannot create a private staging directory."
+msgstr "Un répertoire privé de préparation ne peut pas être créé."
+
+msgid "Cannot establish the owned staging root."
+msgstr "Impossible de créer le dossier de préparation sécurisé."
+
+msgid "Changed since analysis; analyze again"
+msgstr "Modifiée depuis l’analyse ; analysez à nouveau"
+
+msgid "Choose existing media"
+msgstr "Choisir des médias existants"
+
+msgid "Choose images in the Media Library"
+msgstr "Choisir des images dans la médiathèque"
+
+msgid "Color or orientation needs review"
+msgstr "Couleur ou orientation à vérifier"
+
+msgid "Committed generation requires manual integrity review."
+msgstr "La génération enregistrée nécessite une vérification manuelle de son intégrité."
+
+msgid "Complete"
+msgstr "Terminé"
+
+msgid "Complete an image storage analysis first."
+msgstr "Terminez d’abord une analyse du stockage des images."
+
+msgid "Complete usage is not demonstrated."
+msgstr "L’espace total utilisé n’est pas connu de façon fiable."
+
+msgid "Complete with errors"
+msgstr "Terminé avec des erreurs"
+
+msgid "Completed"
+msgstr "Terminé"
+
+msgid "Completed with reservations"
+msgstr "Terminé avec réserves"
+
+msgid "Confirm the whole-library operation first."
+msgstr "Confirmez d’abord le traitement de toute la médiathèque."
+
+msgid "Confirm the whole-library selection first."
+msgstr "Confirmez d’abord la sélection de toute la médiathèque."
+
+msgid "Consistent"
+msgstr "Cohérente"
+
+msgid "Control write could not be verified."
+msgstr "L’enregistrement de contrôle n’a pas pu être vérifié."
+
+msgid "Controls require JavaScript. No work starts automatically."
+msgstr "Les commandes nécessitent JavaScript. Aucun traitement ne démarre automatiquement."
+
+msgid "Could not persist the recovery journal."
+msgstr "Le journal de récupération n’a pas pu être enregistré."
+
+msgid "Could not retain the previous generation safely."
+msgstr "La génération précédente n’a pas pu être conservée sans risque."
+
+msgid "Current Pixel versions"
+msgstr "Versions Pixel actuelles"
+
+msgid "Current active source bytes"
+msgstr "Octets des sources actuellement utilisées"
+
+msgid "Current physical audit"
+msgstr "Relevé physique actuel"
+
+msgid "Decimal MB"
+msgstr "Mo décimaux"
+
+msgid "Decimal MB (1 MB = 1,000,000 bytes)"
+msgstr "Mo décimaux (1 Mo = 1 000 000 octets)"
+
+msgid "Delete permanently"
+msgstr "Supprimer définitivement"
+
+msgid "Derivative integrity failed."
+msgstr "L’intégrité de la version dérivée n’est pas conforme."
+
+msgid "Derivative not available."
+msgstr "La version dérivée n’est pas disponible."
+
+msgid "Diagnostics and developer tools"
+msgstr "Diagnostics et outils de développement"
+
+msgid "Dimensions conflict with retained sizes"
+msgstr "Dimensions incompatibles avec les versions conservées"
+
+msgid "Dimensions must be 1..8192 and JPEG quality 1..100."
+msgstr "Les dimensions doivent être comprises entre 1 et 8 192, et la qualité JPEG entre 1 et 100."
+
+msgid "EXIF declares an uncalibrated or non-sRGB color space."
+msgstr "Les données EXIF déclarent un espace colorimétrique non calibré ou différent de sRGB."
+
+msgid "Eligible formats"
+msgstr "Formats autorisés"
+
+msgid "Enable only after reviewing links and cached versions that may still use these files."
+msgstr "Activez cette option uniquement après avoir vérifié les liens et les versions en cache susceptibles d’utiliser encore ces fichiers."
+
+msgid "Estimated peak"
+msgstr "Pic estimé"
+
+msgid "Estimated peak meets or exceeds the ceiling."
+msgstr "Le pic estimé atteint ou dépasse le plafond."
+
+msgid "Excluded by the selected policy."
+msgstr "Exclu par les réglages choisis."
+
+msgid "Excluded from simulation"
+msgstr "Exclu de la simulation"
+
+msgid "Expected a positive attachment ID and a derivative name."
+msgstr "Un identifiant de média positif et un nom de version dérivée sont requis."
+
+msgid "Expected a positive attachment ID, preset name and boolean force flag."
+msgstr "Un identifiant de média positif, un nom de profil et un indicateur booléen de régénération forcée sont requis."
+
+msgid "Explicit legacy/custom fixed preset."
+msgstr "Profil fixe historique ou personnalisé explicitement choisi."
+
+msgid "Explicitly confirm that old external/cached URLs are no longer required before pruning history."
+msgstr "Confirmez explicitement que les anciennes URL externes ou en cache ne sont plus nécessaires avant de nettoyer l’historique."
+
+msgid "External storage mapping needs review"
+msgstr "La référence de stockage externe doit être vérifiée"
+
+msgid "Failed"
+msgstr "Échec"
+
+msgid "File is outside local uploads"
+msgstr "Le fichier est hors du stockage local des médias"
+
+msgid "File shared by several attachments"
+msgstr "Fichier partagé par plusieurs médias"
+
+msgid "Files and their roles"
+msgstr "Fichiers et leurs rôles"
+
+msgid "Finish or cancel the current analysis first."
+msgstr "Terminez ou annulez d’abord l’analyse en cours."
+
+msgid "Finish the initial batch before retrying failures."
+msgstr "Terminez le lot initial avant de réessayer les échecs."
+
+msgid "Finished"
+msgstr "Terminé"
+
+msgid "Finished with errors; review before retrying"
+msgstr "Terminé avec des erreurs ; vérifiez-les avant de réessayer"
+
+msgid "First bounded candidate satisfying local quality and byte gates."
+msgstr "Première version candidate respectant les limites locales de qualité et de taille."
+
+msgid "Fixed profile"
+msgstr "Profil fixe"
+
+msgid "For normal use, choose an image in the Media Library. This fallback is for diagnosis only."
+msgstr "Pour un usage courant, choisissez une image dans la médiathèque. Cet outil de secours est réservé au diagnostic."
+
+msgid "For original retirement, I accept that unknown external original-image URLs may stop working."
+msgstr "Pour le retrait des originaux, j’accepte que des liens externes inconnus vers ces originaux puissent ne plus fonctionner."
+
+msgid "Format is not eligible for processing"
+msgstr "Ce format n’est pas admissible au traitement"
+
+msgid "Generate native WordPress metadata before optimization."
+msgstr "Générez les métadonnées natives WordPress avant l’optimisation."
+
+msgid "History cleanup bookkeeping requires retry."
+msgstr "Le suivi du nettoyage de l’historique nécessite une nouvelle tentative."
+
+msgid "Hosting quota is unknown."
+msgstr "Le quota de l’hébergement est inconnu."
+
+msgid "I understand this version cannot be restored by Pixel after permanent deletion."
+msgstr "Je comprends que cette version ne pourra plus être restaurée par Pixel après sa suppression définitive."
+
+msgid "ICC conversion stopped safely. No profile stripping fallback was used."
+msgstr "La conversion ICC a été arrêtée sans risque. Aucun recours à la suppression du profil n’a été utilisé."
+
+msgid "Image ID"
+msgstr "ID du média"
+
+msgid "Image actions require JavaScript. Settings remain available without it."
+msgstr "Les actions sur les images nécessitent JavaScript. Les réglages restent accessibles sans JavaScript."
+
+msgid "Image data changed during the operation."
+msgstr "Les données du média ont changé pendant l’opération."
+
+msgid "Image editor rejected the selected JPEG quality."
+msgstr "L’éditeur d’image a refusé la qualité JPEG sélectionnée."
+
+msgid "Image profile"
+msgstr "Profil d’image"
+
+msgid "Image semantics or ownership require review."
+msgstr "Les caractéristiques ou la propriété de l’image doivent être vérifiées."
+
+msgid "Image storage"
+msgstr "Stockage des images"
+
+msgid "Images"
+msgstr "Images"
+
+msgid "Images needing attention"
+msgstr "Images à vérifier"
+
+msgid "Images per request"
+msgstr "Images par requête"
+
+msgid "Imagick with LittleCMS is required; no uncalibrated fallback is allowed."
+msgstr "Imagick avec LittleCMS est requis ; aucune solution de repli non calibrée n’est autorisée."
+
+msgid "Incomplete ICC chunk sequence."
+msgstr "La séquence des segments ICC est incomplète."
+
+msgid "Insufficient disk space."
+msgstr "Espace disque insuffisant."
+
+msgid "Insufficient memory budget for ICC conversion."
+msgstr "La mémoire disponible est insuffisante pour la conversion ICC."
+
+msgid "Insufficient memory budget for safe image decoding."
+msgstr "La mémoire disponible est insuffisante pour décoder l’image sans risque."
+
+msgid "Insufficient physical space."
+msgstr "L’espace physique disponible est insuffisant."
+
+msgid "Insufficient staging disk space."
+msgstr "L’espace disque de préparation est insuffisant."
+
+msgid "Invalid ICC tag boundary."
+msgstr "Les limites d’une balise ICC sont invalides."
+
+msgid "Invalid ICC tag table."
+msgstr "La table des balises ICC est invalide."
+
+msgid "Invalid JPEG header."
+msgstr "L’en-tête JPEG est invalide."
+
+msgid "Invalid derivative definition."
+msgstr "La définition de la version dérivée est invalide."
+
+msgid "Invalid local upload path."
+msgstr "Le chemin local d’importation est invalide."
+
+msgid "Invalid or oversized ICC chunk sequence."
+msgstr "La séquence des segments ICC est invalide ou trop volumineuse."
+
+msgid "Invalid path component."
+msgstr "Un composant du chemin est invalide."
+
+msgid "Invalid preset name."
+msgstr "Le nom du profil est invalide."
+
+msgid "Invalid storage settings."
+msgstr "Réglages de stockage invalides."
+
+msgid "Invalid storage settings. Processing is blocked."
+msgstr "Réglages de stockage invalides. Le traitement est bloqué."
+
+msgid "Items requiring a fresh physical review"
+msgstr "Images nécessitant une nouvelle vérification physique"
+
+msgid "JPEG compression savings not measured"
+msgstr "Gain de compression JPEG non mesuré"
+
+msgid "Job state could not be saved."
+msgstr "L’état du traitement n’a pas pu être enregistré."
+
+msgid "Job storage could not be prepared."
+msgstr "Le stockage des traitements n’a pas pu être préparé."
+
+msgid "Job version is incompatible; review required."
+msgstr "La version du traitement est incompatible. Une vérification est nécessaire."
+
+msgid "Jobs"
+msgstr "Opérations"
+
+msgid "Kept without changes"
+msgstr "Conservée sans modification"
+
+msgid "Known usage"
+msgstr "Espace utilisé connu"
+
+msgid "Large file graph: inventory is partial"
+msgstr "Nombreuses références de fichiers : inventaire partiel"
+
+msgid "Large web view"
+msgstr "Grande vue web"
+
+msgid "Local image optimization. Your original is kept; no image is sent to an external service."
+msgstr "Les images sont optimisées localement. Votre original est conservé ; aucune image n’est envoyée à un service externe."
+
+msgid "Local quality measurement failed."
+msgstr "La mesure locale de qualité a échoué."
+
+msgid "Local upload storage is unavailable."
+msgstr "Le stockage local des médias est indisponible."
+
+msgid "Low margin"
+msgstr "Marge faible"
+
+msgid "Main file mapping is missing"
+msgstr "La référence du fichier principal est absente"
+
+msgid "Main image exceeds 2560 pixels: review dimensions"
+msgstr "L’image principale dépasse 2560 pixels : dimensions à examiner"
+
+msgid "Main images"
+msgstr "Images principales"
+
+msgid "Malformed EXIF or an unsupported orientation value."
+msgstr "Les données EXIF sont mal formées ou la valeur d’orientation n’est pas prise en charge."
+
+msgid "Malformed ICC marker."
+msgstr "Un marqueur ICC est mal formé."
+
+msgid "Malformed JPEG marker."
+msgstr "Un marqueur JPEG est mal formé."
+
+msgid "Malformed or non-RGB ICC profile; no conversion was attempted."
+msgstr "Le profil ICC est mal formé ou n’est pas RVB ; aucune conversion n’a été tentée."
+
+msgid "Malformed or oversized JPEG metadata header."
+msgstr "L’en-tête des métadonnées JPEG est mal formé ou trop volumineux."
+
+msgid "Master replaced; verification pending"
+msgstr "Image principale remplacée ; vérification en attente"
+
+msgid "Master verified"
+msgstr "Image principale vérifiée"
+
+msgid "Master verified; recovery retained"
+msgstr "Image principale vérifiée ; copie de récupération conservée"
+
+msgid "Maximum operation budget"
+msgstr "Budget maximal par opération"
+
+msgid "Measure current file space"
+msgstr "Mesurer l’espace actuel des fichiers"
+
+msgid "Measurements cover planned operational sources, not unchanged thumbnails or excluded files. Hosting quota remains unknown."
+msgstr "Les mesures concernent les sources utilisées du plan, pas les miniatures inchangées ni les fichiers exclus. Le quota d’hébergement reste inconnu."
+
+msgid "Media"
+msgstr "Média"
+
+msgid "Metadata/orientation sanitization required; byte increase disclosed."
+msgstr "Le nettoyage des métadonnées ou de l’orientation est requis ; l’augmentation de taille est signalée."
+
+msgid "Metric unavailable: conservative fixed Q94 fallback."
+msgstr "Mesure indisponible : recours prudent à une qualité fixe Q94."
+
+msgid "Missing file"
+msgstr "Fichier manquant"
+
+msgid "Needs attention"
+msgstr "À vérifier"
+
+msgid "Needs review"
+msgstr "À examiner"
+
+msgid "Net file bytes saved including recovery and audit files"
+msgstr "Économie nette de fichiers, sauvegardes et traces comprises"
+
+msgid "Net file space reclaimed"
+msgstr "Espace net réellement libéré dans les fichiers"
+
+msgid "Network activation is not supported. Activate separately on each site."
+msgstr "L’activation réseau n’est pas prise en charge. Activez l’extension séparément sur chaque site."
+
+msgid "New optimization available"
+msgstr "Nouvelle optimisation disponible"
+
+msgid "New uploads"
+msgstr "Nouveaux téléversements"
+
+msgid "Next"
+msgstr "Suivant"
+
+msgid "No analysis yet"
+msgstr "Aucune analyse pour le moment"
+
+msgid "No automatic purge. Processing requires a private recovery root and explicit engine activation."
+msgstr "Aucune suppression définitive automatique. Le traitement exige un dossier de récupération privé et l’activation explicite du moteur."
+
+msgid "No bulk job yet"
+msgstr "Aucun traitement par lots"
+
+msgid "No candidate meets the quality floor; source retained, dimension target may be exceeded."
+msgstr "Aucune version candidate n’atteint le seuil de qualité ; la source est conservée et les dimensions cibles peuvent être dépassées."
+
+msgid "No eligible failures remain to retry."
+msgstr "Aucun échec admissible à une nouvelle tentative."
+
+msgid "No matching images"
+msgstr "Aucune image correspondante"
+
+msgid "No material byte saving at the quality floor; source retained."
+msgstr "Aucune réduction de taille significative au seuil de qualité ; la source est conservée."
+
+msgid "No meaningful saving; source retained"
+msgstr "Aucun gain significatif ; source conservée"
+
+msgid "No new uploads tracked."
+msgstr "Aucun nouveau fichier suivi."
+
+msgid "No processing started. Select images in the Media Library or confirm the whole library below."
+msgstr "Aucun traitement démarré. Sélectionnez des images dans la médiathèque ou confirmez ci-dessous le traitement de toute la médiathèque."
+
+msgid "No retryable failures remain (maximum two retries per attachment)."
+msgstr "Aucun échec ne peut être réessayé (maximum de deux nouvelles tentatives par média)."
+
+msgid "No sanitized candidate meets the quality floor. MASTER and existing mappings were retained."
+msgstr "Aucune version candidate nettoyée n’atteint le seuil de qualité. L’original MASTER et les correspondances existantes ont été conservés."
+
+msgid "No simulation yet"
+msgstr "Aucune simulation"
+
+msgid "No useful saving; source preserved."
+msgstr "Aucun gain utile ; l’original est conservé."
+
+msgid "Not optimized"
+msgstr "Non optimisée"
+
+msgid "Not replaced"
+msgstr "Non remplacé"
+
+msgid "Off"
+msgstr "Désactivé"
+
+msgid "Open an image to review its details. Up to ten failed items are shown; others remain in the Media Library. Retrying is explicit, with at most two retries per image."
+msgstr "Ouvrez une image pour consulter ses détails. Jusqu’à dix images en échec sont affichées ; les autres restent dans la médiathèque. Une nouvelle tentative doit être demandée explicitement, avec un maximum de deux tentatives par image."
+
+msgid "Operation"
+msgstr "Opération"
+
+msgid "Operation completed."
+msgstr "Opération terminée."
+
+msgid "Operation stopped. Review the image state before trying again."
+msgstr "Opération arrêtée. Vérifiez l’état de l’image avant de réessayer."
+
+msgid "Operational ceiling (0: disabled)"
+msgstr "Plafond opérationnel (0 : désactivé)"
+
+msgid "Optimize"
+msgstr "Optimiser"
+
+msgid "Optimize existing images"
+msgstr "Optimiser les images existantes"
+
+msgid "Optimize new JPEG uploads automatically"
+msgstr "Optimiser automatiquement les nouvelles images JPEG importées"
+
+msgid "Optimize with WP Seed Pixel"
+msgstr "Optimiser avec WP Seed Pixel"
+
+msgid "Optimized"
+msgstr "Optimisée"
+
+msgid "Optimized native image"
+msgstr "Image WordPress optimisée"
+
+msgid "Original already suitable; reused without a new copy."
+msgstr "L’original convient déjà ; il est réutilisé sans nouvelle copie."
+
+msgid "Original bytes to review"
+msgstr "Originaux conservés à examiner"
+
+msgid "PNG lossless savings not measured"
+msgstr "Gain PNG sans perte non mesuré"
+
+msgid "PNG: explicit lossless processing available"
+msgstr "PNG : traitement sans perte disponible sur demande"
+
+msgid "PNG: lossless only, 8-bit non-interlaced, up to 4 megapixels and 16 MiB. Unsupported cases are preserved."
+msgstr "PNG : sans perte uniquement, 8 bits non entrelacé, jusqu’à 4 mégapixels et 16 Mio. Les cas non pris en charge restent inchangés."
+
+msgid "POST required."
+msgstr "Une requête POST est requise."
+
+msgid "Pause"
+msgstr "Pause"
+
+msgid "Paused"
+msgstr "En pause"
+
+msgid "Paused; resume when ready"
+msgstr "En pause ; reprenez quand vous le souhaitez"
+
+msgid "Permanent deletion is separate. Open retained versions to select one image and acknowledge the loss of restoration."
+msgstr "La suppression définitive est séparée. Ouvrez les versions conservées pour choisir une image et accepter la perte de sa restauration."
+
+msgid "Permanent deletion stopped."
+msgstr "La suppression définitive a été arrêtée."
+
+msgid "Permanently deleted previous version"
+msgstr "Version précédente supprimée définitivement"
+
+msgid "Permission denied."
+msgstr "Accès refusé."
+
+msgid "Photo album (compatibility)"
+msgstr "Album photo (compatibilité)"
+
+msgid "Pixel - Image storage"
+msgstr "Pixel - Stockage des images"
+
+msgid "Pixel - New uploads"
+msgstr "Pixel — Nouveaux fichiers"
+
+msgid "Pixel - Retained versions"
+msgstr "Pixel - Versions conservées"
+
+msgid "Pixel - Simulation"
+msgstr "Pixel - Simulation"
+
+msgid "Pixel - Storage saver"
+msgstr "Pixel - Réduction du stockage"
+
+msgid "Pixel file relationships are ambiguous"
+msgstr "Les références de fichiers Pixel sont ambiguës"
+
+msgid "Pixel sections"
+msgstr "Rubriques Pixel"
+
+msgid "Pixel storage and new uploads"
+msgstr "Pixel : stockage et nouveaux téléversements"
+
+msgid "Plan"
+msgstr "Plan"
+
+msgid "Plan fingerprint"
+msgstr "Empreinte du plan"
+
+msgid "Plan or job"
+msgstr "Plan ou traitement"
+
+msgid "Policy fingerprint"
+msgstr "Empreinte de la politique"
+
+msgid "Potential bytes removable by explicit purge"
+msgstr "Octets supprimables par une purge explicite"
+
+msgid "Potential is conditional, not freed space. Quarantine would still occupy storage. Filesystem allocation and hosting quota are unknown."
+msgstr "Le potentiel est conditionnel, pas de l’espace libéré. Une quarantaine occuperait encore du stockage. L’allocation physique et le quota d’hébergement sont inconnus."
+
+msgid "Preexisting media are never processed automatically. Saving establishes a new baseline for subsequent uploads."
+msgstr "Les médias déjà présents ne sont jamais traités automatiquement. Chaque enregistrement établit une nouvelle référence pour les fichiers suivants."
+
+msgid "Preexisting media: protected from automatic processing"
+msgstr "Média déjà présent : protégé du traitement automatique"
+
+msgid "Preparing candidate"
+msgstr "Préparation du candidat"
+
+msgid "Preparing simulation"
+msgstr "Préparation de la simulation"
+
+msgid "Preserved full-resolution original"
+msgstr "Original pleine résolution conservé"
+
+msgid "Preserved original: review future retirement"
+msgstr "Original conservé : retrait futur à examiner"
+
+msgid "Previous"
+msgstr "Précédent"
+
+msgid "Previous Pixel versions"
+msgstr "Anciennes versions Pixel"
+
+msgid "Previous Pixel versions: review references"
+msgstr "Anciennes versions Pixel : références à examiner"
+
+msgid "Previous operational image"
+msgstr "Ancienne image principale"
+
+msgid "Private engine disabled or incompatible storage."
+msgstr "Moteur privé désactivé ou stockage incompatible."
+
+msgid "Process eligible new images"
+msgstr "Traiter les nouvelles images autorisées"
+
+msgid "Process the whole image library, including images already up to date"
+msgstr "Traiter toute la médiathèque, y compris les images déjà à jour"
+
+msgid "Processing"
+msgstr "Traitement en cours"
+
+msgid "Processing could not finish. Check the technical details before retrying."
+msgstr "Le traitement n’a pas pu aboutir. Consultez les détails techniques avant de réessayer."
+
+msgid "Processing could not finish. Your original is preserved."
+msgstr "Le traitement n’a pas pu aboutir. Votre original est conservé."
+
+msgid "Processing is local; no image is sent to an external service."
+msgstr "Le traitement est local ; aucune image n’est envoyée à un service externe."
+
+msgid "Processing stopped safely; retry after checking the local environment."
+msgstr "Le traitement a été arrêté sans risque ; réessayez après avoir vérifié l’environnement local."
+
+msgid "Processing; keep this page open."
+msgstr "Traitement en cours ; gardez cette page ouverte."
+
+msgid "Progress"
+msgstr "Progression"
+
+msgid "Protected history is ambiguous or malformed; no history files were deleted."
+msgstr "L’historique protégé est ambigu ou mal formé ; aucun fichier d’historique n’a été supprimé."
+
+msgid "Protected history is malformed; no history files were deleted."
+msgstr "L’historique protégé est mal formé ; aucun fichier d’historique n’a été supprimé."
+
+msgid "Protected manifest cleanup did not complete."
+msgstr "Le nettoyage du manifeste protégé n’a pas été terminé."
+
+msgid "Protected manifest write requires recovery."
+msgstr "L’écriture du manifeste protégé nécessite une récupération."
+
+msgid "Provider quota (information only)"
+msgstr "Quota de l’hébergeur (information uniquement)"
+
+msgid "Quarantine bytes still on disk"
+msgstr "Octets en quarantaine encore sur le disque"
+
+msgid "Queued"
+msgstr "En attente"
+
+msgid "Quick inventory, dated per image. No compression test. Related-looking extra files are checked in a bounded folder sample; this is not a complete disk audit."
+msgstr "Inventaire rapide, daté pour chaque image. Aucun test de compression. Les fichiers semblant liés sont examinés dans un échantillon limité du dossier ; ce n’est pas un audit complet du disque."
+
+msgid "RGB ICC conversion requires Imagick with LittleCMS. MASTER and existing mappings were retained."
+msgstr "La conversion ICC RVB nécessite Imagick avec LittleCMS. L’original MASTER et les correspondances existantes ont été conservés."
+
+msgid "Ready"
+msgstr "Prêt"
+
+msgid "Reason"
+msgstr "Motif"
+
+msgid "Recent new uploads"
+msgstr "Nouveaux médias : suivi récent"
+
+msgid "Recent results"
+msgstr "Résultats récents"
+
+msgid "Reconcile the interrupted item before cancelling."
+msgstr "Réconciliez le média interrompu avant d’annuler."
+
+msgid "Reconciliation required"
+msgstr "Réconciliation nécessaire"
+
+msgid "Recoverable space after permanent deletion"
+msgstr "Espace récupérable après suppression définitive"
+
+msgid "Recovery history is full. New work is blocked; existing recovery remains available."
+msgstr "L’historique de récupération est plein. Les nouvelles opérations sont bloquées ; les récupérations existantes restent disponibles."
+
+msgid "Recovery history is retained. New storage jobs stop at 10,000 records; restoration and permanent deletion remain available. No automatic expiry."
+msgstr "L’historique de récupération est conservé. Les nouvelles opérations de stockage s’arrêtent à 10 000 enregistrements ; restauration et suppression définitive restent disponibles. Aucune expiration automatique."
+
+msgid "Recovery integrity needs review"
+msgstr "L’intégrité de la sauvegarde doit être vérifiée"
+
+msgid "Recovery journal is invalid; no files were deleted."
+msgstr "Le journal de récupération est invalide ; aucun fichier n’a été supprimé."
+
+msgid "Reference rotation failed."
+msgstr "La rotation de la référence a échoué."
+
+msgid "Regenerate from master"
+msgstr "Régénérer depuis l’original"
+
+msgid "Regenerate web versions"
+msgstr "Régénérer les versions web"
+
+msgid "Regeneration recreates web versions from the preserved original. Previous versions remain available."
+msgstr "La régénération recrée les versions web depuis l’original conservé. Les versions précédentes restent disponibles."
+
+msgid "Related bytes (not additive)"
+msgstr "Octets liés (non additionnables)"
+
+msgid "Related file ownership needs review"
+msgstr "L’appartenance du fichier lié doit être vérifiée"
+
+msgid "Remove owned web versions and settings when uninstalling. Originals are always kept."
+msgstr "Supprimer les versions web créées par l’extension et ses réglages lors de la désinstallation. Les originaux sont toujours conservés."
+
+msgid "Replace eligible JPEG and PNG images"
+msgstr "Remplacer les images JPEG et PNG autorisées"
+
+msgid "Replacement failed"
+msgstr "Le remplacement a échoué"
+
+msgid "Replacement intent recorded"
+msgstr "Intention de remplacement enregistrée"
+
+msgid "Replacement reduces active image bytes. Previous versions remain on disk until a separate, explicit permanent deletion. No work starts automatically."
+msgstr "Le remplacement réduit le poids des images utilisées. Les versions précédentes restent sur le disque jusqu’à une suppression définitive distincte et explicite. Aucun traitement ne démarre automatiquement."
+
+msgid "Reported dimensions differ from the file header"
+msgstr "Les dimensions déclarées diffèrent de l’en-tête du fichier"
+
+msgid "Reported format differs from the file header"
+msgstr "Le format déclaré diffère de l’en-tête du fichier"
+
+msgid "Request failed. Resume later; no automatic retry was sent."
+msgstr "La requête a échoué. Reprenez plus tard ; aucune nouvelle tentative automatique n’a été effectuée."
+
+msgid "Request failed. Your original is preserved; check details before retrying."
+msgstr "La requête a échoué. Votre original est conservé ; consultez les détails avant de réessayer."
+
+msgid "Resolved path escaped the upload directory."
+msgstr "Le chemin résolu sort du répertoire d’importation."
+
+msgid "Restoration available"
+msgstr "Restauration disponible"
+
+msgid "Restoration unavailable"
+msgstr "Restauration indisponible"
+
+msgid "Restore this version"
+msgstr "Restaurer cette version"
+
+msgid "Restored exactly"
+msgstr "Restauré à l’identique"
+
+msgid "Resume"
+msgstr "Reprendre"
+
+msgid "Resume or finish the existing batch before starting another."
+msgstr "Reprenez ou terminez le lot existant avant d’en démarrer un autre."
+
+msgid "Retained bytes"
+msgstr "Espace occupé par les versions conservées"
+
+msgid "Retained image versions"
+msgstr "Anciennes versions conservées"
+
+msgid "Retained recovery: %s"
+msgstr "Version de récupération conservée : %s"
+
+msgid "Retained versions still occupy disk space. Permanent deletion removes Pixel restoration for that version."
+msgstr "Les versions conservées occupent toujours de l’espace disque. Leur suppression définitive rend leur restauration par Pixel impossible."
+
+msgid "Retained versions: latest 20 operations only"
+msgstr "Versions conservées : les 20 dernières opérations uniquement"
+
+msgid "Retire preserved originals"
+msgstr "Retirer les originaux conservés"
+
+msgid "Retry failed items"
+msgstr "Réessayer les médias en échec"
+
+msgid "Retry limit reached; review required."
+msgstr "Limite de tentatives atteinte. Une vérification est nécessaire."
+
+msgid "Retry one failure"
+msgstr "Réessayer l’échec"
+
+msgid "Run simulation"
+msgstr "Lancer la simulation"
+
+msgid "Running"
+msgstr "En cours"
+
+msgid "Running simulation"
+msgstr "Simulation en cours"
+
+msgid "Safety reserve"
+msgstr "Réserve de sécurité"
+
+msgid "Saved evidence is inconsistent; review required."
+msgstr "Les preuves enregistrées sont incohérentes. Une vérification est nécessaire."
+
+msgid "Scan storage could not be prepared."
+msgstr "Le stockage de l’analyse n’a pas pu être préparé."
+
+msgid "Select an existing simulation."
+msgstr "Sélectionnez une simulation existante."
+
+msgid "Select between 1 and 1000 media items."
+msgstr "Sélectionnez entre 1 et 1 000 médias."
+
+msgid "Select images with the Media Library bulk action, then resume here. One image is processed at a time. You can pause or return later to resume; processing stops when this page is closed."
+msgstr "Sélectionnez des images avec l’action groupée de la médiathèque, puis reprenez ici. Les images sont traitées une par une. Vous pouvez mettre le traitement en pause ou revenir plus tard pour le reprendre ; il s’arrête lorsque cette page est fermée."
+
+msgid "Selected media"
+msgstr "Médias sélectionnés"
+
+msgid "Sensitive metadata or unapplied orientation remained in the derivative."
+msgstr "Des métadonnées sensibles ou une orientation non appliquée subsistent dans la version dérivée."
+
+msgid "Settings"
+msgstr "Réglages"
+
+msgid "Settings saved. Existing images have not been reprocessed."
+msgstr "Réglages enregistrés. Les images existantes n’ont pas été retraitées."
+
+msgid "Simulated recovery preparation failed."
+msgstr "La préparation simulée de la récupération a échoué."
+
+msgid "Simulated switch"
+msgstr "Bascule simulée"
+
+msgid "Simulated switch intent"
+msgstr "Intention de bascule simulée"
+
+msgid "Simulation"
+msgstr "Simulation"
+
+msgid "Simulation complete"
+msgstr "Simulation terminée"
+
+msgid "Simulation controls require JavaScript. No work starts automatically."
+msgstr "Les commandes de simulation nécessitent JavaScript. Aucun traitement ne démarre automatiquement."
+
+msgid "Simulation only. No images or attachment data are changed. Replacement and purge are unavailable."
+msgstr "Simulation uniquement. Les images et leurs données ne sont pas modifiées. Le remplacement et la purge sont indisponibles."
+
+msgid "Simulation verification failed."
+msgstr "La vérification de la simulation a échoué."
+
+msgid "Simulation verified"
+msgstr "Simulation vérifiée"
+
+msgid "Single web view (compatibility)"
+msgstr "Vue web unique (compatibilité)"
+
+msgid "Single-image replacement"
+msgstr "Remplacement d’une image"
+
+msgid "Skipped"
+msgstr "Ignorée"
+
+msgid "Source already bounded, light and metadata-safe."
+msgstr "La source respecte déjà les dimensions et la taille requises, sans métadonnées sensibles."
+
+msgid "Space reclaimed"
+msgstr "Espace libéré"
+
+msgid "Start verified operation"
+msgstr "Démarrer l’opération vérifiée"
+
+msgid "Start whole library"
+msgstr "Traiter toute la médiathèque"
+
+msgid "State"
+msgstr "État"
+
+msgid "Stopped: system error"
+msgstr "Arrêt : erreur système"
+
+msgid "Storage analysis"
+msgstr "Analyse du stockage"
+
+msgid "Storage simulation"
+msgstr "Simulation du stockage"
+
+msgid "Supported policies: JPEG, sensitive metadata removal, color preservation and no upscaling."
+msgstr "Politiques prises en charge : JPEG, suppression des métadonnées sensibles, préservation des couleurs et absence d’agrandissement."
+
+msgid "Symbolic link excluded from local accounting"
+msgstr "Lien symbolique exclu du décompte local"
+
+msgid "Symbolic links are not supported."
+msgstr "Les liens symboliques ne sont pas pris en charge."
+
+msgid "Technical details"
+msgstr "Détails techniques"
+
+msgid "The EXIF extension is required for this source orientation."
+msgstr "L’extension EXIF est requise pour l’orientation de cette source."
+
+msgid "The atomic metadata update could not be verified."
+msgstr "La mise à jour atomique des métadonnées n’a pas pu être vérifiée."
+
+msgid "The color-managed reference failed validation."
+msgstr "La référence avec gestion des couleurs n’a pas passé la validation."
+
+msgid "The color-managed sRGB transform failed."
+msgstr "La conversion sRGB avec gestion des couleurs a échoué."
+
+msgid "The decoded source profile does not match the validated JPEG profile."
+msgstr "Le profil de la source décodée ne correspond pas au profil JPEG validé."
+
+msgid "The frozen plan is inconsistent."
+msgstr "Le plan figé est incohérent."
+
+msgid "The image editor did not produce a valid, bounded JPEG."
+msgstr "L’éditeur d’image n’a pas produit de JPEG valide respectant les limites."
+
+msgid "The image exceeds the 40 megapixel / 64 MB safety limit."
+msgstr "L’image dépasse la limite de sécurité de 40 mégapixels ou 64 Mo."
+
+msgid "The local file or parent directory is missing."
+msgstr "Le fichier local ou son répertoire parent est introuvable."
+
+msgid "The lossless working reference could not be written."
+msgstr "La référence de travail sans perte n’a pas pu être enregistrée."
+
+msgid "The master changed before manifest recovery."
+msgstr "L’original a changé avant la récupération du manifeste."
+
+msgid "The media changed; review required."
+msgstr "Le média a changé ; une vérification est nécessaire."
+
+msgid "The native image-size mapping was changed externally."
+msgstr "La correspondance native des tailles d’image a été modifiée par un autre composant."
+
+msgid "The next media item is no longer editable. Review the selection before resuming."
+msgstr "Le média suivant ne peut plus être modifié. Vérifiez la sélection avant de reprendre."
+
+msgid "The original and attached files must share a local upload directory."
+msgstr "L’original et le fichier du média doivent partager un même répertoire local d’importation."
+
+msgid "The path is outside the current site upload directory."
+msgstr "Le chemin se trouve hors du répertoire d’importation du site courant."
+
+msgid "The policy is invalid."
+msgstr "La politique est invalide."
+
+msgid "The preset must contain exactly the documented keys."
+msgstr "Le profil doit contenir exactement les clés documentées."
+
+msgid "The processing backend is unavailable."
+msgstr "Le moteur de traitement est indisponible."
+
+msgid "The request was interrupted."
+msgstr "La requête a été interrompue."
+
+msgid "The requested JPEG quality was not accepted by the image editor."
+msgstr "La qualité JPEG demandée n’a pas été acceptée par l’éditeur d’image."
+
+msgid "The requested dimensions cannot be preserved safely."
+msgstr "Les dimensions demandées ne peuvent pas être conservées sans risque."
+
+msgid "The reused source header is no longer safe or consistent."
+msgstr "L’en-tête de la source réutilisée n’est plus sûr ou cohérent."
+
+msgid "The selected attachment is busy; resume later."
+msgstr "Le média sélectionné est en cours de traitement ; reprenez plus tard."
+
+msgid "The selection contains an unavailable media item."
+msgstr "La sélection contient un média indisponible."
+
+msgid "The simulated candidate was rejected."
+msgstr "Le candidat simulé a été refusé."
+
+msgid "The simulated purge failed."
+msgstr "La purge simulée a échoué."
+
+msgid "The simulated switch failed."
+msgstr "La bascule simulée a échoué."
+
+msgid "The source cannot be read."
+msgstr "La source ne peut pas être lue."
+
+msgid "The source is not a valid JPEG."
+msgstr "La source n’est pas un JPEG valide."
+
+msgid "The source or published derivatives changed during processing."
+msgstr "La source ou les versions dérivées publiées ont changé pendant le traitement."
+
+msgid "The upload directory is unavailable."
+msgstr "Le répertoire d’importation est indisponible."
+
+msgid "This action is not available in the current state."
+msgstr "Cette action n’est pas disponible dans l’état actuel."
+
+msgid "This analysis has already finished."
+msgstr "Cette analyse est déjà terminée."
+
+msgid "This image was preserved because its format or image profile is not supported, or processing was excluded."
+msgstr "Cette image a été conservée car son format ou son profil d’image n’est pas pris en charge, ou parce que le traitement a été exclu."
+
+msgid "Thumbnail"
+msgstr "Miniature"
+
+msgid "Total bytes"
+msgstr "octets au total"
+
+msgid "Twenty previous generations are retained. Back up and review cached URLs before explicitly pruning history with the PHP API."
+msgstr "Vingt générations précédentes sont conservées. Sauvegardez-les et vérifiez les URL en cache avant de nettoyer explicitement l’historique avec l’API PHP."
+
+msgid "Twenty retained operations per page. File space excludes database overhead; hosting quota remains unknown."
+msgstr "Vingt opérations conservées par page. L’espace des fichiers exclut la base de données ; le quota d’hébergement reste inconnu."
+
+msgid "Unattributed related files"
+msgstr "Fichiers liés non attribués"
+
+msgid "Uncertain or shared bytes"
+msgstr "Octets incertains ou partagés"
+
+msgid "Uncertainty reserve"
+msgstr "Réserve pour les incertitudes"
+
+msgid "Unexpected candidate output path."
+msgstr "Le chemin de sortie de la version candidate est inattendu."
+
+msgid "Unique file bytes observed"
+msgstr "Octets uniques observés"
+
+msgid "Unknown"
+msgstr "Inconnu"
+
+msgid "Unknown operation."
+msgstr "Opération inconnue."
+
+msgid "Unknown preset."
+msgstr "Profil inconnu."
+
+msgid "Unknown usage"
+msgstr "Espace utilisé inconnu"
+
+msgid "Unsafe file mapping excluded"
+msgstr "Référence de fichier non sûre exclue"
+
+msgid "Unsafe or occupied output destination."
+msgstr "La destination de sortie n’est pas sûre ou est déjà occupée."
+
+msgid "Unsupported format"
+msgstr "Format non pris en charge"
+
+msgid "Unsupported format or explicit exclusion."
+msgstr "Format non pris en charge ou exclusion explicite."
+
+msgid "Unsupported image profile or orientation."
+msgstr "Profil d’image ou orientation non pris en charge."
+
+msgid "Unsupported operation"
+msgstr "Opération non prise en charge"
+
+msgid "Usage must include quarantine and all hosting storage. An uploaded file already occupies space before Pixel runs."
+msgstr "Les mesures doivent inclure la quarantaine et tout le stockage de l’hébergement. Un fichier téléversé occupe déjà de l’espace avant le traitement Pixel."
+
+msgid "Verification failed"
+msgstr "Échec de la vérification"
+
+msgid "Verification failed."
+msgstr "La vérification a échoué."
+
+msgid "Verified file bytes physically removed"
+msgstr "Octets de fichiers dont la suppression physique est vérifiée"
+
+msgid "Verified hosting budget (MiB)"
+msgstr "Budget d’hébergement vérifié (Mio)"
+
+msgid "Verified quarantine bytes removed"
+msgstr "Octets supprimés de la quarantaine et vérifiés"
+
+msgid "Verified; previous version quarantined"
+msgstr "Vérifiée ; version précédente en quarantaine"
+
+msgid "Waiting"
+msgstr "En attente"
+
+msgid "Waiting for WordPress metadata"
+msgstr "En attente des données WordPress"
+
+msgid "Waiting for automatic processing"
+msgstr "En attente du traitement automatique"
+
+msgid "Web versions"
+msgstr "Versions web"
+
+msgid "Where the bytes are"
+msgstr "Répartition du stockage"
+
+msgid "WordPress edit backups"
+msgstr "Sauvegardes des retouches WordPress"
+
+msgid "WordPress edit backups or ambiguous metadata"
+msgstr "Sauvegardes de retouches WordPress ou métadonnées ambiguës"
+
+msgid "WordPress image metadata is unavailable."
+msgstr "Les métadonnées d’image WordPress sont indisponibles."
+
+msgid "WordPress preserved originals"
+msgstr "Originaux conservés par WordPress"
+
+msgid "WordPress sizes"
+msgstr "Versions WordPress"
+
+msgid "Your original is kept."
+msgstr "Votre original est conservé."
+
+msgid "already up to date"
+msgstr "déjà à jour"
+
+msgid "attachments analyzed"
+msgstr "médias analysés"
+
+msgid "available"
+msgstr "disponible"
+
+msgid "available (not certified)"
+msgstr "disponible (non certifié)"
+
+msgid "kept without changes"
+msgstr "conservées sans modification"
+
+msgid "need attention"
+msgstr "à vérifier"
+
+msgid "optimized"
+msgstr "optimisées"
+
+msgid "source"
+msgstr "source"
+
+msgid "unavailable"
+msgstr "indisponible"

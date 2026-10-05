@@ -6,6 +6,9 @@ final class WP_Seed_Pixel_Engine {
         if (!is_int($id) || $id < 1 || !is_string($preset_name) || !is_bool($force)) {
             return new WP_Error('pixel_arguments', 'Expected a positive attachment ID, preset name and boolean force flag.');
         }
+        $limits = WP_Seed_Pixel_Storage_Budget::settings();
+        // The historical derivative API has no M3 peak plan. Never bypass a configured ceiling.
+        if (is_wp_error($limits) || $limits['operational_ceiling_bytes'] > 0) { return new WP_Error('QUOTA_UNKNOWN'); }
         $preset = WP_Seed_Pixel_Presets::get($preset_name);
         if (is_wp_error($preset)) {
             return $preset;
@@ -59,7 +62,7 @@ final class WP_Seed_Pixel_Engine {
             $master_hash = hash_file('sha256', $master);
             $adaptive = WP_Seed_Pixel_Presets::adaptive($preset_name);
             $backend = wp_json_encode(array('gd' => function_exists('gd_info') ? gd_info() : null, 'imagick' => class_exists('Imagick') ? Imagick::getVersion() : null, 'editors' => apply_filters('wp_image_editors', array('WP_Image_Editor_Imagick', 'WP_Image_Editor_GD')), 'wordpress' => $GLOBALS['wp_version']));
-            $config_hash = hash('sha256', WP_SEED_PIXEL_VERSION . $preset_name . wp_json_encode($preset) . ($adaptive ? WP_Seed_Pixel_Adaptive::VERSION . WP_Seed_Pixel_Adaptive::SSIM_FLOOR . WP_Seed_Pixel_Adaptive::PSNR_FLOOR . WP_Seed_Pixel_Adaptive::THUMB_SSIM_FLOOR . WP_Seed_Pixel_Adaptive::THUMB_PSNR_FLOOR . $backend : 'fixed'));
+            $config_hash = hash('sha256', WP_SEED_PIXEL_ENGINE_VERSION . $preset_name . wp_json_encode($preset) . ($adaptive ? WP_Seed_Pixel_Adaptive::VERSION . WP_Seed_Pixel_Adaptive::SSIM_FLOOR . WP_Seed_Pixel_Adaptive::PSNR_FLOOR . WP_Seed_Pixel_Adaptive::THUMB_SSIM_FLOOR . WP_Seed_Pixel_Adaptive::THUMB_PSNR_FLOOR . $backend : 'fixed'));
             $old = WP_Seed_Pixel_Store::manifest($id);
             if (!$force && is_array($old) && isset($old['master_sha256'], $old['config_sha256']) && $old['master_sha256'] === $master_hash && $old['config_sha256'] === $config_hash && self::valid_files($old['files']) && WP_Seed_Pixel_Store::matches($old['files'], $metadata)) {
                 $old['status'] = 'success';
@@ -89,6 +92,11 @@ final class WP_Seed_Pixel_Engine {
                 $dir = null;
                 return self::error($id, $error);
             }
+            if (!WP_Seed_Pixel_Authority::valid($id)) { return self::error($id, new WP_Error('pixel_lock_unavailable')); }
+            $color = WP_Seed_Pixel_Color::prepare($master, $dir);
+            if (is_wp_error($color)) { return self::error($id, $color); }
+            $source = $color['path'];
+            unset($color['path']);
             $generation = bin2hex(random_bytes(8));
             $files = array();
             $sizes = array();
@@ -98,7 +106,7 @@ final class WP_Seed_Pixel_Engine {
             try {
                 foreach ($preset['sizes'] as $name => $size) {
                     $stage = $dir . '/' . $name . '.jpg';
-                    $decision = $adaptive ? WP_Seed_Pixel_Adaptive::select($master, $size, $stage) : null;
+                    $decision = $adaptive ? WP_Seed_Pixel_Adaptive::select($source, $size, $stage, !$color['converted']) : null;
                     if (is_wp_error($decision)) {
                         return self::error($id, $decision);
                     }
@@ -108,7 +116,7 @@ final class WP_Seed_Pixel_Engine {
                         continue;
                     }
                     if (!$adaptive) {
-                        $editor = wp_get_image_editor($master);
+                        $editor = wp_get_image_editor($source);
                         if (is_wp_error($editor)) {
                             return self::error($id, $editor);
                         }
@@ -159,6 +167,7 @@ final class WP_Seed_Pixel_Engine {
                 remove_filter('image_editor_output_format', array('WP_Seed_Pixel_Files', 'output_map'), PHP_INT_MAX);
             }
             $result = array('status' => 'success', 'attachment_id' => $id, 'preset' => $preset_name, 'strategy' => $adaptive ? 'bounded-adaptive' : 'fixed', 'algorithm_version' => $adaptive ? WP_Seed_Pixel_Adaptive::VERSION : 'legacy-fixed-1', 'generation' => $generation, 'master_sha256' => $master_hash, 'master_bytes' => filesize($master), 'config_sha256' => $config_hash, 'files' => $files, 'added_disk_bytes' => array_sum(array_column(array_filter($files, function ($f) { return $f['kind'] !== 'master'; }), 'bytes')), 'candidates' => array_sum(array_column($files, 'candidates')), 'seconds' => round(microtime(true) - $start, 4), 'created' => time());
+            $result['color'] = $color;
             $journal = WP_Seed_Pixel_Store::journal($dir, array('generation' => $generation, 'files' => $files, 'manifest' => $result));
             if (is_wp_error($journal)) {
                 return self::error($id, $journal);
@@ -168,7 +177,7 @@ final class WP_Seed_Pixel_Engine {
                 if (isset($file['kind']) && $file['kind'] === 'master') {
                     continue;
                 }
-                if (!rename($dir . '/' . $name . '.jpg', $file['path'])) {
+                if (!WP_Seed_Pixel_Authority::valid($id) || !rename($dir . '/' . $name . '.jpg', $file['path'])) {
                     return self::error($id, new WP_Error('pixel_publish', 'Atomic derivative publication failed.'));
                 }
                 $published[] = $file;
@@ -188,6 +197,7 @@ final class WP_Seed_Pixel_Engine {
                 }
             }
             $next['sizes'] = array_merge(isset($next['sizes']) ? $next['sizes'] : array(), $sizes);
+            if (!WP_Seed_Pixel_Authority::valid($id)) { return self::error($id, new WP_Error('pixel_lock_unavailable')); }
             $saved = WP_Seed_Pixel_Store::commit($id, $metadata, $next);
             if (is_wp_error($saved)) {
                 return self::error($id, $saved);
@@ -214,7 +224,7 @@ final class WP_Seed_Pixel_Engine {
         } finally {
             if (!$committed && is_string($master)) {
                 foreach ($published as $file) {
-                    WP_Seed_Pixel_Files::owned_delete($file, $id, $master);
+                    if (WP_Seed_Pixel_Authority::valid($id)) { WP_Seed_Pixel_Files::owned_delete($file, $id, $master); }
                     if (is_file($file['path'])) {
                         $preserve_journal = true;
                     }

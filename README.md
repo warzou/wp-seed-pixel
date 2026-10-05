@@ -1,4 +1,20 @@
-# WP Seed Pixel 0.3.0
+# WP Seed Pixel 0.4.0 (private V1 candidate)
+
+Accepted storage milestones share one coordinator: analyze, explicitly plan
+selected media, verify native JPEG/PNG replacement, retain a private original,
+restore exactly, or explicitly delete that version permanently. Future uploads
+are OFF by default and only enroll after administrator opt-in and a fresh cutoff.
+0.3.x derivative APIs and generation identity remain compatible.
+
+Read [V1 user guide](docs/V1-USER-GUIDE.md), [lossless PNG](docs/PNG-LOSSLESS.md),
+[host hardening](docs/STORAGE-HOST-HARDENING.md) and the compatibility limits.
+This is not a public release or permission for another consumer deployment.
+Earlier milestone descriptions below are historical.
+
+M5.1 development candidate: database-session ownership replaces authoritative
+flock; optional byte-valued operational ceiling and explicitly opted-in future
+JPEG jobs reuse M2-M5. See [host hardening](docs/STORAGE-HOST-HARDENING.md).
+This does not change the public 0.3.2 version or enable processing on upgrade.
 
 Local, non-destructive JPEG optimization for the WordPress Media Library.
 No cloud upload, service quota, AI runtime or telemetry. The original is kept.
@@ -11,7 +27,8 @@ and back up the site before a pilot.
 
 ## Install
 
-Upload `wp-seed-pixel-0.3.0.zip` through Plugins > Add New > Upload Plugin.
+The 0.3.1 ICC fix is an unpublished local candidate. Install only an explicitly
+certified artifact after a targeted backup; it is not a new public release yet.
 Download that installable asset from the GitHub release, not GitHub's automatic
 Source code ZIP or tar.gz archives.
 Activate on one site. Open Media > WP Seed Pixel. Automatic processing defaults
@@ -62,8 +79,13 @@ The quality metric is a bounded heuristic, not a human visual certification.
 - Ordinary, unprofiled three-channel RGB JPEGs are supported. EXIF rotation and
   mirrored orientations require PHP EXIF. Sensitive metadata is removed from
   outputs; the fixed technical GD/JPEG encoder comment can remain.
-- ICC-profiled, declared non-sRGB/uncalibrated, CMYK and grayscale JPEGs are deliberately skipped. This release
-  does not promise profile conversion or wide-gamut color fidelity.
+- Validated RGB ICC JPEGs require Imagick with LittleCMS. The embedded source
+  profile is transformed to bundled standard sRGB in a lossless, oriented working
+  PNG before resizing or quality scoring. Only after conversion are private
+  metadata removed. The original JPEG is never modified or reused as an output.
+- GD-only ICC, invalid/incomplete profiles, unprofiled non-sRGB declarations,
+  CMYK and grayscale fail closed. sRGB conversion may clip out-of-gamut colors;
+  this does not promise preservation of the original wide gamut on every display.
 - PNG, GIF (including animation), WebP, AVIF and SVG are skipped, not overwritten.
 - Source files must be regular local files inside this site's uploads directory,
   without symlink components. Remote/offloaded/private external storage is not
@@ -107,9 +129,10 @@ manually remove locks while workers may be running.
 - [Contributing](CONTRIBUTING.md)
 - [Security](SECURITY.md)
 
-Image-engine visual review passed for 0.2.0; its engine is unchanged. The 0.3.0
-admin UX passed owner acceptance, not a production certification. Linux,
-Imagick, MySQL/MariaDB and multisite remain uncertified. English source strings
+Image-engine visual review passed for 0.2.0; 0.3.1 adds bounded RGB ICC handling.
+The 0.3.0 admin UX passed owner acceptance, not a production certification.
+Imagick/LittleCMS ICC checks now pass locally on Windows; Linux,
+MySQL/MariaDB and multisite remain uncertified. English source strings
 are translatable; a French catalogue is not shipped yet.
 
 ## Administration screenshots
@@ -133,3 +156,11 @@ These are real local WordPress screens with generated synthetic media only.
 GPL-2.0-or-later; see [LICENSE](LICENSE). No third-party code, font, image
 corpus or licensed WordPress theme is bundled. Synthetic fixtures and public
 screenshots are original project test material, distributed under the same license.
+
+## Private V1 packaging
+
+The 0.4.0 candidate is not a public release. Its runtime-only build is
+`python -B tests/v1-package.py`, gated on two identical frozen clean-cycle
+manifests. It writes only into ignored `reports/storage-v1/`, excludes docs,
+screenshots, tests and lab data, and never replaces the public 0.3.2 ZIP.
+Do not use the historical general release packager for this candidate.

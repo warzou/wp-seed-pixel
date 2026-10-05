@@ -9,7 +9,8 @@
     const show = (data) => {
         const current = data.unchanged || 0;
         const heading = labels[data.status] || labels.empty;
-        output.textContent = data.status ? `${data.status === 'complete' && data.failed ? labels.partial : heading} - ${data.processed}/${data.total}. ${Math.max(0, (data.success || 0) - current)} ${labels.optimized}, ${current} ${labels.current}, ${data.skipped || 0} ${labels.skipped}, ${data.failed || 0} ${labels.failed}.` : labels.empty;
+        const count = (kind, value) => wpSeedPixel.counters[value === 0 ? 0 : value === 1 ? 1 : 2][kind].replace('%d', value);
+        output.textContent = data.status ? `${data.status === 'complete' && data.failed ? labels.partial : heading} - ${data.processed}/${data.total}. ${count('optimized', Math.max(0, (data.success || 0) - current))}, ${count('current', current)}, ${count('skipped', data.skipped || 0)}, ${count('failed', data.failed || 0)}.` : labels.empty;
         const progress = document.getElementById('pixel-progress');
         progress.max = Math.max(1, data.total || 1);
         progress.value = data.processed || 0;
@@ -35,7 +36,7 @@
         const response = await fetch(wpSeedPixel.url, { method: 'POST', credentials: 'same-origin', body });
         const result = await response.json();
         if (!result.success) throw new Error(result.data && result.data.message || wpSeedPixel.error);
-        if (operation === 'optimize') output.textContent = result.data.message || result.data.status;
+        if (operation === 'optimize') output.textContent = result.data.message || wpSeedPixel.error;
         else show(result.data);
         return result.data;
     };

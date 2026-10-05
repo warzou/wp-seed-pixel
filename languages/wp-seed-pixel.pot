@@ -1,0 +1,1300 @@
+msgid ""
+msgstr "Project-Id-Version: WP Seed Pixel 0.4.0\nMIME-Version: 1.0\nContent-Type: text/plain; charset=UTF-8\nContent-Transfer-Encoding: 8bit\nLanguage: \nPlural-Forms: nplurals=2; plural=(n != 1);\nX-Domain: wp-seed-pixel\n"
+
+msgid "%1$s: %2$s x %3$s | Quality: %4$s | Engine: %5$s"
+msgstr ""
+
+msgid "%d image already up to date"
+msgid_plural "%d images already up to date"
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "%d image kept without changes"
+msgid_plural "%d images kept without changes"
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "%d image needs attention"
+msgid_plural "%d images need attention"
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "%d image optimized"
+msgid_plural "%d images optimized"
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "%s%% less transfer than the original"
+msgstr ""
+
+msgid "A completed plan is required."
+msgstr ""
+
+msgid "A journal file changed or remains referenced; it was retained."
+msgstr ""
+
+msgid "A metadata filter changed the proposed result; no metadata was committed."
+msgstr ""
+
+msgid "A new method or profile is available. Regeneration is optional."
+msgstr ""
+
+msgid "A preset requires one to four derivatives."
+msgstr ""
+
+msgid "A referenced file cannot be read"
+msgstr ""
+
+msgid "A referenced file is missing"
+msgstr ""
+
+msgid "A safe, sufficiently sized ICC workspace is required."
+msgstr ""
+
+msgid "A safety check failed. Review technical details."
+msgstr ""
+
+msgid "Active source bytes saved"
+msgstr ""
+
+msgid "Additional bytes"
+msgstr ""
+
+msgid "Additional disk usage: %s. This is not a disk saving."
+msgstr ""
+
+msgid "Advanced settings"
+msgstr ""
+
+msgid "Algorithm: %s | Profile: %s | Original: %s"
+msgstr ""
+
+msgid "All states"
+msgstr ""
+
+msgid "Allocated blocks removed (not hosting quota)"
+msgstr ""
+
+msgid "Ambiguous protected manifest."
+msgstr ""
+
+msgid "An existing image size uses this plugin key without proven ownership."
+msgstr ""
+
+msgid "Analysis complete"
+msgstr ""
+
+msgid "Analysis controls require JavaScript. No image processing starts on this page."
+msgstr ""
+
+msgid "Analysis is busy. Resume later."
+msgstr ""
+
+msgid "Analysis not found."
+msgstr ""
+
+msgid "Analysis only. Images and their WordPress data are not changed."
+msgstr ""
+
+msgid "Analysis state could not be saved."
+msgstr ""
+
+msgid "Analyze image storage"
+msgstr ""
+
+msgid "Analyze library"
+msgstr ""
+
+msgid "Analyze only"
+msgstr ""
+
+msgid "Analyzed"
+msgstr ""
+
+msgid "Analyzing"
+msgstr ""
+
+msgid "Another image optimizer is active. Both may process the same images. Review their automatic settings; nothing has been disabled."
+msgstr ""
+
+msgid "Another job reserves this image."
+msgstr ""
+
+msgid "Another operation owns the lock."
+msgstr ""
+
+msgid "Another optimizer conflicts with this operation."
+msgstr ""
+
+msgid "Another worker owns this operation. Try later."
+msgstr ""
+
+msgid "Atomic derivative publication failed."
+msgstr ""
+
+msgid "Attachment ID"
+msgstr ""
+
+msgid "Attachment metadata changed concurrently or is ambiguous."
+msgstr ""
+
+msgid "Attachment not found."
+msgstr ""
+
+msgid "Available"
+msgstr ""
+
+msgid "Balanced (recommended)"
+msgstr ""
+
+msgid "Balanced is recommended. It adapts web versions to the image. Compatibility profiles keep the earlier fixed method."
+msgstr ""
+
+msgid "Baseline ID / activation UTC"
+msgstr ""
+
+msgid "Batch controls require JavaScript. Single-attachment processing and settings remain available."
+msgstr ""
+
+msgid "Blocked"
+msgstr ""
+
+msgid "Build plan from latest analysis"
+msgstr ""
+
+msgid "Bulk storage saver"
+msgstr ""
+
+msgid "CMYK and non-RGB JPEGs are not supported."
+msgstr ""
+
+msgid "Cancel"
+msgstr ""
+
+msgid "Cancel analysis"
+msgstr ""
+
+msgid "Cancelled"
+msgstr ""
+
+msgid "Candidate rejected"
+msgstr ""
+
+msgid "Cannot create a private staging directory."
+msgstr ""
+
+msgid "Cannot establish the owned staging root."
+msgstr ""
+
+msgid "Changed since analysis; analyze again"
+msgstr ""
+
+msgid "Choose existing media"
+msgstr ""
+
+msgid "Choose images in the Media Library"
+msgstr ""
+
+msgid "Color or orientation needs review"
+msgstr ""
+
+msgid "Committed generation requires manual integrity review."
+msgstr ""
+
+msgid "Complete"
+msgstr ""
+
+msgid "Complete an image storage analysis first."
+msgstr ""
+
+msgid "Complete usage is not demonstrated."
+msgstr ""
+
+msgid "Complete with errors"
+msgstr ""
+
+msgid "Completed"
+msgstr ""
+
+msgid "Completed with reservations"
+msgstr ""
+
+msgid "Confirm the whole-library operation first."
+msgstr ""
+
+msgid "Confirm the whole-library selection first."
+msgstr ""
+
+msgid "Consistent"
+msgstr ""
+
+msgid "Control write could not be verified."
+msgstr ""
+
+msgid "Controls require JavaScript. No work starts automatically."
+msgstr ""
+
+msgid "Could not persist the recovery journal."
+msgstr ""
+
+msgid "Could not retain the previous generation safely."
+msgstr ""
+
+msgid "Current Pixel versions"
+msgstr ""
+
+msgid "Current active source bytes"
+msgstr ""
+
+msgid "Current physical audit"
+msgstr ""
+
+msgid "Decimal MB"
+msgstr ""
+
+msgid "Decimal MB (1 MB = 1,000,000 bytes)"
+msgstr ""
+
+msgid "Delete permanently"
+msgstr ""
+
+msgid "Derivative integrity failed."
+msgstr ""
+
+msgid "Derivative not available."
+msgstr ""
+
+msgid "Diagnostics and developer tools"
+msgstr ""
+
+msgid "Dimensions conflict with retained sizes"
+msgstr ""
+
+msgid "Dimensions must be 1..8192 and JPEG quality 1..100."
+msgstr ""
+
+msgid "EXIF declares an uncalibrated or non-sRGB color space."
+msgstr ""
+
+msgid "Eligible formats"
+msgstr ""
+
+msgid "Enable only after reviewing links and cached versions that may still use these files."
+msgstr ""
+
+msgid "Estimated peak"
+msgstr ""
+
+msgid "Estimated peak meets or exceeds the ceiling."
+msgstr ""
+
+msgid "Excluded by the selected policy."
+msgstr ""
+
+msgid "Excluded from simulation"
+msgstr ""
+
+msgid "Expected a positive attachment ID and a derivative name."
+msgstr ""
+
+msgid "Expected a positive attachment ID, preset name and boolean force flag."
+msgstr ""
+
+msgid "Explicit legacy/custom fixed preset."
+msgstr ""
+
+msgid "Explicitly confirm that old external/cached URLs are no longer required before pruning history."
+msgstr ""
+
+msgid "External storage mapping needs review"
+msgstr ""
+
+msgid "Failed"
+msgstr ""
+
+msgid "File is outside local uploads"
+msgstr ""
+
+msgid "File shared by several attachments"
+msgstr ""
+
+msgid "Files and their roles"
+msgstr ""
+
+msgid "Finish or cancel the current analysis first."
+msgstr ""
+
+msgid "Finish the initial batch before retrying failures."
+msgstr ""
+
+msgid "Finished"
+msgstr ""
+
+msgid "Finished with errors; review before retrying"
+msgstr ""
+
+msgid "First bounded candidate satisfying local quality and byte gates."
+msgstr ""
+
+msgid "Fixed profile"
+msgstr ""
+
+msgid "For normal use, choose an image in the Media Library. This fallback is for diagnosis only."
+msgstr ""
+
+msgid "For original retirement, I accept that unknown external original-image URLs may stop working."
+msgstr ""
+
+msgid "Format is not eligible for processing"
+msgstr ""
+
+msgid "Generate native WordPress metadata before optimization."
+msgstr ""
+
+msgid "History cleanup bookkeeping requires retry."
+msgstr ""
+
+msgid "Hosting quota is unknown."
+msgstr ""
+
+msgid "I understand this version cannot be restored by Pixel after permanent deletion."
+msgstr ""
+
+msgid "ICC conversion stopped safely. No profile stripping fallback was used."
+msgstr ""
+
+msgid "Image ID"
+msgstr ""
+
+msgid "Image actions require JavaScript. Settings remain available without it."
+msgstr ""
+
+msgid "Image data changed during the operation."
+msgstr ""
+
+msgid "Image editor rejected the selected JPEG quality."
+msgstr ""
+
+msgid "Image profile"
+msgstr ""
+
+msgid "Image semantics or ownership require review."
+msgstr ""
+
+msgid "Image storage"
+msgstr ""
+
+msgid "Images"
+msgstr ""
+
+msgid "Images needing attention"
+msgstr ""
+
+msgid "Images per request"
+msgstr ""
+
+msgid "Imagick with LittleCMS is required; no uncalibrated fallback is allowed."
+msgstr ""
+
+msgid "Incomplete ICC chunk sequence."
+msgstr ""
+
+msgid "Insufficient disk space."
+msgstr ""
+
+msgid "Insufficient memory budget for ICC conversion."
+msgstr ""
+
+msgid "Insufficient memory budget for safe image decoding."
+msgstr ""
+
+msgid "Insufficient physical space."
+msgstr ""
+
+msgid "Insufficient staging disk space."
+msgstr ""
+
+msgid "Invalid ICC tag boundary."
+msgstr ""
+
+msgid "Invalid ICC tag table."
+msgstr ""
+
+msgid "Invalid JPEG header."
+msgstr ""
+
+msgid "Invalid derivative definition."
+msgstr ""
+
+msgid "Invalid local upload path."
+msgstr ""
+
+msgid "Invalid or oversized ICC chunk sequence."
+msgstr ""
+
+msgid "Invalid path component."
+msgstr ""
+
+msgid "Invalid preset name."
+msgstr ""
+
+msgid "Invalid storage settings."
+msgstr ""
+
+msgid "Invalid storage settings. Processing is blocked."
+msgstr ""
+
+msgid "Items requiring a fresh physical review"
+msgstr ""
+
+msgid "JPEG compression savings not measured"
+msgstr ""
+
+msgid "Job state could not be saved."
+msgstr ""
+
+msgid "Job storage could not be prepared."
+msgstr ""
+
+msgid "Job version is incompatible; review required."
+msgstr ""
+
+msgid "Jobs"
+msgstr ""
+
+msgid "Kept without changes"
+msgstr ""
+
+msgid "Known usage"
+msgstr ""
+
+msgid "Large file graph: inventory is partial"
+msgstr ""
+
+msgid "Large web view"
+msgstr ""
+
+msgid "Local image optimization. Your original is kept; no image is sent to an external service."
+msgstr ""
+
+msgid "Local quality measurement failed."
+msgstr ""
+
+msgid "Local upload storage is unavailable."
+msgstr ""
+
+msgid "Low margin"
+msgstr ""
+
+msgid "Main file mapping is missing"
+msgstr ""
+
+msgid "Main image exceeds 2560 pixels: review dimensions"
+msgstr ""
+
+msgid "Main images"
+msgstr ""
+
+msgid "Malformed EXIF or an unsupported orientation value."
+msgstr ""
+
+msgid "Malformed ICC marker."
+msgstr ""
+
+msgid "Malformed JPEG marker."
+msgstr ""
+
+msgid "Malformed or non-RGB ICC profile; no conversion was attempted."
+msgstr ""
+
+msgid "Malformed or oversized JPEG metadata header."
+msgstr ""
+
+msgid "Master replaced; verification pending"
+msgstr ""
+
+msgid "Master verified"
+msgstr ""
+
+msgid "Master verified; recovery retained"
+msgstr ""
+
+msgid "Maximum operation budget"
+msgstr ""
+
+msgid "Measure current file space"
+msgstr ""
+
+msgid "Measurements cover planned operational sources, not unchanged thumbnails or excluded files. Hosting quota remains unknown."
+msgstr ""
+
+msgid "Media"
+msgstr ""
+
+msgid "Metadata/orientation sanitization required; byte increase disclosed."
+msgstr ""
+
+msgid "Metric unavailable: conservative fixed Q94 fallback."
+msgstr ""
+
+msgid "Missing file"
+msgstr ""
+
+msgid "Needs attention"
+msgstr ""
+
+msgid "Needs review"
+msgstr ""
+
+msgid "Net file bytes saved including recovery and audit files"
+msgstr ""
+
+msgid "Net file space reclaimed"
+msgstr ""
+
+msgid "Network activation is not supported. Activate separately on each site."
+msgstr ""
+
+msgid "New optimization available"
+msgstr ""
+
+msgid "New uploads"
+msgstr ""
+
+msgid "Next"
+msgstr ""
+
+msgid "No analysis yet"
+msgstr ""
+
+msgid "No automatic purge. Processing requires a private recovery root and explicit engine activation."
+msgstr ""
+
+msgid "No bulk job yet"
+msgstr ""
+
+msgid "No candidate meets the quality floor; source retained, dimension target may be exceeded."
+msgstr ""
+
+msgid "No eligible failures remain to retry."
+msgstr ""
+
+msgid "No matching images"
+msgstr ""
+
+msgid "No material byte saving at the quality floor; source retained."
+msgstr ""
+
+msgid "No meaningful saving; source retained"
+msgstr ""
+
+msgid "No new uploads tracked."
+msgstr ""
+
+msgid "No processing started. Select images in the Media Library or confirm the whole library below."
+msgstr ""
+
+msgid "No retryable failures remain (maximum two retries per attachment)."
+msgstr ""
+
+msgid "No sanitized candidate meets the quality floor. MASTER and existing mappings were retained."
+msgstr ""
+
+msgid "No simulation yet"
+msgstr ""
+
+msgid "No useful saving; source preserved."
+msgstr ""
+
+msgid "Not optimized"
+msgstr ""
+
+msgid "Not replaced"
+msgstr ""
+
+msgid "Off"
+msgstr ""
+
+msgid "Open an image to review its details. Up to ten failed items are shown; others remain in the Media Library. Retrying is explicit, with at most two retries per image."
+msgstr ""
+
+msgid "Operation"
+msgstr ""
+
+msgid "Operation completed."
+msgstr ""
+
+msgid "Operation stopped. Review the image state before trying again."
+msgstr ""
+
+msgid "Operational ceiling (0: disabled)"
+msgstr ""
+
+msgid "Optimize"
+msgstr ""
+
+msgid "Optimize existing images"
+msgstr ""
+
+msgid "Optimize new JPEG uploads automatically"
+msgstr ""
+
+msgid "Optimize with WP Seed Pixel"
+msgstr ""
+
+msgid "Optimized"
+msgstr ""
+
+msgid "Optimized native image"
+msgstr ""
+
+msgid "Original already suitable; reused without a new copy."
+msgstr ""
+
+msgid "Original bytes to review"
+msgstr ""
+
+msgid "PNG lossless savings not measured"
+msgstr ""
+
+msgid "PNG: explicit lossless processing available"
+msgstr ""
+
+msgid "PNG: lossless only, 8-bit non-interlaced, up to 4 megapixels and 16 MiB. Unsupported cases are preserved."
+msgstr ""
+
+msgid "POST required."
+msgstr ""
+
+msgid "Pause"
+msgstr ""
+
+msgid "Paused"
+msgstr ""
+
+msgid "Paused; resume when ready"
+msgstr ""
+
+msgid "Permanent deletion is separate. Open retained versions to select one image and acknowledge the loss of restoration."
+msgstr ""
+
+msgid "Permanent deletion stopped."
+msgstr ""
+
+msgid "Permanently deleted previous version"
+msgstr ""
+
+msgid "Permission denied."
+msgstr ""
+
+msgid "Photo album (compatibility)"
+msgstr ""
+
+msgid "Pixel - Image storage"
+msgstr ""
+
+msgid "Pixel - New uploads"
+msgstr ""
+
+msgid "Pixel - Retained versions"
+msgstr ""
+
+msgid "Pixel - Simulation"
+msgstr ""
+
+msgid "Pixel - Storage saver"
+msgstr ""
+
+msgid "Pixel file relationships are ambiguous"
+msgstr ""
+
+msgid "Pixel sections"
+msgstr ""
+
+msgid "Pixel storage and new uploads"
+msgstr ""
+
+msgid "Plan"
+msgstr ""
+
+msgid "Plan fingerprint"
+msgstr ""
+
+msgid "Plan or job"
+msgstr ""
+
+msgid "Policy fingerprint"
+msgstr ""
+
+msgid "Potential bytes removable by explicit purge"
+msgstr ""
+
+msgid "Potential is conditional, not freed space. Quarantine would still occupy storage. Filesystem allocation and hosting quota are unknown."
+msgstr ""
+
+msgid "Preexisting media are never processed automatically. Saving establishes a new baseline for subsequent uploads."
+msgstr ""
+
+msgid "Preexisting media: protected from automatic processing"
+msgstr ""
+
+msgid "Preparing candidate"
+msgstr ""
+
+msgid "Preparing simulation"
+msgstr ""
+
+msgid "Preserved full-resolution original"
+msgstr ""
+
+msgid "Preserved original: review future retirement"
+msgstr ""
+
+msgid "Previous"
+msgstr ""
+
+msgid "Previous Pixel versions"
+msgstr ""
+
+msgid "Previous Pixel versions: review references"
+msgstr ""
+
+msgid "Previous operational image"
+msgstr ""
+
+msgid "Private engine disabled or incompatible storage."
+msgstr ""
+
+msgid "Process eligible new images"
+msgstr ""
+
+msgid "Process the whole image library, including images already up to date"
+msgstr ""
+
+msgid "Processing"
+msgstr ""
+
+msgid "Processing could not finish. Check the technical details before retrying."
+msgstr ""
+
+msgid "Processing could not finish. Your original is preserved."
+msgstr ""
+
+msgid "Processing is local; no image is sent to an external service."
+msgstr ""
+
+msgid "Processing stopped safely; retry after checking the local environment."
+msgstr ""
+
+msgid "Processing; keep this page open."
+msgstr ""
+
+msgid "Progress"
+msgstr ""
+
+msgid "Protected history is ambiguous or malformed; no history files were deleted."
+msgstr ""
+
+msgid "Protected history is malformed; no history files were deleted."
+msgstr ""
+
+msgid "Protected manifest cleanup did not complete."
+msgstr ""
+
+msgid "Protected manifest write requires recovery."
+msgstr ""
+
+msgid "Provider quota (information only)"
+msgstr ""
+
+msgid "Quarantine bytes still on disk"
+msgstr ""
+
+msgid "Queued"
+msgstr ""
+
+msgid "Quick inventory, dated per image. No compression test. Related-looking extra files are checked in a bounded folder sample; this is not a complete disk audit."
+msgstr ""
+
+msgid "RGB ICC conversion requires Imagick with LittleCMS. MASTER and existing mappings were retained."
+msgstr ""
+
+msgid "Ready"
+msgstr ""
+
+msgid "Reason"
+msgstr ""
+
+msgid "Recent new uploads"
+msgstr ""
+
+msgid "Recent results"
+msgstr ""
+
+msgid "Reconcile the interrupted item before cancelling."
+msgstr ""
+
+msgid "Reconciliation required"
+msgstr ""
+
+msgid "Recoverable space after permanent deletion"
+msgstr ""
+
+msgid "Recovery history is full. New work is blocked; existing recovery remains available."
+msgstr ""
+
+msgid "Recovery history is retained. New storage jobs stop at 10,000 records; restoration and permanent deletion remain available. No automatic expiry."
+msgstr ""
+
+msgid "Recovery integrity needs review"
+msgstr ""
+
+msgid "Recovery journal is invalid; no files were deleted."
+msgstr ""
+
+msgid "Reference rotation failed."
+msgstr ""
+
+msgid "Regenerate from master"
+msgstr ""
+
+msgid "Regenerate web versions"
+msgstr ""
+
+msgid "Regeneration recreates web versions from the preserved original. Previous versions remain available."
+msgstr ""
+
+msgid "Related bytes (not additive)"
+msgstr ""
+
+msgid "Related file ownership needs review"
+msgstr ""
+
+msgid "Remove owned web versions and settings when uninstalling. Originals are always kept."
+msgstr ""
+
+msgid "Replace eligible JPEG and PNG images"
+msgstr ""
+
+msgid "Replacement failed"
+msgstr ""
+
+msgid "Replacement intent recorded"
+msgstr ""
+
+msgid "Replacement reduces active image bytes. Previous versions remain on disk until a separate, explicit permanent deletion. No work starts automatically."
+msgstr ""
+
+msgid "Reported dimensions differ from the file header"
+msgstr ""
+
+msgid "Reported format differs from the file header"
+msgstr ""
+
+msgid "Request failed. Resume later; no automatic retry was sent."
+msgstr ""
+
+msgid "Request failed. Your original is preserved; check details before retrying."
+msgstr ""
+
+msgid "Resolved path escaped the upload directory."
+msgstr ""
+
+msgid "Restoration available"
+msgstr ""
+
+msgid "Restoration unavailable"
+msgstr ""
+
+msgid "Restore this version"
+msgstr ""
+
+msgid "Restored exactly"
+msgstr ""
+
+msgid "Resume"
+msgstr ""
+
+msgid "Resume or finish the existing batch before starting another."
+msgstr ""
+
+msgid "Retained bytes"
+msgstr ""
+
+msgid "Retained image versions"
+msgstr ""
+
+msgid "Retained recovery: %s"
+msgstr ""
+
+msgid "Retained versions still occupy disk space. Permanent deletion removes Pixel restoration for that version."
+msgstr ""
+
+msgid "Retained versions: latest 20 operations only"
+msgstr ""
+
+msgid "Retire preserved originals"
+msgstr ""
+
+msgid "Retry failed items"
+msgstr ""
+
+msgid "Retry limit reached; review required."
+msgstr ""
+
+msgid "Retry one failure"
+msgstr ""
+
+msgid "Run simulation"
+msgstr ""
+
+msgid "Running"
+msgstr ""
+
+msgid "Running simulation"
+msgstr ""
+
+msgid "Safety reserve"
+msgstr ""
+
+msgid "Saved evidence is inconsistent; review required."
+msgstr ""
+
+msgid "Scan storage could not be prepared."
+msgstr ""
+
+msgid "Select an existing simulation."
+msgstr ""
+
+msgid "Select between 1 and 1000 media items."
+msgstr ""
+
+msgid "Select images with the Media Library bulk action, then resume here. One image is processed at a time. You can pause or return later to resume; processing stops when this page is closed."
+msgstr ""
+
+msgid "Selected media"
+msgstr ""
+
+msgid "Sensitive metadata or unapplied orientation remained in the derivative."
+msgstr ""
+
+msgid "Settings"
+msgstr ""
+
+msgid "Settings saved. Existing images have not been reprocessed."
+msgstr ""
+
+msgid "Simulated recovery preparation failed."
+msgstr ""
+
+msgid "Simulated switch"
+msgstr ""
+
+msgid "Simulated switch intent"
+msgstr ""
+
+msgid "Simulation"
+msgstr ""
+
+msgid "Simulation complete"
+msgstr ""
+
+msgid "Simulation controls require JavaScript. No work starts automatically."
+msgstr ""
+
+msgid "Simulation only. No images or attachment data are changed. Replacement and purge are unavailable."
+msgstr ""
+
+msgid "Simulation verification failed."
+msgstr ""
+
+msgid "Simulation verified"
+msgstr ""
+
+msgid "Single web view (compatibility)"
+msgstr ""
+
+msgid "Single-image replacement"
+msgstr ""
+
+msgid "Skipped"
+msgstr ""
+
+msgid "Source already bounded, light and metadata-safe."
+msgstr ""
+
+msgid "Space reclaimed"
+msgstr ""
+
+msgid "Start verified operation"
+msgstr ""
+
+msgid "Start whole library"
+msgstr ""
+
+msgid "State"
+msgstr ""
+
+msgid "Stopped: system error"
+msgstr ""
+
+msgid "Storage analysis"
+msgstr ""
+
+msgid "Storage simulation"
+msgstr ""
+
+msgid "Supported policies: JPEG, sensitive metadata removal, color preservation and no upscaling."
+msgstr ""
+
+msgid "Symbolic link excluded from local accounting"
+msgstr ""
+
+msgid "Symbolic links are not supported."
+msgstr ""
+
+msgid "Technical details"
+msgstr ""
+
+msgid "The EXIF extension is required for this source orientation."
+msgstr ""
+
+msgid "The atomic metadata update could not be verified."
+msgstr ""
+
+msgid "The color-managed reference failed validation."
+msgstr ""
+
+msgid "The color-managed sRGB transform failed."
+msgstr ""
+
+msgid "The decoded source profile does not match the validated JPEG profile."
+msgstr ""
+
+msgid "The frozen plan is inconsistent."
+msgstr ""
+
+msgid "The image editor did not produce a valid, bounded JPEG."
+msgstr ""
+
+msgid "The image exceeds the 40 megapixel / 64 MB safety limit."
+msgstr ""
+
+msgid "The local file or parent directory is missing."
+msgstr ""
+
+msgid "The lossless working reference could not be written."
+msgstr ""
+
+msgid "The master changed before manifest recovery."
+msgstr ""
+
+msgid "The media changed; review required."
+msgstr ""
+
+msgid "The native image-size mapping was changed externally."
+msgstr ""
+
+msgid "The next media item is no longer editable. Review the selection before resuming."
+msgstr ""
+
+msgid "The original and attached files must share a local upload directory."
+msgstr ""
+
+msgid "The path is outside the current site upload directory."
+msgstr ""
+
+msgid "The policy is invalid."
+msgstr ""
+
+msgid "The preset must contain exactly the documented keys."
+msgstr ""
+
+msgid "The processing backend is unavailable."
+msgstr ""
+
+msgid "The request was interrupted."
+msgstr ""
+
+msgid "The requested JPEG quality was not accepted by the image editor."
+msgstr ""
+
+msgid "The requested dimensions cannot be preserved safely."
+msgstr ""
+
+msgid "The reused source header is no longer safe or consistent."
+msgstr ""
+
+msgid "The selected attachment is busy; resume later."
+msgstr ""
+
+msgid "The selection contains an unavailable media item."
+msgstr ""
+
+msgid "The simulated candidate was rejected."
+msgstr ""
+
+msgid "The simulated purge failed."
+msgstr ""
+
+msgid "The simulated switch failed."
+msgstr ""
+
+msgid "The source cannot be read."
+msgstr ""
+
+msgid "The source is not a valid JPEG."
+msgstr ""
+
+msgid "The source or published derivatives changed during processing."
+msgstr ""
+
+msgid "The upload directory is unavailable."
+msgstr ""
+
+msgid "This action is not available in the current state."
+msgstr ""
+
+msgid "This analysis has already finished."
+msgstr ""
+
+msgid "This image was preserved because its format or image profile is not supported, or processing was excluded."
+msgstr ""
+
+msgid "Thumbnail"
+msgstr ""
+
+msgid "Total bytes"
+msgstr ""
+
+msgid "Twenty previous generations are retained. Back up and review cached URLs before explicitly pruning history with the PHP API."
+msgstr ""
+
+msgid "Twenty retained operations per page. File space excludes database overhead; hosting quota remains unknown."
+msgstr ""
+
+msgid "Unattributed related files"
+msgstr ""
+
+msgid "Uncertain or shared bytes"
+msgstr ""
+
+msgid "Uncertainty reserve"
+msgstr ""
+
+msgid "Unexpected candidate output path."
+msgstr ""
+
+msgid "Unique file bytes observed"
+msgstr ""
+
+msgid "Unknown"
+msgstr ""
+
+msgid "Unknown operation."
+msgstr ""
+
+msgid "Unknown preset."
+msgstr ""
+
+msgid "Unknown usage"
+msgstr ""
+
+msgid "Unsafe file mapping excluded"
+msgstr ""
+
+msgid "Unsafe or occupied output destination."
+msgstr ""
+
+msgid "Unsupported format"
+msgstr ""
+
+msgid "Unsupported format or explicit exclusion."
+msgstr ""
+
+msgid "Unsupported image profile or orientation."
+msgstr ""
+
+msgid "Unsupported operation"
+msgstr ""
+
+msgid "Usage must include quarantine and all hosting storage. An uploaded file already occupies space before Pixel runs."
+msgstr ""
+
+msgid "Verification failed"
+msgstr ""
+
+msgid "Verification failed."
+msgstr ""
+
+msgid "Verified file bytes physically removed"
+msgstr ""
+
+msgid "Verified hosting budget (MiB)"
+msgstr ""
+
+msgid "Verified quarantine bytes removed"
+msgstr ""
+
+msgid "Verified; previous version quarantined"
+msgstr ""
+
+msgid "Waiting"
+msgstr ""
+
+msgid "Waiting for WordPress metadata"
+msgstr ""
+
+msgid "Waiting for automatic processing"
+msgstr ""
+
+msgid "Web versions"
+msgstr ""
+
+msgid "Where the bytes are"
+msgstr ""
+
+msgid "WordPress edit backups"
+msgstr ""
+
+msgid "WordPress edit backups or ambiguous metadata"
+msgstr ""
+
+msgid "WordPress image metadata is unavailable."
+msgstr ""
+
+msgid "WordPress preserved originals"
+msgstr ""
+
+msgid "WordPress sizes"
+msgstr ""
+
+msgid "Your original is kept."
+msgstr ""
+
+msgid "already up to date"
+msgstr ""
+
+msgid "attachments analyzed"
+msgstr ""
+
+msgid "available"
+msgstr ""
+
+msgid "available (not certified)"
+msgstr ""
+
+msgid "kept without changes"
+msgstr ""
+
+msgid "need attention"
+msgstr ""
+
+msgid "optimized"
+msgstr ""
+
+msgid "source"
+msgstr ""
+
+msgid "unavailable"
+msgstr ""

@@ -101,6 +101,7 @@ final class WP_Seed_Pixel_Store {
     }
 
     public static function commit($id, array $before, array $after) {
+        if (!WP_Seed_Pixel_Authority::valid($id)) { return new WP_Error('pixel_locked'); }
         global $wpdb;
         $filtered = apply_filters('wp_update_attachment_metadata', $after, $id);
         if ($filtered !== $after) {
@@ -124,7 +125,12 @@ final class WP_Seed_Pixel_Store {
 
     public static function workspace($id) {
         $uploads = wp_upload_dir(null, false);
-        $dir = $uploads['basedir'] . '/wp-seed-pixel/job-' . (int) $id . '-' . bin2hex(random_bytes(8));
+        $parent = $uploads['basedir'] . '/wp-seed-pixel';
+        if (is_link($parent) || (!is_dir($parent) && !mkdir($parent, 0700))
+            || wp_normalize_path(realpath($parent)) !== wp_normalize_path(realpath($uploads['basedir'])) . '/wp-seed-pixel') {
+            return new WP_Error('pixel_stage_dir', 'Cannot establish the owned staging root.');
+        }
+        $dir = $parent . '/job-' . (int) $id . '-' . bin2hex(random_bytes(8));
         if (!mkdir($dir, 0700)) {
             return new WP_Error('pixel_stage_dir', 'Cannot create a private staging directory.');
         }
@@ -203,11 +209,13 @@ final class WP_Seed_Pixel_Store {
 
     public static function clean_workspace($dir) {
         $checked = WP_Seed_Pixel_Files::path($dir . '/journal.json', false);
-        if (is_wp_error($checked) || is_link($dir) || !preg_match('/^job-[0-9]+-[a-f0-9]{16}$/D', basename($dir))) {
+        if (is_wp_error($checked) || is_link($dir) || !preg_match('/^job-([0-9]+)-[a-f0-9]{16}$/D', basename($dir), $identity)
+            || !WP_Seed_Pixel_Authority::valid((int) $identity[1])) {
             return;
         }
         foreach (glob($dir . '/*') ?: array() as $path) {
-            if (!is_link($path) && is_file($path) && (basename($path) === 'journal.json' || preg_match('/^[a-z][a-z0-9_]{0,19}\.jpg$/D', basename($path)))) {
+            if (!is_link($path) && is_file($path) && (in_array(basename($path), array('journal.json', 'color-reference.png'), true) || preg_match('/^[a-z][a-z0-9_]{0,19}\.jpg$/D', basename($path)))) {
+                if (!WP_Seed_Pixel_Authority::valid((int) $identity[1])) { return; }
                 unlink($path);
             }
         }

@@ -32,7 +32,7 @@ final class WP_Seed_Pixel_Admin {
         wp_enqueue_script('wp-seed-pixel-admin', plugins_url('assets/admin.js', WP_SEED_PIXEL_FILE), array(), WP_SEED_PIXEL_VERSION, true);
         wp_enqueue_script('wp-seed-pixel-media', plugins_url('assets/media.js', WP_SEED_PIXEL_FILE), array(), WP_SEED_PIXEL_VERSION, true);
         wp_localize_script('wp-seed-pixel-media', 'wpSeedPixelMedia', array('url' => admin_url('admin-ajax.php'), 'nonce' => wp_create_nonce('wp_seed_pixel'), 'preset' => WP_Seed_Pixel_Plugin::settings()['preset'], 'processing' => __('Processing', 'wp-seed-pixel'), 'regenerate' => __('Regenerate web versions', 'wp-seed-pixel'), 'failed' => __('Processing could not finish. Your original is preserved.', 'wp-seed-pixel')));
-        wp_localize_script('wp-seed-pixel-admin', 'wpSeedPixel', array('url' => admin_url('admin-ajax.php'), 'nonce' => wp_create_nonce('wp_seed_pixel'), 'error' => __('Request failed. Resume later; no automatic retry was sent.', 'wp-seed-pixel'), 'labels' => array('running' => __('Processing', 'wp-seed-pixel'), 'paused' => __('Paused; resume when ready', 'wp-seed-pixel'), 'complete' => __('Finished', 'wp-seed-pixel'), 'partial' => __('Finished with errors; review before retrying', 'wp-seed-pixel'), 'empty' => __('No processing started. Select images in the Media Library or confirm the whole library below.', 'wp-seed-pixel'), 'optimized' => __('optimized', 'wp-seed-pixel'), 'current' => __('already up to date', 'wp-seed-pixel'), 'skipped' => __('kept without changes', 'wp-seed-pixel'), 'failed' => __('need attention', 'wp-seed-pixel'), 'confirm' => __('Confirm the whole-library selection first.', 'wp-seed-pixel'))));
+        wp_localize_script('wp-seed-pixel-admin', 'wpSeedPixel', array('counters' => WP_Seed_Pixel_I18n::counters(), 'url' => admin_url('admin-ajax.php'), 'nonce' => wp_create_nonce('wp_seed_pixel'), 'error' => __('Request failed. Resume later; no automatic retry was sent.', 'wp-seed-pixel'), 'labels' => array('running' => __('Processing', 'wp-seed-pixel'), 'paused' => __('Paused; resume when ready', 'wp-seed-pixel'), 'complete' => __('Finished', 'wp-seed-pixel'), 'partial' => __('Finished with errors; review before retrying', 'wp-seed-pixel'), 'empty' => __('No processing started. Select images in the Media Library or confirm the whole library below.', 'wp-seed-pixel'), 'optimized' => __('optimized', 'wp-seed-pixel'), 'current' => __('already up to date', 'wp-seed-pixel'), 'skipped' => __('kept without changes', 'wp-seed-pixel'), 'failed' => __('need attention', 'wp-seed-pixel'), 'confirm' => __('Confirm the whole-library selection first.', 'wp-seed-pixel'))));
     }
 
     public static function columns($columns) {
@@ -113,11 +113,11 @@ final class WP_Seed_Pixel_Admin {
                 case 'pause': $result = WP_Seed_Pixel_Batch::pause(true); break;
                 case 'resume': $result = WP_Seed_Pixel_Batch::pause(false); break;
                 case 'retry': $result = WP_Seed_Pixel_Batch::retry_one(); break;
-                default: $result = new WP_Error('pixel_operation', 'Unknown operation.');
+                default: $result = new WP_Error('pixel_operation', __('Unknown operation.', 'wp-seed-pixel'));
             }
         }
         if (is_wp_error($result)) {
-            wp_send_json_error(array('code' => $result->get_error_code(), 'message' => $result->get_error_message()), 400);
+            wp_send_json_error(array('code' => $result->get_error_code(), 'message' => WP_Seed_Pixel_I18n::message($result->get_error_message())), 400);
         }
         // File system paths are reserved for trusted PHP API consumers, not AJAX output.
         if (isset($result['files'])) {
@@ -175,7 +175,7 @@ final class WP_Seed_Pixel_Admin {
                 <?php submit_button(); ?>
             </form>
             <details class="pixel-diagnostic"><summary><?php esc_html_e('Diagnostics and developer tools', 'wp-seed-pixel'); ?></summary>
-            <p><?php echo esc_html('WordPress ' . get_bloginfo('version') . ' | PHP ' . PHP_VERSION . ' | WP Seed Pixel ' . WP_SEED_PIXEL_VERSION . ' | GD: ' . (extension_loaded('gd') ? 'available' : 'unavailable') . ' | Imagick: ' . (extension_loaded('imagick') ? 'available (not certified)' : 'unavailable') . ' | bounded-rgb-3'); ?></p>
+            <p><?php echo esc_html('WordPress ' . get_bloginfo('version') . ' | PHP ' . PHP_VERSION . ' | WP Seed Pixel ' . WP_SEED_PIXEL_VERSION . ' | GD: ' . (extension_loaded('gd') ? __('available', 'wp-seed-pixel') : __('unavailable', 'wp-seed-pixel')) . ' | Imagick: ' . (extension_loaded('imagick') ? __('available (not certified)', 'wp-seed-pixel') : __('unavailable', 'wp-seed-pixel')) . ' | bounded-rgb-3'); ?></p>
             <p><?php esc_html_e('For normal use, choose an image in the Media Library. This fallback is for diagnosis only.', 'wp-seed-pixel'); ?></p>
             <form id="pixel-single" method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>">
                 <input type="hidden" name="action" value="wp_seed_pixel_manual">

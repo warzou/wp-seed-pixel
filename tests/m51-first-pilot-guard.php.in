@@ -1,0 +1,24 @@
+<?php
+// Intentional one-JPEG pilot adapter. Human baseline, not a provider API reading.
+defined('ABSPATH') || exit;
+define('WP_SEED_PIXEL_STORAGE_ENABLED',true);
+define('WP_SEED_PIXEL_RECOVERY_ROOT','/home/therapc/.pixel-one-jpeg-__NONCE__/recovery');
+function pixel_one_pilot_authorized() { return time()<=__DEADLINE__ && hash_equals('__TOKEN_HASH__',hash('sha256',$_SERVER['HTTP_X_PIXEL_PREFLIGHT']??'')); }
+add_filter('option_wp_seed_pixel_future_uploads',static function($s){ if(!pixel_one_pilot_authorized()){ $s['mode']='off'; } return $s; });
+add_action('plugins_loaded',static function(){ remove_action('wp_seed_pixel_future_job',array('WP_Seed_Pixel_Future_Uploads','run')); },PHP_INT_MAX);
+add_filter('upload_dir',static function($u){
+    if(pixel_one_pilot_authorized() && !empty($_FILES['file']) && ($_FILES['file']['name']??'')==='pixel-one-disposable-__NONCE__.jpg'){
+        $sub='/pixel-one-jpeg-__NONCE__'; $u['path']=$u['basedir'].$sub; $u['url']=$u['baseurl'].$sub; $u['subdir']=$sub;
+    } return $u;
+});
+add_filter('wp_seed_pixel_storage_usage',static function(){
+    if(!pixel_one_pilot_authorized()){return null;}
+    $total=624000000+2000000; // Fixed additional SQL/log allowance; no hidden storage investigation.
+    foreach(array(WP_PLUGIN_DIR.'/wp-seed-pixel', '/home/therapc/.pixel-one-jpeg-__NONCE__', WP_CONTENT_DIR.'/uploads/pixel-one-jpeg-__NONCE__') as $dir){
+        if(!is_dir($dir)){continue;} if(is_link($dir)){return null;}
+        foreach(new RecursiveIteratorIterator(new RecursiveDirectoryIterator($dir,FilesystemIterator::SKIP_DOTS)) as $f){if($f->isLink()){return null;} if($f->isFile()){$total+=$f->getSize();}}
+    }
+    global $wpdb; $bytes=$wpdb->get_var("SELECT COALESCE(SUM(DATA_LENGTH+INDEX_LENGTH),0) FROM information_schema.TABLES WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME IN ('{$wpdb->prefix}seed_pixel_jobs','{$wpdb->prefix}seed_pixel_items')");
+    if($wpdb->last_error || $bytes===null || (int)$bytes>2000000){return null;}
+    return array('bytes'=>$total,'measured_at'=>time(),'uncertainty_bytes'=>8000000,'complete'=>true,'includes_recovery'=>true,'live'=>true);
+});

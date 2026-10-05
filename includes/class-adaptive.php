@@ -8,24 +8,24 @@ final class WP_Seed_Pixel_Adaptive {
     const THUMB_SSIM_FLOOR = 0.960;
     const THUMB_PSNR_FLOOR = 30.0;
 
-    public static function select($master, array $size, $stage) {
+    public static function select($master, array $size, $stage, $allow_reuse = true) {
         $info = getimagesize($master);
-        $markers = WP_Seed_Pixel_Files::markers($master);
+        $markers = $info[2] === IMAGETYPE_JPEG ? WP_Seed_Pixel_Files::markers($master) : array('private' => true, 'icc' => false);
         if (is_wp_error($markers)) {
             return $markers;
         }
-        $clean = !$markers['private'] && !$markers['icc'];
+        $clean = $allow_reuse && !$markers['private'] && !$markers['icc'];
         $bounded = $info[0] <= $size['width'] && $info[1] <= $size['height'];
         $target = $size['width'] <= 640 ? 50000 : 500000;
         if ($clean && $bounded && filesize($master) <= $target) {
             return self::reuse($master, $info, 'Source already bounded, light and metadata-safe.', 0);
         }
-        $metric_available = function_exists('imagecreatefromjpeg');
+        $metric_available = function_exists('imagecreatefromjpeg') && ($info[2] !== IMAGETYPE_PNG || function_exists('imagecreatefrompng'));
         $qualities = $metric_available ? array(78, 86, 94) : array(94);
         $attempts = 0;
         foreach ($qualities as $quality) {
             ++$attempts;
-            // Each candidate starts from MASTER; never from a rejected JPEG.
+            // Each candidate starts from MASTER or its lossless sRGB reference.
             $editor = wp_get_image_editor($master);
             if (is_wp_error($editor)) {
                 return $editor;
@@ -86,7 +86,8 @@ final class WP_Seed_Pixel_Adaptive {
     }
 
     public static function metric($master, $candidate) {
-        $source = @imagecreatefromjpeg($master);
+        $info = @getimagesize($master);
+        $source = $info && $info[2] === IMAGETYPE_PNG ? @imagecreatefrompng($master) : @imagecreatefromjpeg($master);
         $out = @imagecreatefromjpeg($candidate);
         if (!$source || !$out) {
             return new WP_Error('pixel_metric_decode', 'Local quality measurement failed.');

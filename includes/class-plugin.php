@@ -7,14 +7,20 @@ final class WP_Seed_Pixel_Plugin {
     }
 
     public static function boot() {
-        load_plugin_textdomain('wp-seed-pixel', false, dirname(plugin_basename(WP_SEED_PIXEL_FILE)) . '/languages');
+        add_action('init', static function () {
+            load_plugin_textdomain('wp-seed-pixel', false, dirname(plugin_basename(WP_SEED_PIXEL_FILE)) . '/languages');
+        });
         WP_Seed_Pixel_Admin::boot();
+        WP_Seed_Pixel_Storage_Admin::boot();
+        WP_Seed_Pixel_Jobs_Admin::boot();
+        WP_Seed_Pixel_Future_Uploads::boot();
         add_action('added_post_meta', array(__CLASS__, 'uploaded'), 10, 4);
         add_action('wp_seed_pixel_auto', array(__CLASS__, 'automatic'));
         add_action('delete_attachment', array('WP_Seed_Pixel_Store', 'cleanup'));
     }
 
     public static function uploaded($meta_id, $id, $key, $value) {
+        if ((WP_Seed_Pixel_Future_Uploads::settings()['mode'] ?? 'off') !== 'off') { return; }
         if ($key !== '_wp_attachment_metadata' || !self::settings()['automatic'] || get_post_mime_type($id) !== 'image/jpeg' || wp_next_scheduled('wp_seed_pixel_auto', array((int) $id))) {
             return;
         }
@@ -23,6 +29,7 @@ final class WP_Seed_Pixel_Plugin {
     }
 
     public static function automatic($id) {
+        if (WP_Seed_Pixel_Future_Uploads::settings()['mode'] !== 'off') { return; }
         $settings = self::settings();
         if ($settings['automatic']) {
             $result = wp_seed_pixel_optimize((int) $id, $settings['preset']);
@@ -48,6 +55,7 @@ final class WP_Seed_Pixel_Plugin {
 
     public static function deactivate() {
         wp_unschedule_hook('wp_seed_pixel_auto');
+        wp_unschedule_hook('wp_seed_pixel_future_job');
         $batch = WP_Seed_Pixel_Batch::current();
         if ($batch && $batch['status'] === 'running') {
             WP_Seed_Pixel_Batch::pause(true);

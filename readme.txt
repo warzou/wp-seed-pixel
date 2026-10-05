@@ -1,15 +1,26 @@
 === WP Seed Pixel ===
-Tags: images, jpeg, media, optimization
+Tags: images, jpeg, png, media, optimization
 Requires at least: 6.6
 Tested up to: 7.1
 Requires PHP: 8.1
-Stable tag: 0.3.0
+Stable tag: 0.3.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Local JPEG derivatives, immutable masters and resumable administrator batches.
+Local image optimization, storage analysis, verified recovery and resumable jobs.
 
 == Description ==
+
+0.4.0 is a PRIVATE review candidate, not a public release. The stable public tag
+above remains unchanged. Storage replacement is separately enabled by a host
+administrator with private recovery; activation itself changes no image.
+Future upload processing defaults OFF. JPEG and bounded lossless PNG are opt-in;
+existing media require an explicit selected plan. Recovery occupies hosting space.
+Permanent deletion requires separate per-version approval and removes rollback.
+Provider quota remains unknown unless a complete live accounting adapter proves it.
+PNG: 8-bit non-interlaced, <=4 megapixels / 16 MiB; no format conversion.
+No automatic quarantine expiry. New storage operations stop at 10,000 records.
+See repository docs/V1-USER-GUIDE.md and docs/PNG-LOSSLESS.md for setup and limits.
 
 WP Seed Pixel adds owned JPEG derivatives to the existing WordPress media
 library. It uses WP_Image_Editor, with no cloud or telemetry. Automatic processing
@@ -23,11 +34,14 @@ remain compatible. Upgrades do not regenerate the library or change settings.
 Masters and native sizes remain. Disk use can increase. Re-encoding at higher
 quality can increase transferred bytes; gains are never guaranteed.
 
-Unprofiled RGB JPEGs only. ICC, CMYK, grayscale and other formats are skipped.
+Unprofiled RGB JPEGs and validated RGB ICC JPEGs with Imagick/LittleCMS.
+ICC conversion uses a lossless sRGB working reference; MASTER stays byte-exact.
+GD-only hosts skip ICC safely. CMYK, grayscale and other formats are skipped.
 Local uploads only. No offloaded storage or network activation support.
 This release is a Tech Preview with owner acceptance completed, not a universal
 production certification. PHP 8.4.23 / GD / Windows / SQLite / WordPress 7.1.2
-were tested. Other backends and platforms remain uncertified.
+were tested. RGB ICC conversion was also tested with Imagick 3.8.1 / LittleCMS
+on Windows. Other platforms and production hosting remain uncertified.
 
 == Installation ==
 

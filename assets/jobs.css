@@ -1,0 +1,10 @@
+.pixel-jobs { max-width: 1100px; }
+.pixel-job-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 16px 0; }
+.pixel-jobs progress { width: 100%; height: 20px; }
+.pixel-jobs dd { margin: 4px 0 16px; overflow-wrap: anywhere; font-family: monospace; }
+.pixel-job-item { padding: 12px 0; border-bottom: 1px solid #c3c4c7; }
+.pixel-job-item h3 { margin: 0; font-size: 14px; }
+.pixel-job-item p { margin: 6px 0; }
+.pixel-jobs button:focus-visible { outline: 2px solid #1d2327; outline-offset: 3px; }
+#pixel-job-error { color: #8a2424; }
+@media (max-width: 600px) { .pixel-jobs .button { white-space: normal; height: auto; min-height: 36px; } }

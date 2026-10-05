@@ -53,9 +53,12 @@ final class WP_Seed_Pixel_Files {
         if (isset($info['channels']) && $info['channels'] !== 3) {
             return new WP_Error('pixel_color_unsupported', 'CMYK and non-RGB JPEGs are not supported.');
         }
-        // Fail closed; profile-aware conversion is deliberately outside this release.
         if ($markers['icc']) {
-            return new WP_Error('pixel_color_unsupported', 'ICC-profiled JPEGs are skipped to avoid unverified color conversion.');
+            $profile = WP_Seed_Pixel_Color::inspect($path);
+            if (is_wp_error($profile)) { return $profile; }
+            if (!WP_Seed_Pixel_Color::available()) {
+                return new WP_Error('pixel_color_unsupported', 'RGB ICC conversion requires Imagick with LittleCMS. MASTER and existing mappings were retained.');
+            }
         }
         if ($markers['exif'] && !function_exists('exif_read_data')) {
             return new WP_Error('pixel_exif_required', 'The EXIF extension is required for this source orientation.');
@@ -65,7 +68,7 @@ final class WP_Seed_Pixel_Files {
             if ($exif === false || isset($exif['Orientation']) && (!is_int($exif['Orientation']) || $exif['Orientation'] < 1 || $exif['Orientation'] > 8)) {
                 return new WP_Error('pixel_exif_invalid', 'Malformed EXIF or an unsupported orientation value.');
             }
-            if (isset($exif['ColorSpace']) && (int) $exif['ColorSpace'] !== 1) {
+            if (!$markers['icc'] && isset($exif['ColorSpace']) && (int) $exif['ColorSpace'] !== 1) {
                 return new WP_Error('pixel_color_unsupported', 'EXIF declares an uncalibrated or non-sRGB color space.');
             }
         }
@@ -76,12 +79,13 @@ final class WP_Seed_Pixel_Files {
         return $info;
     }
 
-    public static function markers($path) {
+    public static function markers($path, $collect_profile = false) {
         $handle = @fopen($path, 'rb');
         if (!$handle) {
             return new WP_Error('pixel_read', 'The source cannot be read.');
         }
         $flags = array('icc' => false, 'exif' => false, 'private' => false);
+        $chunks = array(); $chunk_count = null; $profile_bytes = 0;
         try {
             if (fread($handle, 2) !== "\xff\xd8") {
                 return new WP_Error('pixel_jpeg_header', 'Invalid JPEG header.');
@@ -96,6 +100,11 @@ final class WP_Seed_Pixel_Files {
                 }
                 $marker = ord($byte);
                 if ($marker === 0xda || $marker === 0xd9) {
+                    if ($collect_profile && $flags['icc']) {
+                        if (count($chunks) !== $chunk_count) { return new WP_Error('pixel_color_unsupported', 'Incomplete ICC chunk sequence.'); }
+                        ksort($chunks);
+                        $flags['profile'] = implode('', $chunks);
+                    }
                     return $flags;
                 }
                 if ($marker === 0x01 || $marker >= 0xd0 && $marker <= 0xd7) {
@@ -115,6 +124,15 @@ final class WP_Seed_Pixel_Files {
                 }
                 if ($marker === 0xe2 && strncmp($payload, 'ICC_PROFILE', 11) === 0) {
                     $flags['icc'] = true;
+                    if ($collect_profile) {
+                        if (strlen($payload) < 14 || substr($payload, 0, 12) !== "ICC_PROFILE\0") { return new WP_Error('pixel_color_unsupported', 'Malformed ICC marker.'); }
+                        $sequence = ord($payload[12]); $total = ord($payload[13]);
+                        $profile_bytes += strlen($payload) - 14;
+                        if (!$sequence || !$total || $sequence > $total || isset($chunks[$sequence]) || $chunk_count !== null && $chunk_count !== $total || $profile_bytes > 1048576) {
+                            return new WP_Error('pixel_color_unsupported', 'Invalid or oversized ICC chunk sequence.');
+                        }
+                        $chunk_count = $total; $chunks[$sequence] = substr($payload, 14);
+                    }
                 }
                 if ($marker === 0xe1 && strncmp($payload, 'Exif', 4) === 0) {
                     $flags['exif'] = true;
@@ -132,30 +150,11 @@ final class WP_Seed_Pixel_Files {
     }
 
     public static function lock($id) {
-        $uploads = wp_upload_dir(null, false);
-        $dir = $uploads['basedir'] . '/wp-seed-pixel';
-        if (!is_dir($dir) && !wp_mkdir_p($dir)) {
-            return new WP_Error('pixel_lock_dir', 'Cannot create the plugin workspace.');
-        }
-        $path = self::path($dir . '/lock-' . (int) $id, false);
-        if (is_wp_error($path)) {
-            return $path;
-        }
-        $handle = @fopen($path, 'c');
-        if (!$handle || !flock($handle, LOCK_EX | LOCK_NB)) {
-            if ($handle) {
-                fclose($handle);
-            }
-            return new WP_Error('pixel_locked', 'This attachment or batch is already processing.');
-        }
-        return $handle;
+        return WP_Seed_Pixel_Authority::acquire($id);
     }
 
     public static function unlock($handle) {
-        if (is_resource($handle)) {
-            flock($handle, LOCK_UN);
-            fclose($handle);
-        }
+        WP_Seed_Pixel_Authority::release($handle);
     }
 
     public static function referenced_elsewhere($file, $id) {
@@ -168,6 +167,7 @@ final class WP_Seed_Pixel_Files {
     }
 
     public static function owned_delete(array $file, $id, $master) {
+        if (!WP_Seed_Pixel_Authority::valid($id)) { return false; }
         if (isset($file['kind']) && $file['kind'] === 'master') {
             return false;
         }
@@ -181,7 +181,7 @@ final class WP_Seed_Pixel_Files {
         if (!hash_equals($file['sha256'], hash_file('sha256', $path)) || self::referenced_elsewhere($path, $id)) {
             return false;
         }
-        return unlink($path);
+        return WP_Seed_Pixel_Authority::valid($id) && unlink($path);
     }
 
     public static function output_map($formats) {

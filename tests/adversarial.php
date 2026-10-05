@@ -10,7 +10,7 @@ $result = wp_seed_pixel_optimize($id, 'participant_album');
 $before = wp_get_attachment_metadata($id, true);
 $master = wp_get_original_image_path($id);
 $master_hash = hash_file('sha256', $master);
-$command = array(PHP_BINARY, '-d', 'extension_dir=' . ini_get('extension_dir'), '-d', 'extension=gd', '-d', 'extension=exif', '-d', 'extension=mbstring', '-d', 'extension=pdo_sqlite', '-d', 'extension=mysqli', '-d', 'memory_limit=512M', __DIR__ . '/worker.php', (string) $id);
+$command = pixel_worker_command($id);
 $pipes = array();
 $process = proc_open(array_merge($command, array('crash')), array(1 => array('pipe', 'w'), 2 => array('pipe', 'w')), $pipes);
 $child_output = stream_get_contents($pipes[1]);
@@ -31,10 +31,11 @@ verify('Recovery preserves master SHA', hash_file('sha256', $master) === $master
 $process = proc_open(array_merge($command, array('hold')), array(1 => array('pipe', 'w'), 2 => array('pipe', 'w')), $pipes);
 $held = trim(fgets($pipes[1]));
 $concurrent = wp_seed_pixel_optimize($id, 'participant_album', true);
-verify('Separate process owns flock', $held === 'LOCK_HELD' && is_wp_error($concurrent) && $concurrent->get_error_code() === 'pixel_locked');
-stream_get_contents($pipes[1]); $err = stream_get_contents($pipes[2]);
+verify('Separate process owns flock', $held === 'LOCK_HELD' && is_wp_error($concurrent) && $concurrent->get_error_code() === 'pixel_locked', wp_json_encode(array('held' => $held, 'concurrent' => is_wp_error($concurrent) ? $concurrent->get_error_code() : 'not_error')));
+$held_output = stream_get_contents($pipes[1]); $err = stream_get_contents($pipes[2]);
 fclose($pipes[1]); fclose($pipes[2]);
-verify('Lock owner completes', proc_close($process) === 0, $err);
+$held_exit = proc_close($process);
+verify('Lock owner completes', $held_exit === 0, wp_json_encode(array('exit' => $held_exit, 'output' => $held_output, 'error' => $err)));
 wp_cache_delete($id, 'post_meta');
 
 $filter = function ($map) { $map['image/jpeg'] = 'image/webp'; return $map; };

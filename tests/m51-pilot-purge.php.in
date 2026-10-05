@@ -1,0 +1,59 @@
+<?php
+ini_set('display_errors','0'); ini_set('log_errors','0');
+header('Cache-Control: no-store, private, max-age=0');
+header('X-Robots-Tag: noindex, nofollow, noarchive'); header('Content-Type: application/json');
+if(!hash_equals('__TOKEN_HASH__',hash('sha256',$_SERVER['HTTP_X_PIXEL_PREFLIGHT']??'')) || time()>__DEADLINE__){http_response_code(404);exit;}
+__COMMON__
+$scope='/home/therapc/.pixel-one-jpeg-6f8f2320950958d9aef46d2c';
+$plugin=__DIR__.'/wp-content/plugins/wp-seed-pixel';
+try {
+    pp_assert($_SERVER['REQUEST_METHOD']==='POST' && realpath(__DIR__)==='/home/therapc/www','PURGE_SCOPE');
+    $input=json_decode(file_get_contents('php://input'),true); $action=$input['action']??'';
+    pp_assert(in_array($action,array('check','purge','verify'),true),'PURGE_ACTION');
+    list($db,$prefix)=pp_db(); pp_manifest($plugin);
+    pp_assert(is_dir($scope) && !is_link($scope) && (fileperms($scope)&0077)===0,'PRIVATE_SCOPE');
+    pp_assert(hash_file('sha256',$scope.'/baseline.json')===file_get_contents($scope.'/baseline.sha256'),'BASELINE_INTEGRITY');
+    pp_boot(); global $wpdb;
+    add_filter('wp_seed_pixel_storage_usage',static function()use($scope,$plugin){
+        $n=624000000+2000000+pp_size($scope)+pp_size($plugin)+pp_size(__DIR__.'/wp-content/uploads/pixel-one-jpeg-6f8f2320950958d9aef46d2c');
+        return array('bytes'=>$n,'measured_at'=>time(),'uncertainty_bytes'=>8000000,'complete'=>true,'live'=>true,'includes_recovery'=>true);
+    },PHP_INT_MAX);
+    pp_assert(WP_Seed_Pixel_Future_Uploads::settings()['mode']==='off' && !WP_Seed_Pixel_Plugin::settings()['automatic'],'AUTOMATION_NOT_OFF');
+    $job=WP_Seed_Pixel_Job_Store::job(1); $item=WP_Seed_Pixel_Job_Store::item(1);
+    pp_assert($job && $item && (int)$item['job_id']===1 && (int)$item['attachment_id']===4395 && $item['action']==='replace','PILOT_ITEM_IDENTITY');
+    pp_assert($job['kind']==='replace' && $job['status']==='completed' && (int)$job['total']===1,'PILOT_JOB_IDENTITY');
+    $policy=json_decode($job['policy'],true); $marker=get_post_meta(4395,WP_Seed_Pixel_Future_Uploads::META,true);
+    pp_assert(($policy['future_upload_generation']??'')==='13601ee3c318fd80ef709e77ca8056df18c0e2b3b8c5a839' && ($marker['generation']??'')===$policy['future_upload_generation'] && (int)$marker['job_id']===1,'PILOT_ENROLLMENT_GENERATION');
+    $others=$wpdb->get_var('SELECT COUNT(*) FROM '.WP_Seed_Pixel_Job_Store::table('items')." WHERE kind='operation' AND (attachment_id<>4395 OR id<>1)");
+    pp_assert((int)$others===0 && !$wpdb->last_error && !$job['lease'] && !$item['lease'],'CONFLICTING_PIXEL_OPERATION');
+    $record=WP_Seed_Pixel_Quarantine::record($item); pp_assert(!is_wp_error($record),'PILOT_RECORD');
+    pp_assert($record['before']['sha256']==='f0ee8da961dc4c49446e4f93d8e86a1d61ae0e765c39b41d90ee6de3774e655b' && $record['before']['bytes']===1957818,'PILOT_ORIGINAL_IDENTITY');
+    pp_assert($record['candidate']['sha256']==='cf5c7a111b32f6f3cde57b9a55c24c40449cb6b0e88f4148ae518ac0ea5b0035' && $record['candidate']['bytes']===1139878,'PILOT_CANDIDATE_IDENTITY');
+    $health=WP_Seed_Pixel_Master_Storage::verify($item,$record,false,true); pp_assert(!is_wp_error($health),'OPTIMIZED_MASTER_HEALTH');
+    $view=WP_Seed_Pixel_Quarantine::inspect($item); pp_assert(!is_wp_error($view) && $view['generation']==='8e0305c543f8cfaf2f78950a1bab3815ccc69231f0694c13280a7f41a58cfc54','PILOT_QUARANTINE_GENERATION');
+    if($action==='check'){
+        pp_assert($item['stage']==='retained' && $view['state']==='retained' && $view['rollback_available'] && $view['quarantine_bytes']===1957818,'PURGE_PRECONDITIONS');
+        pp_assert(!file_exists($scope.'/pilot-purge-before.json'),'FRESH_PURGE_SNAPSHOT');
+        $old=pp_media($db,$prefix); unset($old[4395]);
+        $snapshot=array('id'=>4395,'job'=>$job,'item'=>$item,'record'=>$record,'view'=>$view,'native'=>WP_Seed_Pixel_Master_Adapter::snapshot(4395),'other_media'=>$old);
+        $bytes=wp_json_encode($snapshot); pp_assert(file_put_contents($scope.'/pilot-purge-before.json',$bytes)===strlen($bytes),'PURGE_SNAPSHOT'); chmod($scope.'/pilot-purge-before.json',0600);
+        pp_assert(file_put_contents($scope.'/pilot-purge-before.sha256',hash('sha256',$bytes))===64,'PURGE_SNAPSHOT_MANIFEST'); chmod($scope.'/pilot-purge-before.sha256',0600);
+        pp_assert(hash_file('sha256',$scope.'/pilot-purge-before.json')===hash('sha256',$bytes),'PURGE_SNAPSHOT_READBACK');
+        $r=array('id'=>4395,'generation'=>$view['generation'],'view'=>$view,'snapshot_sha256'=>hash('sha256',$bytes),'snapshot_bytes'=>strlen($bytes),'native'=>$snapshot['native'],'old_media_count'=>count($old),'automation'=>'OFF');
+    }else{
+        pp_assert(hash_file('sha256',$scope.'/pilot-purge-before.json')===file_get_contents($scope.'/pilot-purge-before.sha256'),'PURGE_SNAPSHOT_INTEGRITY');
+        $snapshot=json_decode(file_get_contents($scope.'/pilot-purge-before.json'),true);
+        if($action==='purge'){
+            pp_assert($item===$snapshot['item'] && $job===$snapshot['job'] && $record===$snapshot['record'],'PURGE_SNAPSHOT_CHANGED');
+            $view=WP_Seed_Pixel_Jobs::quarantine_action(1,'purge',array('version'=>WP_Seed_Pixel_Quarantine::AUTHORIZATION,'generation'=>$view['generation'],'irreversible'=>true),1);
+            pp_assert(!is_wp_error($view),'M4_PURGE_FAILED');
+        }
+        $after=WP_Seed_Pixel_Master_Adapter::snapshot(4395); pp_assert(!is_wp_error($after) && $after===$snapshot['native'],'POST_PURGE_ATTACHMENT_CHANGED');
+        $old=pp_media($db,$prefix); unset($old[4395]); pp_assert($old===$snapshot['other_media'],'POST_PURGE_OTHER_MEDIA_CHANGED');
+        $item=WP_Seed_Pixel_Job_Store::item(1); $view=WP_Seed_Pixel_Quarantine::inspect($item);
+        pp_assert(!is_wp_error($view) && $item['stage']==='purged' && $view['state']==='purged' && !$view['rollback_available'] && !$view['purge_available'] && $view['quarantine_bytes']===0 && $view['removed_bytes']===1957818,'POST_PURGE_STATE');
+        pp_assert(!file_exists($scope.'/recovery/m3-1-1/recovery.jpg') && !is_link($scope.'/recovery/m3-1-1/recovery.jpg'),'POST_PURGE_SOURCE_PRESENT');
+        $r=array('id'=>4395,'view'=>$view,'item_stage'=>$item['stage'],'native'=>$after,'source_physically_absent'=>true,'other_media_unchanged'=>count($old),'db_state'=>pp_state_bytes($db,$prefix),'private_bytes'=>pp_size($scope),'srcset'=>wp_get_attachment_image_srcset(4395),'automation'=>'OFF');
+    }
+    $db->close(); echo json_encode(array('ok'=>true,'result'=>$r));
+}catch(Throwable $e){http_response_code(409);$code=$e instanceof RuntimeException?$e->getMessage():'PURGE_HARNESS_EXCEPTION';if(!preg_match('/^[A-Z0-9_]+$/D',$code)){$code='PURGE_HARNESS_EXCEPTION';}echo json_encode(array('ok'=>false,'code'=>$code,'file'=>basename($e->getFile()),'line'=>$e->getLine()));}

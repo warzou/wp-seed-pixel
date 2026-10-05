@@ -1,0 +1,78 @@
+<?php
+require __DIR__ . '/m4-runtime.php';
+global $wpdb;
+$checks = array();
+list($id, $job, $view) = m4_replaced(); $item = m4_item($job); $dir = WP_Seed_Pixel_Master_Storage::directory($item);
+$r = WP_Seed_Pixel_Quarantine::record($item); $master_sha = hash_file('sha256', get_attached_file($id));
+m4_check(is_wp_error(WP_Seed_Pixel_Quarantine::purge($item, m4_approval($view))), 'unleased direct purge refused');
+m4_check(is_wp_error(WP_Seed_Pixel_Quarantine::restore($item)), 'unleased direct restore refused');
+$qsha = hash_file('sha256', $dir . '/recovery.jpg');
+file_put_contents($dir . '/journal.next', 'foreign temporary');
+m4_check(is_wp_error(WP_Seed_Pixel_Jobs::quarantine_action($job, 'purge', m4_approval($view))), 'existing journal temp refuses');
+m4_check(file_get_contents($dir . '/journal.next') === 'foreign temporary' && hash_file('sha256', $dir . '/recovery.jpg') === $qsha, 'unknown temp and backup untouched');
+unlink($dir . '/journal.next');
+$sentinel = $dir . '/hardlink-sentinel'; copy($dir . '/journal.json', $sentinel); unlink($dir . '/journal.json'); link($sentinel, $dir . '/journal.json');
+$jsha = hash_file('sha256', $sentinel);
+m4_check(is_wp_error(WP_Seed_Pixel_Jobs::quarantine_action($job, 'purge', m4_approval($view))), 'hardlinked journal refuses');
+m4_check(hash_file('sha256', $sentinel) === $jsha, 'hardlinked journal sentinel unchanged');
+unlink($dir . '/journal.json'); copy($sentinel, $dir . '/journal.json');
+
+list($id, $job, $view) = m4_replaced(); $item = m4_item($job); $dir = WP_Seed_Pixel_Master_Storage::directory($item);
+$steal = static function ($name, $item_id) use ($wpdb) { if ($name === 'purge_intent') { $wpdb->update(WP_Seed_Pixel_Job_Store::table('items'), array('lease' => 'another-owner'), array('id' => $item_id)); } };
+add_action('wp_seed_pixel_m4_boundary', $steal, 10, 2);
+$r = WP_Seed_Pixel_Jobs::quarantine_action($job, 'purge', m4_approval($view)); remove_action('wp_seed_pixel_m4_boundary', $steal);
+m4_check(is_wp_error($r) && file_exists($dir . '/recovery.jpg'), 'lost fence before delete refuses');
+$wpdb->update(WP_Seed_Pixel_Job_Store::table('items'), array('lease' => '', 'lease_until' => 0), array('id' => $item['id']));
+
+list($id, $job, $view) = m4_replaced(); $item = m4_item($job); $dir = WP_Seed_Pixel_Master_Storage::directory($item);
+$fault = static function ($sql) { return strpos($sql, " SET stage='purged',revision=") !== false ? 'INVALID M4 SQL INJECTION TEST' : $sql; };
+$wpdb->suppress_errors(true); add_filter('query', $fault);
+$r = WP_Seed_Pixel_Jobs::quarantine_action($job, 'purge', m4_approval($view)); remove_filter('query', $fault); $wpdb->suppress_errors(false);
+m4_check(is_wp_error($r) && !file_exists($dir . '/recovery.jpg') && m4_item($job)['stage'] === 'purge_intent', 'SQL accounting failure durable intent not false completed');
+m4_check(WP_Seed_Pixel_Quarantine::inspect(m4_item($job))['removed_bytes'] === 0, 'SQL accounting failure no completed saving claim');
+$r = WP_Seed_Pixel_Jobs::quarantine_action($job, 'purge', m4_approval($view));
+m4_check(!is_wp_error($r) && m4_item($job)['stage'] === 'purged' && $r['removed_bytes'] === $view['source_bytes'], 'SQL recovery reconciles exact single removal');
+
+list($id, $job, $view) = m4_replaced(); $item = m4_item($job); $dir = WP_Seed_Pixel_Master_Storage::directory($item);
+$fault = static function ($name) use ($dir) { if ($name === 'purge_deleted') { file_put_contents($dir . '/journal.next', 'interrupted audit write'); } };
+add_action('wp_seed_pixel_m4_boundary', $fault);
+$r = WP_Seed_Pixel_Jobs::quarantine_action($job, 'purge', m4_approval($view)); remove_action('wp_seed_pixel_m4_boundary', $fault);
+m4_check(is_wp_error($r) && m4_item($job)['stage'] === 'purge_intent' && !file_exists($dir . '/recovery.jpg'), 'journal failure after delete no false SQL completion');
+m4_check(WP_Seed_Pixel_Quarantine::inspect(m4_item($job))['removed_bytes'] === 0, 'unfinished audit no reclaimed claim');
+unlink($dir . '/journal.next');
+$r = WP_Seed_Pixel_Jobs::quarantine_action($job, 'purge', m4_approval($view));
+m4_check(!is_wp_error($r) && $r['state'] === 'purged', 'journal failure resumed without second deletion');
+
+list($id, $job) = m4_original(); WP_Seed_Pixel_Jobs::step($job);
+$item = m4_item($job); $r = WP_Seed_Pixel_Quarantine::record($item); $dir = WP_Seed_Pixel_Master_Storage::directory($item);
+$target = wp_upload_dir(null, false)['basedir'] . '/' . $r['retired_original']['relative'];
+m4_check(is_wp_error(WP_Seed_Pixel_Original_Executor::restore($item, $r)), 'direct original restore requires coordinator');
+$create = static function ($name) use ($target) { if ($name === 'original_restore_ready') { file_put_contents($target, 'external original wins'); } };
+add_action('wp_seed_pixel_m4_boundary', $create);
+$result = WP_Seed_Pixel_Jobs::quarantine_action($job, 'restore'); remove_action('wp_seed_pixel_m4_boundary', $create);
+m4_check(is_wp_error($result) && file_get_contents($target) === 'external original wins', 'original restore collision never overwrites unknown');
+m4_check(!isset(wp_get_attachment_metadata($id)['original_image']), 'failed original restore never points at unknown');
+
+list($id, $job) = m4_original();
+$item = m4_item($job); $source = wp_get_original_image_path($id); $sha = hash_file('sha256', $source);
+$change = static function ($name) use ($id) { if ($name === 'original_pre_move') { $m = wp_get_attachment_metadata($id); $m['outside'] = true; wp_update_attachment_metadata($id, $m); } };
+add_action('wp_seed_pixel_m4_boundary', $change); WP_Seed_Pixel_Jobs::step($job); remove_action('wp_seed_pixel_m4_boundary', $change);
+m4_check(hash_file('sha256', $source) === $sha && m4_item($job)['stage'] === 'recovery_required', 'external writer before original move wins safely');
+m4_check(WP_Seed_Pixel_Jobs::status($job)['simulation_only'] === false, 'original status is not simulation');
+wp_set_current_user(0);
+m4_check(WP_Seed_Pixel_Quarantine::summary()['entries'] === 0, 'anonymous summary discloses nothing');
+wp_set_current_user(1);
+list($id, $job, $view) = m4_replaced(); $item = m4_item($job); $dir = WP_Seed_Pixel_Master_Storage::directory($item); $r = WP_Seed_Pixel_Quarantine::record($item);
+rename($dir . '/recovery.jpg', $dir . '/owned-source'); copy($dir . '/owned-source', $dir . '/recovery.jpg');
+$s = lstat($dir . '/recovery.jpg'); $r['quarantine']['ino'] = $s['ino'];
+m4_fault_journal($id, $dir, $r);
+m4_check(is_wp_error(WP_Seed_Pixel_Jobs::quarantine_action($job, 'purge', m4_approval($view))) && file_exists($dir . '/recovery.jpg'), 'checksummed forged inode disagrees with durable M2 identity');
+list($id, $job) = m4_original(); $original = wp_get_original_image_path($id); $sha = hash_file('sha256', $original);
+$late = static function ($name) use ($original) { if ($name === 'original_pre_move') { wp_insert_post(array('post_title' => 'Late synthetic reference', 'post_content' => basename($original))); } };
+add_action('wp_seed_pixel_m4_boundary', $late); WP_Seed_Pixel_Jobs::step($job); remove_action('wp_seed_pixel_m4_boundary', $late);
+m4_check(is_file($original) && hash_file('sha256', $original) === $sha && m4_item($job)['stage'] === 'recovery_required', 'new live original reference before move blocks');
+$id = m3_fixture('m3-large.jpg');
+$fault = static function ($sql) { return strpos($sql, 'SELECT ID FROM') !== false && strpos($sql, 'post_content LIKE') !== false ? 'INVALID M4 REFERENCE TEST' : $sql; };
+$wpdb->suppress_errors(true); add_filter('query', $fault); $r = WP_Seed_Pixel_Jobs::retire_original($id, 1073741824, true); remove_filter('query', $fault); $wpdb->suppress_errors(false);
+m4_check(is_wp_error($r) && $r->get_error_code() === 'STORE_FAILED' && is_file(wp_get_original_image_path($id)), 'failed reference inventory cannot authorize retirement');
+m4_report('adversarial');

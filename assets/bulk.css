@@ -1,0 +1,14 @@
+.pixel-bulk { max-width: 1080px; }
+.pixel-bulk form { display: grid; grid-template-columns: minmax(0,1fr); gap: 12px; max-width: 640px; margin-bottom: 24px; }
+.pixel-bulk label { display: block; }
+.pixel-bulk input[type=number], .pixel-bulk select { display: block; max-width: 100%; box-sizing: border-box; min-width: 0; }
+.pixel-bulk .button { max-width: 100%; white-space: normal; height: auto; }
+.pixel-bulk-actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 16px 0; }
+.pixel-bulk progress { display: block; width: min(100%, 640px); }
+.pixel-bulk dl { display: grid; grid-template-columns: minmax(0,2fr) minmax(0,1fr); max-width: 720px; gap: 8px; }
+.pixel-bulk dd { margin: 0; }
+.pixel-bulk table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+.pixel-bulk td, .pixel-bulk th { padding: 8px; text-align: left; overflow-wrap: anywhere; border-bottom: 1px solid #c3c4c7; }
+.pixel-bulk p { overflow-wrap: anywhere; }
+.pixel-bulk #pixel-bulk-error { color: #b32d2e; }
+@media(max-width: 480px) { .pixel-bulk dl { grid-template-columns: minmax(0,1fr); } .pixel-bulk th,.pixel-bulk td { padding: 5px; font-size: 12px; } }

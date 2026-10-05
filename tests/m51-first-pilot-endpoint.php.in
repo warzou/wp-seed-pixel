@@ -1,0 +1,221 @@
+<?php
+ini_set('display_errors', '0'); ini_set('log_errors', '0');
+header('Cache-Control: no-store, private, max-age=0');
+header('X-Robots-Tag: noindex, nofollow, noarchive');
+header('Content-Type: application/json');
+if (!hash_equals('__TOKEN_HASH__', hash('sha256', $_SERVER['HTTP_X_PIXEL_PREFLIGHT'] ?? '')) || time() > __DEADLINE__) { http_response_code(404); exit; }
+function pp_assert($ok, $code) { if (!$ok) { throw new RuntimeException($code); } }
+function pp_literal($t) {
+    pp_assert(is_array($t) && $t[0] === T_CONSTANT_ENCAPSED_STRING, 'NONLITERAL_CONFIG');
+    $v = $t[1];
+    if ($v[0] === "'") { return str_replace(array("\\'", '\\\\'), array("'", '\\'), substr($v, 1, -1)); }
+    pp_assert(strpos($v, '$') === false, 'INTERPOLATED_CONFIG'); return stripcslashes(substr($v, 1, -1));
+}
+function pp_config() {
+    $ts = array_values(array_filter(token_get_all(file_get_contents(__DIR__ . '/wp-config.php')), static function ($t) { return !is_array($t) || !in_array($t[0], array(T_WHITESPACE,T_COMMENT,T_DOC_COMMENT), true); }));
+    $c = array();
+    foreach ($ts as $i=>$t) {
+        if (is_array($t) && $t[0] === T_STRING && strtolower($t[1]) === 'define' && ($ts[$i+1] ?? '') === '(') {
+            $key = pp_literal($ts[$i+2]);
+            if (in_array($key,array('DB_HOST','DB_NAME','DB_USER','DB_PASSWORD'),true)) { $c[$key] = pp_literal($ts[$i+4]); }
+        }
+        if (is_array($t) && $t[0] === T_VARIABLE && $t[1] === '$table_prefix') { $c['prefix'] = pp_literal($ts[$i+2]); }
+    }
+    foreach (array('DB_HOST','DB_NAME','DB_USER','DB_PASSWORD','prefix') as $key) { pp_assert(isset($c[$key]), 'CONFIG_MISSING'); }
+    pp_assert(preg_match('/^[A-Za-z0-9_]+$/D',$c['prefix']), 'PREFIX_INVALID'); return $c;
+}
+function pp_db() {
+    $cfg = pp_config(); mysqli_report(MYSQLI_REPORT_OFF); $db = mysqli_init(); $db->options(MYSQLI_OPT_CONNECT_TIMEOUT,8);
+    $host=$cfg['DB_HOST']; $port=3306;
+    if (preg_match('/^([^:]+):([0-9]+)$/',$host,$m)) { $host=$m[1]; $port=(int)$m[2]; }
+    pp_assert(substr($host,0,2)!=='p:', 'PERSISTENT_DB_UNSUPPORTED');
+    pp_assert(@$db->real_connect($host,$cfg['DB_USER'],$cfg['DB_PASSWORD'],$cfg['DB_NAME'],$port), 'DB_CONNECT');
+    pp_assert($db->set_charset('utf8mb4'),'DB_CHARSET'); return array($db,$cfg['prefix']);
+}
+function pp_query($db,$sql) { $r=$db->query($sql); pp_assert($r!==false,'SQL_FAILED'); return $r; }
+function pp_size($dir) {
+    if (!is_dir($dir)) { return 0; }
+    pp_assert(!is_link($dir),'SCOPE_SYMLINK'); $n=0;
+    $it=new RecursiveIteratorIterator(new RecursiveDirectoryIterator($dir,FilesystemIterator::SKIP_DOTS));
+    foreach ($it as $f) { pp_assert(!$f->isLink(),'SCOPE_SYMLINK'); if ($f->isFile()) { $n+=$f->getSize(); } }
+    return $n;
+}
+function pp_media($db,$prefix) {
+    $posts=pp_query($db,"SELECT * FROM {$prefix}posts WHERE post_type='attachment' ORDER BY ID")->fetch_all(MYSQLI_ASSOC);
+    $out=array();
+    foreach ($posts as $post) {
+        $id=(int)$post['ID']; $rows=pp_query($db,"SELECT * FROM {$prefix}postmeta WHERE post_id=$id ORDER BY meta_id")->fetch_all(MYSQLI_ASSOC);
+        $relative=''; $meta=array();
+        foreach ($rows as $row) {
+            if ($row['meta_key']==='_wp_attached_file') { $relative=$row['meta_value']; }
+            if ($row['meta_key']==='_wp_attachment_metadata') { $meta=@unserialize($row['meta_value'],array('allowed_classes'=>false)); }
+        }
+        $files=array();
+        if ($relative && strpos($relative,'..')===false && substr($relative,0,1)!=='/') {
+            $names=array($relative); $parent=dirname($relative);
+            if (is_array($meta)) {
+                foreach (($meta['sizes'] ?? array()) as $size) { if (basename($size['file'] ?? '')===($size['file'] ?? '') && !empty($size['file'])) { $names[]=$parent.'/'.$size['file']; } }
+                if (!empty($meta['original_image']) && basename($meta['original_image'])===$meta['original_image']) { $names[]=$parent.'/'.$meta['original_image']; }
+            }
+            foreach (array_unique($names) as $name) {
+                $path=__DIR__.'/wp-content/uploads/'.$name;
+                $files[$name]=is_file($path) && !is_link($path) ? array(filesize($path),hash_file('sha256',$path)) : 'MISSING_OR_LINK';
+            }
+        }
+        $out[$id]=hash('sha256',json_encode(array($post,$rows,$files)));
+    }
+    return $out;
+}
+function pp_check_old($db,$prefix,$baseline) {
+    $after=pp_media($db,$prefix); foreach ($baseline['media'] as $id=>$hash) { pp_assert(($after[$id] ?? '')===$hash,'EXISTING_MEDIA_CHANGED'); }
+    return array('existing_count'=>count($baseline['media']),'new_count'=>count($after)-count($baseline['media']),
+        'protected'=>array_fill_keys(array(3474,3487,3485,3940,3462),'UNCHANGED'),'old_mutations'=>0);
+}
+function pp_boot() {
+    define('DISABLE_WP_CRON',true); define('WP_USE_THEMES',false);
+    require_once __DIR__.'/wp-load.php';
+    pp_assert(rtrim(home_url(),'/')==='https://therapsycorporel.fr','WORDPRESS_SITE_IDENTITY');
+    $user=get_user_by('login','__ACTOR__'); pp_assert($user && user_can($user,'manage_options') && user_can($user,'upload_files'),'ACTOR_CAPABILITIES');
+    wp_set_current_user($user->ID); require_once ABSPATH.'wp-admin/includes/plugin.php'; require_once ABSPATH.'wp-admin/includes/image.php';
+}
+function pp_state_bytes($db,$prefix) {
+    $tables=pp_query($db,"SELECT TABLE_NAME,DATA_LENGTH,INDEX_LENGTH FROM information_schema.TABLES WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME IN ('{$prefix}seed_pixel_jobs','{$prefix}seed_pixel_items')")->fetch_all(MYSQLI_ASSOC);
+    $options=pp_query($db,"SELECT COALESCE(SUM(OCTET_LENGTH(option_value)),0) FROM {$prefix}options WHERE option_name LIKE 'wp\\_seed\\_pixel\\_%'")->fetch_row()[0];
+    return array('tables'=>$tables,'options_payload_bytes'=>(int)$options,'separate_log_files'=>0);
+}
+function pp_manifest($dir) {
+    $manifest=json_decode(base64_decode('__MANIFEST__'),true); $bytes=0; $count=0;
+    foreach ($manifest as $entry) { $path=$dir.'/'.$entry['file']; pp_assert(is_file($path) && !is_link($path) && hash_file('sha256',$path)===$entry['sha256'],'PLUGIN_READBACK'); $bytes+=filesize($path); $count++; }
+    $actual=0; foreach (new RecursiveIteratorIterator(new RecursiveDirectoryIterator($dir,FilesystemIterator::SKIP_DOTS)) as $f) { pp_assert(!$f->isLink(),'PLUGIN_SYMLINK'); if($f->isFile()){$actual++;} }
+    pp_assert($actual===$count,'UNEXPECTED_PLUGIN_FILES'); return array('files'=>$count,'bytes'=>$bytes);
+}
+function pp_remove_tree($dir) {
+    pp_assert(strpos($dir,dirname(__DIR__).'/.pixel-one-jpeg-__NONCE__/')===0 && !is_link($dir),'REMOVE_SCOPE');
+    if(!is_dir($dir)){return;}
+    $it=new RecursiveIteratorIterator(new RecursiveDirectoryIterator($dir,FilesystemIterator::SKIP_DOTS),RecursiveIteratorIterator::CHILD_FIRST);
+    foreach($it as $f){pp_assert(!$f->isLink(),'REMOVE_SYMLINK'); if($f->isDir()){pp_assert(rmdir($f->getPathname()),'REMOVE_DIR');}else{pp_assert(unlink($f->getPathname()),'REMOVE_FILE');}}
+    pp_assert(rmdir($dir),'REMOVE_ROOT');
+}
+register_shutdown_function(static function(){ $e=error_get_last(); if($e && in_array($e['type'],array(E_ERROR,E_PARSE,E_CORE_ERROR,E_COMPILE_ERROR),true)){http_response_code(500); echo json_encode(array('ok'=>false,'code'=>'PHP_FATAL','file'=>basename($e['file']),'line'=>$e['line']));} });
+$scope=dirname(__DIR__).'/.pixel-one-jpeg-__NONCE__';
+$plugin=__DIR__.'/wp-content/plugins/wp-seed-pixel';
+$guard=__DIR__.'/wp-content/mu-plugins/wp-seed-pixel-one-jpeg-pilot.php';
+$upload=__DIR__.'/wp-content/uploads/pixel-one-jpeg-__NONCE__';
+$input=json_decode(file_get_contents('php://input'),true) ?: array();
+$action=$input['action'] ?? '';
+try {
+    pp_assert($_SERVER['REQUEST_METHOD']==='POST','POST_REQUIRED');
+    pp_assert(realpath(__DIR__)==='/home/therapc/www','WEB_ROOT_IDENTITY');
+    list($db,$prefix)=pp_db();
+    $home=pp_query($db,"SELECT option_value FROM {$prefix}options WHERE option_name='home'")->fetch_row()[0];
+    pp_assert(rtrim($home,'/')==='https://therapsycorporel.fr','SITE_IDENTITY');
+    if ($action==='baseline') {
+        pp_assert(!file_exists($scope) && !is_dir($plugin) && !file_exists($guard),'FRESH_PIXEL_SCOPE_REQUIRED');
+        $tables=pp_query($db,"SELECT TABLE_NAME FROM information_schema.TABLES WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME IN ('{$prefix}seed_pixel_jobs','{$prefix}seed_pixel_items')")->fetch_all(MYSQLI_ASSOC);
+        pp_assert(!$tables,'PREEXISTING_PIXEL_TABLES_REQUIRE_SEPARATE_ROLLBACK');
+        $opts=pp_query($db,"SELECT option_name,option_value,autoload FROM {$prefix}options WHERE option_name='active_plugins' OR option_name LIKE 'wp\\_seed\\_pixel\\_%'")->fetch_all(MYSQLI_ASSOC);
+        $baseline=array('nonce'=>'__NONCE__','created'=>time(),'media'=>pp_media($db,$prefix),'options'=>$opts,'pixel_tables_before'=>array());
+        foreach (array(3474,3487,3485,3940,3462) as $id) { pp_assert(isset($baseline['media'][$id]),'PROTECTED_ATTACHMENT_MISSING'); }
+        pp_assert(mkdir($scope,0700) && fileowner($scope)===posix_geteuid(),'PRIVATE_SCOPE');
+        pp_assert(mkdir($scope.'/recovery',0700),'RECOVERY_SCOPE');
+        pp_assert(stat($scope)['dev']===stat(__DIR__.'/wp-content/uploads')['dev'],'SAME_DEVICE');
+        $payload=json_encode($baseline); pp_assert(file_put_contents($scope.'/baseline.json',$payload)===strlen($payload),'BASELINE_SAVE'); chmod($scope.'/baseline.json',0600);
+        pp_assert(hash_file('sha256',$scope.'/baseline.json')===hash('sha256',$payload),'BASELINE_READBACK');
+        pp_assert(file_put_contents($scope.'/baseline.sha256',hash('sha256',$payload))===64,'BASELINE_MANIFEST'); chmod($scope.'/baseline.sha256',0600);
+        $r=array('attachments'=>count($baseline['media']),'snapshot_sha256'=>hash('sha256',$payload),'snapshot_bytes'=>strlen($payload),'plugin_preexisting'=>false,'tables_preexisting'=>0,'private_mode'=>'0700','same_device'=>true);
+    } else {
+        pp_assert(is_dir($scope) && !is_link($scope) && (fileperms($scope)&0077)===0,'PRIVATE_SCOPE');
+        pp_assert(hash_equals(file_get_contents($scope.'/baseline.sha256'),hash_file('sha256',$scope.'/baseline.json')),'BASELINE_INTEGRITY');
+        $baseline=json_decode(file_get_contents($scope.'/baseline.json'),true); pp_assert(($baseline['nonce']??'')==='__NONCE__','BASELINE_OWNER');
+        if ($action==='install') {
+            pp_assert(!file_exists($plugin) && class_exists('ZipArchive'),'INSTALL_PREREQUISITES');
+            $zip=$scope.'/candidate.zip'; pp_assert(hash_file('sha256',$zip)==='__ZIP_SHA__','ZIP_SHA');
+            $z=new ZipArchive(); pp_assert($z->open($zip)===true,'ZIP_OPEN');
+            for($i=0;$i<$z->numFiles;$i++){ $name=$z->getNameIndex($i); pp_assert(strpos($name,'wp-seed-pixel/')===0 && strpos($name,'..')===false && !preg_match('#(^|/)(tests|reports|screenshots|docs|\.git)/#',$name),'ZIP_SCOPE'); }
+            umask(0022); pp_assert(mkdir($scope.'/stage',0700),'STAGE_DIR'); pp_assert($z->extractTo($scope.'/stage'),'ZIP_EXTRACT'); $z->close();
+            $staged=$scope.'/stage/wp-seed-pixel'; $r=pp_manifest($staged);
+            foreach(new RecursiveIteratorIterator(new RecursiveDirectoryIterator($staged,FilesystemIterator::SKIP_DOTS),RecursiveIteratorIterator::SELF_FIRST) as $f){ pp_assert(chmod($f->getPathname(),$f->isDir()?0755:0644),'STAGE_PERMISSIONS'); }
+            pp_assert(chmod($staged,0755) && rename($staged,$plugin),'ATOMIC_INSTALL');
+            pp_assert(unlink($zip),'TRANSFER_REMOVE'); pp_remove_tree($scope.'/stage'); $r['readback']=pp_manifest($plugin); $r['old_media']=pp_check_old($db,$prefix,$baseline);
+        } elseif ($action==='activate') {
+            pp_manifest($plugin); pp_boot(); $x=activate_plugin('wp-seed-pixel/wp-seed-pixel.php'); pp_assert(!is_wp_error($x),'ACTIVATE_FAILED');
+            $schema=WP_Seed_Pixel_Job_Store::install(); pp_assert(!is_wp_error($schema),'PIXEL_SCHEMA');
+            pp_assert(is_plugin_active('wp-seed-pixel/wp-seed-pixel.php') && !WP_Seed_Pixel_Plugin::settings()['automatic'] && WP_Seed_Pixel_Future_Uploads::settings()['mode']==='off','ACTIVATION_NOT_INERT');
+            $r=array('active'=>true,'legacy_automatic'=>false,'future_mode'=>'off','old_media'=>pp_check_old($db,$prefix,$baseline),'footprint'=>pp_manifest($plugin),'state'=>pp_state_bytes($db,$prefix));
+        } elseif ($action==='configure') {
+            pp_assert(!file_exists($guard),'GUARD_COLLISION');
+            if(!is_dir(dirname($guard))){pp_assert(mkdir(dirname($guard),0755),'MU_DIRECTORY');}
+            pp_assert(!is_link(dirname($guard)),'MU_DIRECTORY_LINK');
+            $bytes=base64_decode('__GUARD__'); pp_assert(file_put_contents($guard,$bytes)===strlen($bytes),'GUARD_WRITE'); chmod($guard,0644);
+            pp_boot(); require_once $guard;
+            $limits=array('provider_quota_bytes'=>1000000000,'operational_ceiling_bytes'=>700000000,'uncertainty_reserve_bytes'=>8000000,'safety_reserve_bytes'=>4000000,'max_usage_age'=>60);
+            $settings=WP_Seed_Pixel_Future_Uploads::configure('process',50000000,$limits); pp_assert(!is_wp_error($settings),'CONFIGURE_FAILED');
+            pp_assert(WP_Seed_Pixel_Future_Uploads::settings()===$settings,'CONFIGURE_READBACK');
+            $r=array('settings'=>$settings,'admission'=>WP_Seed_Pixel_Storage_Budget::status(44000000,$scope),'old_media'=>pp_check_old($db,$prefix,$baseline));
+            pp_assert(($r['admission']['state']??'')==='OK','PILOT_ADMISSION');
+        } elseif (in_array($action,array('native','process','qa','off'),true)) {
+            pp_boot(); $id=(int)($input['id']??0); pp_assert($id>0 && !isset($baseline['media'][$id]),'PILOT_ID_SCOPE');
+            $file=get_attached_file($id); pp_assert(dirname($file)===$upload && basename($file)==='pixel-one-disposable-__NONCE__.jpg','PILOT_PATH_SCOPE');
+            if($action==='native') {
+                pp_assert(hash_file('sha256',$file)==='__IMAGE_SHA__','UPLOAD_SOURCE_SHA');
+                $before=WP_Seed_Pixel_Master_Adapter::snapshot($id); pp_assert(!is_wp_error($before),'NATIVE_GRAPH');
+                pp_assert(file_put_contents($scope.'/native.json',wp_json_encode($before))!==false,'NATIVE_SAVE'); chmod($scope.'/native.json',0600);
+                $r=array('id'=>$id,'before'=>$before,'native_bytes'=>array_sum(array_column($before['files'],'bytes')),'extra_peak'=>WP_Seed_Pixel_Master_Storage::peak($before),
+                    'admission'=>WP_Seed_Pixel_Storage_Budget::status(WP_Seed_Pixel_Master_Storage::peak($before),$scope),'marker'=>get_post_meta($id,WP_Seed_Pixel_Future_Uploads::META,true));
+                pp_assert(($r['admission']['state']??'')==='OK','NATIVE_PEAK_ADMISSION');
+            } elseif ($action==='process') {
+                WP_Seed_Pixel_Future_Uploads::run($id); $v=get_post_meta($id,WP_Seed_Pixel_Future_Uploads::META,true);
+                $job=WP_Seed_Pixel_Job_Store::job((int)($v['job_id']??0)); pp_assert($job,'FUTURE_JOB_MISSING');
+                $r=array('marker'=>$v,'job'=>$job);
+            } elseif ($action==='qa') {
+                $v=get_post_meta($id,WP_Seed_Pixel_Future_Uploads::META,true); $job=(int)($v['job_id']??0); global $wpdb;
+                $items=$wpdb->get_results($wpdb->prepare('SELECT * FROM '.WP_Seed_Pixel_Job_Store::table('items')." WHERE job_id=%d AND kind='operation'",$job),ARRAY_A);
+                pp_assert(count($items)===1 && $items[0]['stage']==='retained','PILOT_NOT_RETAINED'); $item=$items[0];
+                $record=WP_Seed_Pixel_Quarantine::record($item); $view=WP_Seed_Pixel_Quarantine::inspect($item);
+                pp_assert(!is_wp_error($record) && !is_wp_error($view) && $view['rollback_available'],'ROLLBACK_UNAVAILABLE');
+                $after=WP_Seed_Pixel_Master_Adapter::snapshot($id); pp_assert(!is_wp_error($after),'AFTER_NATIVE_INVALID');
+                $old=pp_check_old($db,$prefix,$baseline); pp_assert($old['new_count']===1,'ATTACHMENT_COUNT');
+                $wrong=$wpdb->get_var('SELECT COUNT(*) FROM '.WP_Seed_Pixel_Job_Store::table('items')." WHERE kind='operation' AND attachment_id<>$id"); pp_assert((int)$wrong===0,'OLD_MEDIA_JOB');
+                $duplicate=$wpdb->get_var('SELECT COUNT(*) FROM '.WP_Seed_Pixel_Job_Store::table('jobs')." WHERE kind='replace'"); pp_assert((int)$duplicate===1,'DUPLICATE_JOB');
+                $policy=json_decode(WP_Seed_Pixel_Job_Store::job($job)['policy'],true); pp_assert(empty($policy['intent']['purge']),'PURGE_NOT_DISABLED');
+                $r=array('id'=>$id,'job'=>$job,'item'=>$item,'candidate'=>$record['candidate'],'before_bytes'=>$record['before']['bytes'],'after'=>$after,'quarantine'=>$view,
+                    'recovery_bytes'=>pp_size($scope.'/recovery'),'private_state_bytes'=>pp_size($scope),'plugin'=>pp_manifest($plugin),'db_state'=>pp_state_bytes($db,$prefix),'old_media'=>$old,'purge_authorized'=>false,
+                    'media_url'=>wp_get_attachment_url($id),'srcset'=>wp_get_attachment_image_srcset($id),'metadata'=>wp_get_attachment_metadata($id),'settings'=>WP_Seed_Pixel_Future_Uploads::settings(),
+                    'usage'=>WP_Seed_Pixel_Storage_Budget::status(0,$scope));
+            } else {
+                WP_Seed_Pixel_Future_Uploads::configure('off'); wp_clear_scheduled_hook('wp_seed_pixel_future_job',array($id));
+                $r=array('mode'=>WP_Seed_Pixel_Future_Uploads::settings()['mode'],'old_media'=>pp_check_old($db,$prefix,$baseline));
+            }
+        } elseif ($action==='rollback') {
+            pp_boot();
+            $native=is_file($scope.'/native.json') ? json_decode(file_get_contents($scope.'/native.json'),true) : null;
+            if(!$native){global $wpdb;
+                $relative='pixel-one-jpeg-__NONCE__/pixel-one-disposable-__NONCE__.jpg';
+                $ids=$wpdb->get_col($wpdb->prepare("SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key='_wp_attached_file' AND meta_value=%s",$relative));
+                pp_assert(count($ids)<=1,'ROLLBACK_UPLOAD_AMBIGUOUS');
+                if($ids){$native=array('attachment_id'=>(int)$ids[0]);}
+            }
+            if($native){$id=(int)$native['attachment_id']; pp_assert(!isset($baseline['media'][$id]),'ROLLBACK_ID_SCOPE');
+                $v=get_post_meta($id,WP_Seed_Pixel_Future_Uploads::META,true);
+                if(!empty($v['job_id'])){global $wpdb; $item=$wpdb->get_row($wpdb->prepare('SELECT * FROM '.WP_Seed_Pixel_Job_Store::table('items')." WHERE job_id=%d AND kind='operation'",$v['job_id']),ARRAY_A);
+                    if($item && in_array($item['stage'],array('retained','verified'),true)){ $restored=WP_Seed_Pixel_Jobs::quarantine_action((int)$v['job_id'],'restore'); pp_assert(!is_wp_error($restored),'ROLLBACK_RESTORE'); }}
+                pp_assert(is_file(get_attached_file($id)) && hash_file('sha256',get_attached_file($id))==='__IMAGE_SHA__','ROLLBACK_SOURCE');
+                pp_assert(wp_delete_attachment($id,true),'ROLLBACK_ATTACHMENT');
+            }
+            if(class_exists('WP_Seed_Pixel_Future_Uploads')){WP_Seed_Pixel_Future_Uploads::configure('off');}
+            deactivate_plugins('wp-seed-pixel/wp-seed-pixel.php');
+            foreach($baseline['options'] as $opt){pp_query($db,"UPDATE {$prefix}options SET option_value='".$db->real_escape_string($opt['option_value'])."',autoload='".$db->real_escape_string($opt['autoload'])."' WHERE option_name='".$db->real_escape_string($opt['option_name'])."'"); wp_cache_delete($opt['option_name'],'options');}
+            $names=array_column($baseline['options'],'option_name'); $current=pp_query($db,"SELECT option_name FROM {$prefix}options WHERE option_name LIKE 'wp\\_seed\\_pixel\\_%'")->fetch_all(MYSQLI_ASSOC);
+            foreach($current as $opt){if(!in_array($opt['option_name'],$names,true)){pp_query($db,"DELETE FROM {$prefix}options WHERE option_name='".$db->real_escape_string($opt['option_name'])."'"); wp_cache_delete($opt['option_name'],'options');}}
+            wp_cache_delete('alloptions','options'); wp_cache_delete('notoptions','options');
+            foreach(array('items','jobs') as $s){pp_query($db,"DROP TABLE IF EXISTS {$prefix}seed_pixel_$s");}
+            if(is_file($guard)){pp_assert(unlink($guard),'GUARD_REMOVE');}
+            if(is_dir($plugin)){pp_assert(rename($plugin,$scope.'/removed-plugin'),'ROLLBACK_PLUGIN_MOVE'); pp_remove_tree($scope.'/removed-plugin');}
+            $r=array('rolled_back'=>true,'old_media'=>pp_check_old($db,$prefix,$baseline));
+        } elseif ($action==='clean') {
+            pp_assert(!is_file($scope.'/candidate.zip') && !is_dir($scope.'/stage'),'TEMP_TRANSFER_REMAINS');
+            $r=array('temp_transfer'=>0,'temp_stage'=>0,'intentional_private_bytes'=>pp_size($scope),'old_media'=>pp_check_old($db,$prefix,$baseline));
+        } else { throw new RuntimeException('ACTION_DENIED'); }
+    }
+    $db->close(); echo json_encode(array('ok'=>true,'result'=>$r));
+} catch(Throwable $e) { http_response_code(409); $code=$e instanceof RuntimeException ? $e->getMessage() : get_class($e); if(!preg_match('/^[A-Z0-9_]+$/D',$code)){$code='HARNESS_EXCEPTION';} echo json_encode(array('ok'=>false,'code'=>$code,'file'=>basename($e->getFile()),'line'=>$e->getLine())); }

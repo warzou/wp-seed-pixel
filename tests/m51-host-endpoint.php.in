@@ -1,0 +1,203 @@
+<?php
+// Ephemeral synthetic harness; no WordPress bootstrap or image operations.
+ini_set('display_errors', '0'); ini_set('log_errors', '0');
+header('Cache-Control: no-store, private, max-age=0');
+header('X-Robots-Tag: noindex, nofollow, noarchive');
+header('Content-Type: application/json');
+if (!hash_equals('__TOKEN_HASH__', hash('sha256', $_SERVER['HTTP_X_PIXEL_PREFLIGHT'] ?? '')) || time() > __DEADLINE__) {
+    http_response_code(404); exit;
+}
+define('ABSPATH', __DIR__ . '/'); define('ARRAY_A', 'ARRAY_A');
+class WP_Error {
+    private $code;
+    public function __construct($code) { $this->code = $code; }
+    public function get_error_code() { return $this->code; }
+}
+function is_wp_error($value) { return $value instanceof WP_Error; }
+function wp_json_encode($value) { return json_encode($value); }
+function m51_assert($ok, $name) { if (!$ok) { throw new RuntimeException($name); } }
+function m51_literal($token) {
+    m51_assert(is_array($token) && $token[0] === T_CONSTANT_ENCAPSED_STRING, 'nonliteral_config');
+    $s = $token[1];
+    if ($s[0] === "'") { return str_replace(array("\\'", '\\\\'), array("'", '\\'), substr($s, 1, -1)); }
+    m51_assert(strpos($s, '$') === false, 'interpolated_config');
+    return stripcslashes(substr($s, 1, -1));
+}
+function m51_config() {
+    $tokens = array_values(array_filter(token_get_all(file_get_contents(__DIR__ . '/wp-config.php')), static function ($t) {
+        return !is_array($t) || !in_array($t[0], array(T_WHITESPACE, T_COMMENT, T_DOC_COMMENT), true);
+    }));
+    $cfg = array();
+    foreach ($tokens as $i => $t) {
+        if (is_array($t) && $t[0] === T_STRING && strtolower($t[1]) === 'define' && ($tokens[$i + 1] ?? null) === '(') {
+            $key = m51_literal($tokens[$i + 2]);
+            if (in_array($key, array('DB_HOST', 'DB_NAME', 'DB_USER', 'DB_PASSWORD'), true)) {
+                m51_assert(($tokens[$i + 3] ?? null) === ',', 'config_separator');
+                $cfg[$key] = m51_literal($tokens[$i + 4]);
+            }
+        }
+        if (is_array($t) && $t[0] === T_VARIABLE && $t[1] === '$table_prefix' && ($tokens[$i + 1] ?? null) === '=') {
+            $cfg['prefix'] = m51_literal($tokens[$i + 2]);
+        }
+    }
+    foreach (array('DB_HOST', 'DB_NAME', 'DB_USER', 'DB_PASSWORD', 'prefix') as $key) { m51_assert(isset($cfg[$key]), 'config_missing'); }
+    m51_assert(preg_match('/^[A-Za-z0-9_]+$/', $cfg['prefix']), 'config_prefix');
+    return $cfg;
+}
+class M51_DB_Bridge {
+    public $prefix = 'm51___NONCE___';
+    public $last_error = '';
+    public $db;
+    public function __construct($cfg) {
+        mysqli_report(MYSQLI_REPORT_OFF); $this->db = mysqli_init();
+        $this->db->options(MYSQLI_OPT_CONNECT_TIMEOUT, 8);
+        $host = $cfg['DB_HOST']; $port = 3306;
+        if (preg_match('/^([^:]+):([0-9]+)$/', $host, $m)) { $host = $m[1]; $port = (int) $m[2]; }
+        m51_assert(@$this->db->real_connect($host, $cfg['DB_USER'], $cfg['DB_PASSWORD'], $cfg['DB_NAME'], $port), 'db_connect');
+        m51_assert($this->db->set_charset('utf8mb4'), 'db_charset');
+    }
+    public function prepare($sql, ...$args) {
+        $i = 0;
+        return preg_replace_callback('/%[sd]/', function ($m) use ($args, &$i) {
+            $v = $args[$i++];
+            return $m[0] === '%d' ? (string) (int) $v : "'" . $this->db->real_escape_string((string) $v) . "'";
+        }, $sql);
+    }
+    public function query($sql) {
+        $this->last_error = '';
+        if (!preg_match('/^(SELECT|SHOW)\b/i', $sql) && !in_array($sql, array('START TRANSACTION', 'ROLLBACK', 'COMMIT'), true)) {
+            $table = preg_quote($this->prefix . 'seed_pixel_items', '/');
+            m51_assert(preg_match('/^(CREATE TABLE|DROP TABLE(?: IF EXISTS)?|UPDATE|INSERT INTO) `?' . $table . '`?(?:\s|\(|$)/i', $sql), 'write_scope');
+        }
+        $r = $this->db->query($sql);
+        if ($r === false) { $this->last_error = 'SQL_FAILED'; return false; }
+        return $r === true ? $this->db->affected_rows : $r;
+    }
+    public function get_var($sql) {
+        $r = $this->query($sql); return $r instanceof mysqli_result ? ($r->fetch_row()[0] ?? null) : null;
+    }
+    public function get_row($sql, $output = ARRAY_A) {
+        $r = $this->query($sql); return $r instanceof mysqli_result ? $r->fetch_assoc() : null;
+    }
+}
+function m51_time() { global $wpdb; $time = $wpdb->get_var('SELECT UNIX_TIMESTAMP(NOW(6))'); m51_assert(!$wpdb->last_error && (float) $time > 1000000000, 'database_clock'); return (float) $time; }
+function m51_server_hash() { global $wpdb; $uuid = $wpdb->get_var('SELECT @@server_uuid'); m51_assert(!$wpdb->last_error && is_string($uuid) && preg_match('/^[a-f0-9-]{36}$/i', $uuid), 'server_identity'); return hash('sha256', $uuid); }
+function m51_scope($dir) {
+    m51_assert(realpath(__DIR__) === '__WEB_ROOT__', 'web_root');
+    m51_assert(realpath(dirname($dir)) === '__PRIVATE_PARENT__' && !is_link(dirname($dir)), 'private_parent');
+    m51_assert(function_exists('posix_geteuid') && fileowner(dirname($dir)) === posix_geteuid(), 'private_parent_owner');
+    if (file_exists($dir)) {
+        m51_assert(!is_link($dir) && realpath($dir) === $dir, 'private_directory');
+        m51_assert(file_get_contents($dir . '/owner') === '__NONCE__', 'directory_owner');
+    }
+}
+function m51_table_exists($table) {
+    global $wpdb;
+    $count = $wpdb->get_var($wpdb->prepare('SELECT COUNT(*) FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=%s', $table));
+    m51_assert($count !== null && !$wpdb->last_error, 'table_inventory'); return (int) $count === 1;
+}
+function m51_table_owned($table) {
+    global $wpdb;
+    return $wpdb->get_var($wpdb->prepare('SELECT table_comment FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=%s', $table)) === 'm51:__NONCE__';
+}
+function m51_lock_names() {
+    global $wpdb; $db = $wpdb->get_var('SELECT DATABASE()'); m51_assert($db && !$wpdb->last_error, 'database_identity'); $out = array();
+    foreach (array(0, 90002, 90010, 90020) as $id) { $out[] = substr('seed-pixel:' . hash('sha256', $db . ':' . $wpdb->prefix . ':' . $id), 0, 64); }
+    return $out;
+}
+$dir = '__PRIVATE_PARENT__/.pixel-m51-__NONCE__';
+$reply = array();
+try {
+    $action = $_GET['action'] ?? '';
+    $cfg = m51_config(); $wpdb = new M51_DB_Bridge($cfg);
+    $home = $wpdb->get_var("SELECT option_value FROM `" . $cfg['prefix'] . "options` WHERE option_name='home'");
+    if (!in_array($action, array('cleanup', 'verify'), true)) { m51_assert(parse_url($home, PHP_URL_HOST) === '__SITE_HOST__', 'site_identity'); }
+    unset($cfg);
+    eval(base64_decode('__AUTHORITY_SOURCE__'));
+    eval(base64_decode('__STORE_SOURCE__'));
+    $table = WP_Seed_Pixel_Job_Store::table('items'); m51_scope($dir);
+    if ($action === 'init') {
+        m51_assert(!file_exists($dir) && !m51_table_exists($table), 'fresh_scope');
+        m51_assert(mkdir($dir, 0700), 'mkdir'); $made_table = false;
+        try {
+            m51_assert(file_put_contents($dir . '/owner', '__NONCE__', LOCK_EX) === 32, 'owner_marker'); chmod($dir . '/owner', 0600);
+            foreach (array(2, 10) as $wave) { $f = fopen($dir . '/wave' . $wave . '.lock', 'x'); m51_assert($f !== false, 'lock_file'); fclose($f); chmod($dir . '/wave' . $wave . '.lock', 0600); }
+            m51_assert($wpdb->query("CREATE TABLE $table (id bigint unsigned NOT NULL PRIMARY KEY, job_id bigint unsigned NOT NULL, attachment_id bigint unsigned NOT NULL, action varchar(20) NOT NULL, stage varchar(20) NOT NULL, revision bigint unsigned NOT NULL DEFAULT 0, lease varchar(64) NOT NULL, lease_until bigint unsigned NOT NULL, attempts int unsigned NOT NULL DEFAULT 0, error_code varchar(40) NOT NULL DEFAULT '', error_class varchar(20) NOT NULL DEFAULT '', journal longtext, receipt longtext, updated bigint unsigned NOT NULL DEFAULT 0) ENGINE=InnoDB COMMENT='m51:__NONCE__'") !== false, 'table_create');
+            $made_table = true; m51_assert(m51_table_owned($table), 'table_owner');
+        } catch (Throwable $e) {
+            if ($made_table) { $wpdb->query("DROP TABLE $table"); }
+            foreach (array('wave2.lock', 'wave10.lock', 'owner') as $name) { if (is_file($dir . '/' . $name)) { unlink($dir . '/' . $name); } }
+            rmdir($dir); throw $e;
+        }
+        $reply = array('php' => PHP_VERSION, 'database' => $wpdb->get_var('SELECT VERSION()'), 'vendor' => $wpdb->get_var('SELECT @@version_comment'),
+            'db_server_hash' => m51_server_hash(), 'server_time' => microtime(true),
+            'private_outside_webroot' => true, 'private_mode' => sprintf('%04o', fileperms($dir) & 0777),
+            'same_device' => stat($dir)['dev'] === stat(__DIR__)['dev'], 'authority_sha256' => '__AUTHORITY_HASH__', 'store_sha256' => '__STORE_HASH__');
+    } elseif ($action === 'worker') {
+        m51_assert(is_dir($dir) && m51_table_owned($table), 'initialized');
+        $wave = (int) ($_GET['wave'] ?? 0); $slot = (int) ($_GET['slot'] ?? -1); $at = (float) ($_GET['at'] ?? 0);
+        m51_assert(in_array($wave, array(2, 10), true) && $slot >= 0 && $slot < $wave && abs($at - microtime(true)) < 20, 'worker_bounds');
+        $once = fopen($dir . '/slot' . $wave . '-' . $slot, 'x'); m51_assert($once !== false, 'worker_once'); fclose($once); chmod($dir . '/slot' . $wave . '-' . $slot, 0600);
+        while (microtime(true) < $at) { usleep(10000); }
+        $f = fopen($dir . '/wave' . $wave . '.lock', 'r+'); m51_assert($f !== false, 'file_open');
+        $flock = flock($f, LOCK_EX | LOCK_NB, $would_block);
+        $start = m51_time(); $owner = WP_Seed_Pixel_Authority::acquire(90000 + $wave); $won = !is_wp_error($owner); $st = fstat($f);
+        $reply = array('slot' => $slot, 'flock' => $flock, 'flock_would_block' => (int) $would_block, 'owned' => $won,
+            'claim_code' => $won ? 'OWNED' : $owner->get_error_code(), 'at' => $start, 'claim_at' => m51_time(),
+            'db_server_hash' => m51_server_hash(),
+            'file_identity_hash' => hash('sha256', $st['dev'] . ':' . $st['ino']));
+        try {
+            if ($won) { usleep(8000000); m51_assert(WP_Seed_Pixel_Authority::valid(90000 + $wave), 'live_owner'); }
+            $reply['end'] = m51_time();
+        } finally {
+            if ($won) { $reply['released'] = WP_Seed_Pixel_Authority::release($owner); }
+            if ($flock) { flock($f, LOCK_UN); } fclose($f);
+        }
+    } elseif ($action === 'suite') {
+        m51_assert(is_dir($dir) && m51_table_owned($table), 'initialized');
+        $once = fopen($dir . '/suite.once', 'x'); m51_assert($once !== false, 'suite_once'); fclose($once); chmod($dir . '/suite.once', 0600);
+        $site_owner = WP_Seed_Pixel_Authority::acquire(0); $owner = WP_Seed_Pixel_Authority::acquire(90020);
+        m51_assert(!is_wp_error($site_owner) && !is_wp_error($owner), 'suite_claim'); $checks = array();
+        try {
+            $clone = clone $owner; $checks['foreign_handle_release_denied'] = !WP_Seed_Pixel_Authority::release($clone) && WP_Seed_Pixel_Authority::valid(90020);
+            $token = bin2hex(random_bytes(24));
+            m51_assert($wpdb->query($wpdb->prepare("INSERT INTO $table (id,job_id,attachment_id,action,stage,lease,lease_until) VALUES (1,1,90020,'replace','queued',%s,%d)", $token, time() + 60)) === 1, 'insert_fixture');
+            $before = WP_Seed_Pixel_Job_Store::item(1);
+            $checks['wrong_token_denied'] = is_wp_error(WP_Seed_Pixel_Job_Store::transition($before, 'wrong', 'preparing')) && WP_Seed_Pixel_Job_Store::item(1) === $before;
+            m51_assert($wpdb->query('START TRANSACTION') !== false, 'transaction_start'); $changed = WP_Seed_Pixel_Job_Store::transition($before, $token, 'preparing'); m51_assert($wpdb->query('ROLLBACK') !== false, 'transaction_rollback');
+            $checks['rollback_exact_and_owner_live'] = !is_wp_error($changed) && WP_Seed_Pixel_Job_Store::item(1) === $before && WP_Seed_Pixel_Authority::valid(90020);
+            $changed = WP_Seed_Pixel_Job_Store::transition($before, $token, 'preparing'); $checks['cas_transition_exact'] = !is_wp_error($changed) && (int) $changed['revision'] === 1;
+            $checks['stale_revision_denied'] = is_wp_error(WP_Seed_Pixel_Job_Store::transition($before, $token, 'preparing'));
+            $wpdb->query("UPDATE $table SET lease_until=0 WHERE id=1"); $expired = WP_Seed_Pixel_Job_Store::item(1);
+            $checks['expired_lease_denied'] = is_wp_error(WP_Seed_Pixel_Job_Store::transition($expired, $token, 'ready'));
+            $next_token = bin2hex(random_bytes(24));
+            $wpdb->query($wpdb->prepare("UPDATE $table SET lease=%s,lease_until=%d,revision=revision+1 WHERE id=1", $next_token, time() + 60)); $next = WP_Seed_Pixel_Job_Store::item(1);
+            $checks['aba_token_denied'] = is_wp_error(WP_Seed_Pixel_Job_Store::transition($next, $token, 'ready'));
+            $checks['new_token_allowed'] = !is_wp_error(WP_Seed_Pixel_Job_Store::transition($next, $next_token, 'ready'));
+            m51_assert($wpdb->query('START TRANSACTION') !== false && $wpdb->query('COMMIT') !== false, 'transaction_commit'); $checks['commit_does_not_release_owner'] = WP_Seed_Pixel_Authority::valid(90020);
+        } finally { $checks['release_exact'] = WP_Seed_Pixel_Authority::release($owner); WP_Seed_Pixel_Authority::release($site_owner); }
+        $next_owner = WP_Seed_Pixel_Authority::acquire(90020); m51_assert(!is_wp_error($next_owner), 'post_release_claim');
+        $checks['stale_handle_cannot_release_new_owner'] = !WP_Seed_Pixel_Authority::release($owner) && WP_Seed_Pixel_Authority::valid(90020);
+        $checks['new_owner_release'] = WP_Seed_Pixel_Authority::release($next_owner);
+        m51_assert(!in_array(false, $checks, true), 'suite_checks'); $reply = array('checks' => $checks);
+    } elseif ($action === 'cleanup' || $action === 'verify') {
+        if ($action === 'cleanup') {
+            foreach (m51_lock_names() as $name) { m51_assert($wpdb->get_var($wpdb->prepare('SELECT IS_USED_LOCK(%s)', $name)) === null && !$wpdb->last_error, 'live_worker'); }
+            if (m51_table_exists($table)) { m51_assert(m51_table_owned($table), 'table_owner'); m51_assert($wpdb->query("DROP TABLE $table") !== false, 'table_drop'); }
+            if (is_dir($dir)) {
+                foreach (scandir($dir) as $entry) {
+                    if (in_array($entry, array('.', '..', 'owner'), true)) { continue; }
+                    m51_assert(preg_match('/^(wave(?:2|10)\.lock|slot(?:2|10)-[0-9]|suite\.once)$/', $entry) && !is_link($dir . '/' . $entry), 'file_owner');
+                    m51_assert(unlink($dir . '/' . $entry), 'file_delete');
+                }
+                m51_assert(unlink($dir . '/owner') && rmdir($dir), 'directory_delete');
+            }
+        }
+        clearstatcache(); $locks = 0;
+        foreach (m51_lock_names() as $name) { if ($wpdb->get_var($wpdb->prepare('SELECT IS_USED_LOCK(%s)', $name)) !== null) { $locks++; } m51_assert(!$wpdb->last_error, 'lock_inventory'); }
+        $reply = array('temporary_tables' => (int) m51_table_exists($table), 'temporary_directories' => (int) file_exists($dir), 'live_test_locks' => $locks);
+    } else { throw new RuntimeException('action'); }
+    echo json_encode(array('ok' => true, 'result' => $reply));
+} catch (Throwable $e) {
+    http_response_code(500); echo json_encode(array('ok' => false, 'code' => 'SYNTHETIC_GATE_FAILED'));
+} finally { if (isset($wpdb) && $wpdb->db) { $wpdb->db->close(); } }

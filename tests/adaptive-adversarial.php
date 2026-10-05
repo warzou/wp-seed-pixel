@@ -9,7 +9,7 @@ foreach (array('small.jpg', 'rgb.jpg') as $fixture) {
     $first = wp_seed_pixel_optimize($id, 'balanced');
     if (is_wp_error($first)) { throw new RuntimeException('Test setup failed.'); }
     $meta = wp_get_attachment_metadata($id, true);
-    $command = array(PHP_BINARY, '-d', 'extension_dir=' . ini_get('extension_dir'), '-d', 'extension=gd', '-d', 'extension=exif', '-d', 'extension=mbstring', '-d', 'extension=pdo_sqlite', '-d', 'extension=mysqli', '-d', 'memory_limit=512M', __DIR__ . '/worker.php', (string) $id);
+    $command = pixel_worker_command($id);
     foreach (array('crash' => 99, 'crash-after-native' => 98) as $mode => $expected) {
         $pipes = array();
         $p = proc_open(array_merge($command, array($mode, 'balanced')), array(1 => array('pipe','w'), 2 => array('pipe','w')), $pipes);
@@ -45,6 +45,7 @@ foreach (array('small.jpg', 'rgb.jpg') as $fixture) {
     $check($fixture . ' cleanup removes native reuse keys only', is_file($master) && !isset(wp_get_attachment_metadata($id)['sizes']['seed-pixel-view']));
     wp_delete_attachment($id, true);
 }
+wp_mkdir_p(dirname(__DIR__) . '/reports/adaptive/data');
 file_put_contents(dirname(__DIR__) . '/reports/adaptive/data/adaptive-adversarial-tests.json', wp_json_encode($tests, JSON_PRETTY_PRINT));
 echo wp_json_encode(array_count_values(array_column($tests, 'status')), JSON_PRETTY_PRINT);
 exit(in_array('FAIL', array_column($tests, 'status'), true) ? 1 : 0);

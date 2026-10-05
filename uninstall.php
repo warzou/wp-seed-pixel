@@ -1,6 +1,13 @@
 <?php
 defined('WP_UNINSTALL_PLUGIN') || exit;
 $settings = (array) get_option('wp_seed_pixel_settings', array());
+// Recovery is independent of derivative cleanup, including after plugin removal.
+global $wpdb;
+$pending_master = $wpdb->get_var("SELECT meta_id FROM {$wpdb->postmeta} WHERE meta_key='_seed_pixel_master_state' LIMIT 1");
+if ($pending_master) { return; }
+$jobs_table = $wpdb->prefix . 'seed_pixel_jobs';
+$jobs_exist = $wpdb->get_var($wpdb->prepare('SHOW TABLES LIKE %s', $wpdb->esc_like($jobs_table)));
+if ($jobs_exist && $wpdb->get_var("SELECT id FROM $jobs_table WHERE kind IN ('replace','retire') LIMIT 1")) { return; }
 if (empty($settings['cleanup_on_uninstall']) || is_multisite()) {
     return;
 }

@@ -1,0 +1,24 @@
+<?php
+require __DIR__ . '/m4-runtime.php';
+require_once ABSPATH . 'wp-admin/includes/image-edit.php';
+$checks = array();
+list($id, $job) = m4_original(); WP_Seed_Pixel_Jobs::step($job);
+$view = WP_Seed_Pixel_Quarantine::inspect(m4_item($job));
+WP_Seed_Pixel_Jobs::quarantine_action($job, 'purge', m4_approval($view));
+$master = get_attached_file($id); $sha = hash_file('sha256', $master); $meta = wp_get_attachment_metadata($id);
+$_REQUEST = array('do' => 'scale', 'target' => 'all', 'fwidth' => $meta['width'] / 2, 'fheight' => $meta['height'] / 2);
+$save = wp_save_image($id); $_REQUEST = array();
+m4_check(!isset($save->error) && get_attached_file($id) !== $master, 'WordPress actual image edit after original purge');
+m4_check(is_file(get_attached_file($id)) && is_array(get_post_meta($id, '_wp_attachment_backup_sizes', true)), 'WordPress own edit backup preserved');
+$restore = wp_restore_image($id);
+m4_check(!isset($restore->error) && hash_file('sha256', get_attached_file($id)) === $sha, 'WordPress own edit restore exact operational master');
+m4_check(!isset(wp_get_attachment_metadata($id)['original_image']), 'WordPress restore never resurrects purged original pointer');
+m4_check(is_wp_error(WP_Seed_Pixel_Jobs::quarantine_action($job, 'restore')), 'native edit restore does not imply Pixel restore after purge');
+list($id, $job, $view) = m4_replaced(); $item = m4_item($job); $dir = WP_Seed_Pixel_Master_Storage::directory($item);
+$meta = wp_get_attachment_metadata($id); $_REQUEST = array('do' => 'scale', 'target' => 'all', 'fwidth' => $meta['width'] / 2, 'fheight' => $meta['height'] / 2);
+$save = wp_save_image($id); $_REQUEST = array(); $sha = hash_file('sha256', get_attached_file($id));
+m4_check(!isset($save->error), 'native subsequent edit while quarantine retained');
+m4_check(is_wp_error(WP_Seed_Pixel_Jobs::quarantine_action($job, 'restore')) && hash_file('sha256', get_attached_file($id)) === $sha && file_exists($dir . '/recovery.jpg'), 'Pixel refuses overwrite of new WordPress edited generation');
+$summary = WP_Seed_Pixel_Quarantine::summary();
+m4_check($summary['entries'] <= 20 && $summary['quarantine_bytes'] > 0 && $summary['needs_review'] > 0, 'bounded read-only dashboard truthful review and retained bytes');
+m4_report('native');

@@ -43,6 +43,8 @@ adaptive_check('Non-finite metrics rejected', !WP_Seed_Pixel_Adaptive::accepts(a
 adaptive_check('VIEW below quality floor rejected', !WP_Seed_Pixel_Adaptive::accepts(array('ssim' => 0.90, 'psnr' => 40.0)));
 adaptive_check('THUMB uses explicit lighter intent', WP_Seed_Pixel_Adaptive::accepts(array('ssim' => 0.97, 'psnr' => 32.0), true));
 wp_delete_attachment($id, true);
+wp_mkdir_p(dirname(__DIR__) . '/reports/adaptive/data');
 file_put_contents(dirname(__DIR__) . '/reports/adaptive/data/adaptive-tests.json', wp_json_encode($results, JSON_PRETTY_PRINT));
+foreach ($results as $row) { if ($row['status'] === 'FAIL') { echo $row['test'] . " FAIL\n"; } }
 echo wp_json_encode(array_count_values(array_column($results, 'status')), JSON_PRETTY_PRINT);
 exit(in_array('FAIL', array_column($results, 'status'), true) ? 1 : 0);

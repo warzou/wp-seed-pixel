@@ -9,6 +9,13 @@ require_once ABSPATH . 'wp-admin/includes/plugin.php';
 add_filter('pre_wp_mail', '__return_false');
 wp_set_current_user(1);
 
+function pixel_worker_command($id) {
+    if (getenv('PIXEL_M3_ROOT')) {
+        return array('/bin/bash', '/mnt/c/Dev/git/wp-seed-pixel/tests/m3-linux-php.sh', __DIR__ . '/worker.php', (string) $id);
+    }
+    return array(PHP_BINARY, '-d', 'extension_dir=' . ini_get('extension_dir'), '-d', 'extension=gd', '-d', 'extension=exif', '-d', 'extension=mbstring', '-d', 'extension=pdo_sqlite', '-d', 'extension=mysqli', '-d', 'memory_limit=512M', __DIR__ . '/worker.php', (string) $id);
+}
+
 function pixel_fixture($name, $native = true) {
     $source = dirname(__DIR__) . '/.runtime/fixtures/' . $name;
     $type = wp_check_filetype($name);

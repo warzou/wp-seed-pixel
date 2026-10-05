@@ -79,5 +79,8 @@ JPEG RGB scope and memory/disk/ownership checks remain unchanged. Random RGB
 noise can make JPEG quality gates impossible; safe source reuse is intentional
 and can exceed 1 MB. Targets are soft, not destructive hard caps. Sampling can
 miss localized artifacts: inspect full-resolution human examples before use.
-No claim of broad production or 10,000-photo certification, ICC conversion,
+0.3.1 adds bounded RGB ICC conversion through an Imagick/LittleCMS lossless
+sRGB reference, with reuse disabled and metrics in that managed space. See
+[color management](COLOR-MANAGEMENT.md); GD-only ICC inputs still fail closed.
+No claim of broad production or 10,000-photo certification,
 multisite, Linux permissions, MySQL or commercial-optimizer coexistence.
