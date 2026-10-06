@@ -1,166 +1,95 @@
-# WP Seed Pixel 0.4.0 (private V1 candidate)
+# WP Seed Pixel 0.4.0
 
-Accepted storage milestones share one coordinator: analyze, explicitly plan
-selected media, verify native JPEG/PNG replacement, retain a private original,
-restore exactly, or explicitly delete that version permanently. Future uploads
-are OFF by default and only enroll after administrator opt-in and a fresh cutoff.
-0.3.x derivative APIs and generation identity remain compatible.
+Local WordPress image optimization and storage management. Images never leave
+the host: no external image service, telemetry, account or AI runtime.
+The release candidate remains private until the owner publishes it.
 
-Read [V1 user guide](docs/V1-USER-GUIDE.md), [lossless PNG](docs/PNG-LOSSLESS.md),
-[host hardening](docs/STORAGE-HOST-HARDENING.md) and the compatibility limits.
-This is not a public release or permission for another consumer deployment.
-Earlier milestone descriptions below are historical.
+## Install and Update
 
-M5.1 development candidate: database-session ownership replaces authoritative
-flock; optional byte-valued operational ceiling and explicitly opted-in future
-JPEG jobs reuse M2-M5. See [host hardening](docs/STORAGE-HOST-HARDENING.md).
-This does not change the public 0.3.2 version or enable processing on upgrade.
+Back up the database, uploads and installed plugin before deployment. Install
+the approved runtime ZIP through Plugins > Add New > Upload Plugin. Confirm
+replacement when updating; do not uninstall to update. Activation and upgrade
+do not process existing media or enable a new format.
 
-Local, non-destructive JPEG optimization for the WordPress Media Library.
-No cloud upload, service quota, AI runtime or telemetry. The original is kept.
-Use automatic uploads, individual actions or selected bulk processing, with a
-bounded local Adaptive strategy. No extra runtime package or second library.
+An owner-approved HTTPS distribution endpoint enables the native Plugins
+update row. There is no default endpoint. The updater validates version,
+compatibility, archive identity and SHA-256 before WordPress replaces runtime
+files. Network or integrity failure refuses the update. Manual approved ZIP
+installation is the fallback. See [private updates](docs/PRIVATE-UPDATES.md).
 
-**0.3.0 is a Tech Preview.** Owner acceptance passed; this is not a universal
-production certification. Review [tested compatibility](docs/COMPATIBILITY.md)
-and back up the site before a pilot.
+## Ordinary Administration
 
-## Install
+Open Media > WP Seed Pixel. One page contains:
+- Automatic optimization: independent JPEG and lossless PNG choices.
+- Existing images: the native media selector and explicit selected-count action.
+- Recent activity: durable status and progress, with pause/resume where relevant.
 
-The 0.3.1 ICC fix is an unpublished local candidate. Install only an explicitly
-certified artifact after a targeted backup; it is not a new public release yet.
-Download that installable asset from the GitHub release, not GitHub's automatic
-Source code ZIP or tar.gz archives.
-Activate on one site. Open Media > WP Seed Pixel. Automatic processing defaults
-to OFF. Back up the database and uploads before a library-wide batch.
+Saving automatic settings does not process old attachments. Future uploads are
+protected by a fresh enrollment baseline. Existing settings and JPEG-only
+choices remain unchanged on upgrade. The selected workflow is limited to the
+chosen attachments (maximum 500), not the whole library. Whole-library
+processing and storage diagnostics are advanced, explicit actions.
 
-Choose an image in Media > Library and use **Optimize with WP Seed Pixel**.
-Native attachment details in list and grid show status, benefit and optional
-technical details. **Regenerate web versions** uses the preserved original.
-For several images, use the list view bulk action, then **Resume** on the Pixel
-page. A selection is capped at 1000 items; larger libraries can use several
-selections or the separate explicitly confirmed whole-library action.
-A batch processes one attachment per authenticated POST and can be paused,
-resumed after reload, and retried twice per failed attachment. Keep the admin
-page open to advance it; this is not a background worker daemon.
-Image buttons and batch progress require JavaScript. Settings and the diagnostic
-single-image fallback work without it. Numeric IDs are confined to developer
-tools, not normal use. Frontend rendering does not require JavaScript.
+In the Media Library, choose Optimize this image. An unprocessed image shows
+format, dimensions and bytes. Successful native replacement shows Original,
+Optimized version and active-image saving. An original retained for restoration
+still occupies space: active savings are not permanent disk reclaim.
 
-## Presets
+Restore original verifies the current generation and restores its exact bytes.
+Permanently delete original requires separate, irreversible, per-generation
+confirmation. Recovery remains until that explicit action; no automatic expiry.
+For a verified pre-swap No useful saving outcome, there is nothing to restore.
+Pixel automatically removes unnecessary private escrow/candidate resources.
+The active image and native derivatives remain unchanged. Small bounded
+checksummed audit metadata remains and is accounted for.
 
-| Preset | Derivatives | JPEG quality |
-| --- | --- | --- |
-| balanced (new installation default) | THUMB 640; VIEW target 1920 | local quality/byte selection, source reuse |
-| web (legacy/API default) | maximum 1600 x 1600, proportional | 82 |
-| participant_album (example) | THUMB maximum 640; VIEW maximum 2048 | 80; 90 |
+Technical details are collapsed. English and French are supported. Native
+buttons, focus and reflow are tested; this is not a blanket accessibility
+certification. Frontend media do not require Pixel JavaScript.
 
-No cropping, enlargement, sharpening or aesthetic alteration. Preset dimensions
-are upper bounds, not promised square outputs. Both derivatives come from the
-master independently, never from a previous compressed derivative.
+## Image and Host Safety
 
-**Smaller transfer is not guaranteed.** A Q90 re-encode can be larger than an
-already-compressed source. The result reports negative transfer savings honestly.
-Disk use can increase because the master and native WordPress sizes remain.
+JPEG remains JPEG; PNG remains PNG. No ordinary WebP/AVIF conversion.
+- JPEG candidates use bounded local quality and byte gates, no enlargement,
+  arbitrary crop or aesthetic editing. The metric is not human quality approval.
+- Lossless PNG supports bounded 8-bit non-interlaced inputs, up to 4 megapixels
+  and 16 MiB. Decoded pixels, depth and color semantics are verified. Animation,
+  unsupported chunks/profiles/depth and unsafe inputs fail closed.
+- Legacy derivative APIs, Balanced/fixed profiles and their generation identity
+  remain compatible. See [adaptive strategy](docs/ADAPTIVE-ALGORITHM.md).
+- Native storage replacement needs supported single-site Linux storage,
+  InnoDB and database-session advisory-lock authority, verified rename/fsync,
+  ownership, generation and physical-space guards. File flock is not authority.
+- Pixel prepares an owned private recovery directory outside verified public
+  roots where safe. No mandatory FTP path or manual MiB budget is needed.
+  Explicit host configuration wins; uncertain roots, links, shared paths,
+  identity changes, third-party changes or incomplete inventories refuse work.
+- The optional advanced operational ceiling requires complete trusted live
+  usage. An unset ceiling does not disable otherwise safe operation. Unknown
+  provider quota remains unknown; physical/per-operation peak gates still apply.
+- Required recovery is never cleaned as pre-swap escrow. Ambiguous crash states
+  retain bytes for review. Terminal pre-swap reconciliation is resumable under
+  the same DB authority and lease/CAS fences, without encoding.
+- Offloaded storage and multisite/network activation are not certified.
+  Coexistence with other optimizers requires a site-specific audit.
 
-The recommended `balanced` intent tries at most three independent qualities
-per output, checks sampled local structure and RGB error, and retains a safe
-MASTER when encoding has no material gain. It never exposes an original carrying
-private metadata. A reused resource has `kind=master`, `quality=null` and adds
-zero disk bytes; it is not a duplicate file. A source retained after quality
-rejection can exceed the dimension/soft weight target. See [algorithm](docs/ADAPTIVE-ALGORITHM.md).
-Existing settings and fixed/custom profiles stay unchanged on upgrade. Select
-Balanced explicitly to regenerate existing images; there is no upgrade-wide batch.
-The quality metric is a bounded heuristic, not a human visual certification.
+## Deactivation and Uninstall
 
-## Safety and compatibility
+Deactivation stops automation; optimized files remain native WordPress media.
+Recovery and job state remain. Uninstall never silently deletes recovery
+originals. Optional legacy derivative cleanup is restricted to proven-owned
+outputs and does not override recovery safety. Reinstall the approved runtime
+to use recovery actions. A host backup remains necessary for disaster recovery.
 
-- WordPress `WP_Image_Editor` selects its existing GD or Imagick backend.
-- Ordinary, unprofiled three-channel RGB JPEGs are supported. EXIF rotation and
-  mirrored orientations require PHP EXIF. Sensitive metadata is removed from
-  outputs; the fixed technical GD/JPEG encoder comment can remain.
-- Validated RGB ICC JPEGs require Imagick with LittleCMS. The embedded source
-  profile is transformed to bundled standard sRGB in a lossless, oriented working
-  PNG before resizing or quality scoring. Only after conversion are private
-  metadata removed. The original JPEG is never modified or reused as an output.
-- GD-only ICC, invalid/incomplete profiles, unprofiled non-sRGB declarations,
-  CMYK and grayscale fail closed. sRGB conversion may clip out-of-gamut colors;
-  this does not promise preservation of the original wide gamut on every display.
-- PNG, GIF (including animation), WebP, AVIF and SVG are skipped, not overwritten.
-- Source files must be regular local files inside this site's uploads directory,
-  without symlink components. Remote/offloaded/private external storage is not
-  supported by this release; this plugin is not a private-album access-control system.
-- Preflight limits: 40 megapixels, 64 MB source, bounded JPEG header, estimated
-  decode memory and staging disk budget. Host resource failures remain possible.
-- File locks and metadata compare-and-swap prevent two Pixel jobs and concurrent
-  metadata overwrites. Foreign metadata filters cause a safe refusal.
-- Other optimizers are neither disabled nor rewritten. Coexistence with each
-  commercial optimizer requires a separate real-site validation.
-- PHP minimum 8.1, WordPress minimum 6.6 are declared API floors, not an assertion
-  that every combination was tested. See [compatibility](docs/COMPATIBILITY.md).
-- Network activation is refused. Per-site multisite behavior is not certified.
+## Documentation and Development
 
-## Deactivation and removal
+[Administrator guide](docs/V1-USER-GUIDE.md),
+[PNG limits](docs/PNG-LOSSLESS.md),
+[host hardening](docs/STORAGE-HOST-HARDENING.md),
+[compatibility](docs/COMPATIBILITY.md).
 
-Deactivation stops automation and pauses a running batch; masters and outputs
-remain. Default uninstall retains generated files and settings. Optional cleanup
-removes only proven-owned, hash-matching, unreferenced derivatives and plugin
-metadata. Shared or changed files are retained conservatively. WordPress itself
-deletes its original when the user explicitly deletes an attachment.
-
-Interrupted output publication leaves a journal. The next job for that attachment
-recovers it under the lock. A crash does not replace the previous valid generation.
-Previously published URLs remain stored, including after regeneration, to avoid
-breaking static/cached HTML. A maximum of twenty previous generations is kept;
-further regeneration stops until explicitly reviewed/pruned with the PHP API.
-Disk growth includes these retained generations. Never prune before reviewing
-external and cached uses; database reference checks cannot see a CDN cache.
-Locks are persistent empty synchronization files, not active processes. Do not
-manually remove locks while workers may be running.
-
-## Documentation
-
-- [Architecture](docs/ARCHITECTURE.md)
-- [PHP API and hooks](docs/API.md)
-- [Development and tests](docs/DEVELOPER.md)
-- [Roadmap](docs/ROADMAP.md)
-- [External album integration example](docs/INTEGRATION-EXAMPLE-ALBUMS.md)
-- [Compatibility](docs/COMPATIBILITY.md)
-- [Contributing](CONTRIBUTING.md)
-- [Security](SECURITY.md)
-
-Image-engine visual review passed for 0.2.0; 0.3.1 adds bounded RGB ICC handling.
-The 0.3.0 admin UX passed owner acceptance, not a production certification.
-Imagick/LittleCMS ICC checks now pass locally on Windows; Linux,
-MySQL/MariaDB and multisite remain uncertified. English source strings
-are translatable; a French catalogue is not shipped yet.
-
-## Administration screenshots
-
-These are real local WordPress screens with generated synthetic media only.
-
-### Settings
-![Settings](screenshots/settings.png)
-
-### Media Library
-![Native Media Library integration](screenshots/media-library.png)
-
-### Attachment details
-![Per-image results and regeneration](screenshots/attachment-details.png)
-
-### Selected bulk result
-![Bulk processing with distinct skipped and failed items](screenshots/bulk.png)
-
-## License
-
-GPL-2.0-or-later; see [LICENSE](LICENSE). No third-party code, font, image
-corpus or licensed WordPress theme is bundled. Synthetic fixtures and public
-screenshots are original project test material, distributed under the same license.
-
-## Private V1 packaging
-
-The 0.4.0 candidate is not a public release. Its runtime-only build is
-`python -B tests/v1-package.py`, gated on two identical frozen clean-cycle
-manifests. It writes only into ignored `reports/storage-v1/`, excludes docs,
-screenshots, tests and lab data, and never replaces the public 0.3.2 ZIP.
-Do not use the historical general release packager for this candidate.
+Runtime packaging uses tools/private-release.py into a fresh ignored directory.
+It excludes tests, tools, labs, screenshots, reports, credentials and media.
+No distribution endpoint, public publication or consumer deployment is implied
+by a local build. M1-M6 describe developer certification only, not normal admin
+steps. PHP >= 8.1 and WordPress >= 6.6 are API floors, not universal host claims.

@@ -5,6 +5,7 @@ final class WP_Seed_Pixel_Admin {
     public static function boot() {
         WP_Seed_Pixel_Media::boot();
         add_action('admin_menu', array(__CLASS__, 'menu'));
+        add_action('admin_menu', array(__CLASS__, 'consolidate_menu'), 99);
         add_action('admin_enqueue_scripts', array(__CLASS__, 'assets'));
         add_action('admin_post_wp_seed_pixel_settings', array(__CLASS__, 'save'));
         add_action('admin_post_wp_seed_pixel_manual', array(__CLASS__, 'manual'));
@@ -18,21 +19,53 @@ final class WP_Seed_Pixel_Admin {
         add_media_page('WP Seed Pixel', 'WP Seed Pixel', 'manage_options', 'wp-seed-pixel', array(__CLASS__, 'page'));
     }
 
+    public static function consolidate_menu() {
+        foreach (array('wp-seed-pixel-storage', 'wp-seed-pixel-host', 'wp-seed-pixel-jobs', 'wp-seed-pixel-bulk', 'wp-seed-pixel-quarantine') as $slug) {
+            remove_submenu_page('upload.php', $slug);
+        }
+    }
+
+    public static function save_settings(array $input) {
+        if (!current_user_can('manage_options')) { return new WP_Error('PERMISSION_DENIED'); }
+        $preset = isset($input['preset']) && is_string($input['preset']) ? sanitize_key($input['preset']) : '';
+        if (is_wp_error(WP_Seed_Pixel_Presets::get($preset))) { return new WP_Error('POLICY_INVALID'); }
+        $future = WP_Seed_Pixel_Future_Uploads::settings();
+        $png = !empty($input['png']);
+        $jpeg = !empty($input['automatic']);
+        $old_png = $future['mode'] === 'process' && in_array('png', $future['formats'], true);
+        $future_jpeg = $future['mode'] === 'process' && in_array('jpeg', $future['formats'], true);
+        if ($png !== $old_png || $jpeg !== $future_jpeg) {
+            if ($png || $jpeg) { $r = WP_Seed_Pixel_Workflow::prepare(); if (is_wp_error($r)) { return $r; } }
+            $formats = array();
+            if ($jpeg) { $formats[] = 'jpeg'; }
+            if ($png) { $formats[] = 'png'; }
+            $r = WP_Seed_Pixel_Future_Uploads::configure($formats ? 'process' : 'off', $future['capacity_bytes'], null, $formats ?: array('jpeg'));
+            if (is_wp_error($r)) { return $r; }
+        }
+        update_option('wp_seed_pixel_settings', array('automatic' => $jpeg, 'preset' => $preset,
+            'cleanup_on_uninstall' => !empty($input['cleanup_on_uninstall'])), false);
+        return true;
+    }
+
     public static function assets($hook) {
         if ($hook !== 'media_page_wp-seed-pixel') {
             $screen = get_current_screen();
             if ($hook === 'upload.php' || $screen && $screen->post_type === 'attachment') {
-                wp_enqueue_style('wp-seed-pixel-admin', plugins_url('assets/admin.css', WP_SEED_PIXEL_FILE), array(), WP_SEED_PIXEL_VERSION);
-                wp_enqueue_script('wp-seed-pixel-media', plugins_url('assets/media.js', WP_SEED_PIXEL_FILE), array(), WP_SEED_PIXEL_VERSION, true);
+                wp_enqueue_style('wp-seed-pixel-admin', plugins_url('assets/admin.css', WP_SEED_PIXEL_FILE), array(), WP_SEED_PIXEL_BUILD);
+                wp_enqueue_script('wp-seed-pixel-media', plugins_url('assets/media.js', WP_SEED_PIXEL_FILE), array(), WP_SEED_PIXEL_BUILD, true);
                 wp_localize_script('wp-seed-pixel-media', 'wpSeedPixelMedia', array('url' => admin_url('admin-ajax.php'), 'nonce' => wp_create_nonce('wp_seed_pixel'), 'preset' => WP_Seed_Pixel_Plugin::settings()['preset'], 'processing' => __('Processing; keep this page open.', 'wp-seed-pixel'), 'regenerate' => __('Regenerate web versions', 'wp-seed-pixel'), 'failed' => __('Request failed. Your original is preserved; check details before retrying.', 'wp-seed-pixel')));
             }
             return;
         }
-        wp_enqueue_style('wp-seed-pixel-admin', plugins_url('assets/admin.css', WP_SEED_PIXEL_FILE), array(), WP_SEED_PIXEL_VERSION);
-        wp_enqueue_script('wp-seed-pixel-admin', plugins_url('assets/admin.js', WP_SEED_PIXEL_FILE), array(), WP_SEED_PIXEL_VERSION, true);
-        wp_enqueue_script('wp-seed-pixel-media', plugins_url('assets/media.js', WP_SEED_PIXEL_FILE), array(), WP_SEED_PIXEL_VERSION, true);
+        wp_enqueue_style('wp-seed-pixel-admin', plugins_url('assets/admin.css', WP_SEED_PIXEL_FILE), array(), WP_SEED_PIXEL_BUILD);
+        wp_enqueue_media();
+        wp_enqueue_script('wp-seed-pixel-admin', plugins_url('assets/admin.js', WP_SEED_PIXEL_FILE), array('media-views'), WP_SEED_PIXEL_BUILD, true);
+        wp_enqueue_script('wp-seed-pixel-media', plugins_url('assets/media.js', WP_SEED_PIXEL_FILE), array(), WP_SEED_PIXEL_BUILD, true);
         wp_localize_script('wp-seed-pixel-media', 'wpSeedPixelMedia', array('url' => admin_url('admin-ajax.php'), 'nonce' => wp_create_nonce('wp_seed_pixel'), 'preset' => WP_Seed_Pixel_Plugin::settings()['preset'], 'processing' => __('Processing', 'wp-seed-pixel'), 'regenerate' => __('Regenerate web versions', 'wp-seed-pixel'), 'failed' => __('Processing could not finish. Your original is preserved.', 'wp-seed-pixel')));
         wp_localize_script('wp-seed-pixel-admin', 'wpSeedPixel', array('counters' => WP_Seed_Pixel_I18n::counters(), 'url' => admin_url('admin-ajax.php'), 'nonce' => wp_create_nonce('wp_seed_pixel'), 'error' => __('Request failed. Resume later; no automatic retry was sent.', 'wp-seed-pixel'), 'labels' => array('running' => __('Processing', 'wp-seed-pixel'), 'paused' => __('Paused; resume when ready', 'wp-seed-pixel'), 'complete' => __('Finished', 'wp-seed-pixel'), 'partial' => __('Finished with errors; review before retrying', 'wp-seed-pixel'), 'empty' => __('No processing started. Select images in the Media Library or confirm the whole library below.', 'wp-seed-pixel'), 'optimized' => __('optimized', 'wp-seed-pixel'), 'current' => __('already up to date', 'wp-seed-pixel'), 'skipped' => __('kept without changes', 'wp-seed-pixel'), 'failed' => __('need attention', 'wp-seed-pixel'), 'confirm' => __('Confirm the whole-library selection first.', 'wp-seed-pixel'))));
+        wp_localize_script('wp-seed-pixel-admin', 'wpSeedPixelSelection', array('choose' => __('Select images', 'wp-seed-pixel'),
+            'count' => __('%d images selected', 'wp-seed-pixel'), 'start' => __('Optimize the %d images', 'wp-seed-pixel'),
+            'review' => __('JPEG web versions; other formats are kept without changes.', 'wp-seed-pixel')));
     }
 
     public static function columns($columns) {
@@ -48,7 +81,7 @@ final class WP_Seed_Pixel_Admin {
     }
 
     public static function row_actions($actions, $post) {
-        if ($post->post_mime_type === 'image/jpeg' && current_user_can('upload_files') && current_user_can('edit_post', $post->ID)) {
+        if (in_array($post->post_mime_type, array('image/jpeg', 'image/png'), true) && current_user_can('manage_options') && current_user_can('edit_post', $post->ID)) {
             $actions['pixel'] = str_replace('class="button pixel-regenerate"', 'class="button-link pixel-regenerate"', WP_Seed_Pixel_Media::button($post->ID));
         }
         return $actions;
@@ -66,7 +99,8 @@ final class WP_Seed_Pixel_Admin {
         if (is_wp_error(WP_Seed_Pixel_Presets::get($preset))) {
             wp_die(esc_html__('Unknown preset.', 'wp-seed-pixel'), '', array('response' => 400));
         }
-        update_option('wp_seed_pixel_settings', array('automatic' => isset($_POST['automatic']), 'preset' => $preset, 'cleanup_on_uninstall' => isset($_POST['cleanup_on_uninstall'])), false);
+        $result = self::save_settings(wp_unslash($_POST));
+        if (is_wp_error($result)) { wp_die(esc_html(WP_Seed_Pixel_Workflow::message($result->get_error_code())), '', array('response' => 409)); }
         wp_safe_redirect(admin_url('upload.php?page=wp-seed-pixel&saved=1'));
         exit;
     }
@@ -104,12 +138,42 @@ final class WP_Seed_Pixel_Admin {
                 wp_send_json_error(array('message' => __('Permission denied.', 'wp-seed-pixel')), 403);
             }
             switch ($operation) {
+                case 'image_start':
+                    $id = is_scalar($_POST['attachment_id'] ?? null) ? absint($_POST['attachment_id']) : 0;
+                    $result = WP_Seed_Pixel_Selected_Admin::start(array($id));
+                    break;
+                case 'image_restore': case 'image_purge':
+                    $id = is_scalar($_POST['attachment_id'] ?? null) ? absint($_POST['attachment_id']) : 0;
+                    $generation = is_string($_POST['generation'] ?? null) ? wp_unslash($_POST['generation']) : '';
+                    $result = WP_Seed_Pixel_Workflow::original($id, substr($operation, 6), $generation, ($_POST['confirmed'] ?? '') === '1');
+                    if (!is_wp_error($result)) { $result = array('panel' => WP_Seed_Pixel_Media::details($id)); }
+                    break;
+                case 'image_panel':
+                    $id = is_scalar($_POST['attachment_id'] ?? null) ? absint($_POST['attachment_id']) : 0;
+                    $result = $id && current_user_can('edit_post', $id) ? array('panel' => WP_Seed_Pixel_Media::details($id)) : new WP_Error('PERMISSION_DENIED');
+                    break;
+                case 'selected':
+                    $selection = isset($_POST['selection']) && is_string($_POST['selection']) ? wp_unslash($_POST['selection']) : '';
+                    $ids = preg_match('/^[1-9][0-9]*(?:,[1-9][0-9]*){0,499}$/D', $selection) ? explode(',', $selection) : array();
+                    $preset = isset($_POST['preset']) && is_string($_POST['preset']) ? sanitize_key(wp_unslash($_POST['preset'])) : '';
+                    $result = WP_Seed_Pixel_Selected_Admin::start($ids);
+                    break;
+                case 'native_step': case 'native_start': case 'native_pause': case 'native_resume': case 'native_cancel':
+                    $result = WP_Seed_Pixel_Selected_Admin::command($operation, is_scalar($_POST['job_id'] ?? null) ? absint($_POST['job_id']) : 0);
+                    break;
                 case 'start':
                     $preset = isset($_POST['preset']) && is_string($_POST['preset']) ? sanitize_key(wp_unslash($_POST['preset'])) : '';
+                    $native = WP_Seed_Pixel_Selected_Admin::available() ? WP_Seed_Pixel_Selected_Admin::current() : array();
+                    if ($native && $native['status'] !== 'complete') { $result = new WP_Error('LOCKED'); break; }
                     $result = WP_Seed_Pixel_Batch::start($preset, isset($_POST['confirmed']) && $_POST['confirmed'] === '1');
                     break;
                 case 'step': $result = WP_Seed_Pixel_Batch::step(); break;
-                case 'status': $result = WP_Seed_Pixel_Batch::current(); break;
+                case 'status':
+                    $result = WP_Seed_Pixel_Batch::current();
+                    if ((!$result || $result['status'] === 'complete') && WP_Seed_Pixel_Selected_Admin::available()) {
+                        $native = WP_Seed_Pixel_Selected_Admin::current(); if ($native) { $result = $native; }
+                    }
+                    break;
                 case 'pause': $result = WP_Seed_Pixel_Batch::pause(true); break;
                 case 'resume': $result = WP_Seed_Pixel_Batch::pause(false); break;
                 case 'retry': $result = WP_Seed_Pixel_Batch::retry_one(); break;
@@ -117,7 +181,7 @@ final class WP_Seed_Pixel_Admin {
             }
         }
         if (is_wp_error($result)) {
-            wp_send_json_error(array('code' => $result->get_error_code(), 'message' => WP_Seed_Pixel_I18n::message($result->get_error_message())), 400);
+            wp_send_json_error(array('code' => $result->get_error_code(), 'message' => WP_Seed_Pixel_Workflow::message($result->get_error_code())), 400);
         }
         // File system paths are reserved for trusted PHP API consumers, not AJAX output.
         if (isset($result['files'])) {
@@ -147,6 +211,8 @@ final class WP_Seed_Pixel_Admin {
             return;
         }
         $settings = WP_Seed_Pixel_Plugin::settings();
+        $future = WP_Seed_Pixel_Future_Uploads::settings();
+        $png = $future['mode'] === 'process' && in_array('png', $future['formats'], true);
         ?>
         <div class="wrap wp-seed-pixel">
             <h1>WP Seed Pixel</h1>
@@ -156,25 +222,29 @@ final class WP_Seed_Pixel_Admin {
             <p><?php esc_html_e('Local image optimization. Your original is kept; no image is sent to an external service.', 'wp-seed-pixel'); ?></p>
             <?php if (isset($_GET['saved'])) { ?><div class="notice notice-success"><p><?php esc_html_e('Settings saved. Existing images have not been reprocessed.', 'wp-seed-pixel'); ?></p></div><?php } ?>
             <?php if (self::other_optimizer()) { ?><div class="notice notice-warning"><p><?php esc_html_e('Another image optimizer is active. Both may process the same images. Review their automatic settings; nothing has been disabled.', 'wp-seed-pixel'); ?></p></div><?php } ?>
-            <p><a class="button" href="<?php echo esc_url(admin_url('upload.php?mode=list')); ?>"><?php esc_html_e('Choose images in the Media Library', 'wp-seed-pixel'); ?></a></p>
-            <h2><?php esc_html_e('Settings', 'wp-seed-pixel'); ?></h2>
+            <h2><?php esc_html_e('Automatic optimization', 'wp-seed-pixel'); ?></h2>
             <form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>">
                 <input type="hidden" name="action" value="wp_seed_pixel_settings">
                 <?php wp_nonce_field('wp_seed_pixel_settings'); ?>
-                <p><label><input type="checkbox" name="automatic" <?php checked($settings['automatic']); ?>> <?php esc_html_e('Optimize new JPEG uploads automatically', 'wp-seed-pixel'); ?></label></p>
+                <p><label><input type="checkbox" name="automatic" <?php checked($settings['automatic'] || ($future['mode'] === 'process' && in_array('jpeg', $future['formats'], true))); ?>> <?php esc_html_e('Optimize new JPEG uploads automatically', 'wp-seed-pixel'); ?></label></p>
+                <p id="pixel-png"><label><input type="checkbox" name="png" <?php checked($png); ?>> <?php esc_html_e('Optimize new PNG uploads without loss', 'wp-seed-pixel'); ?></label></p>
+                <p class="description"><?php esc_html_e('Lossless optimization; transparency is preserved and PNG remains PNG. Existing media are not processed automatically.', 'wp-seed-pixel'); ?></p>
+                <details><summary><?php esc_html_e('Advanced settings', 'wp-seed-pixel'); ?></summary>
                 <p><label for="pixel-preset"><?php esc_html_e('Image profile', 'wp-seed-pixel'); ?></label> <select name="preset" id="pixel-preset">
                     <?php foreach (WP_Seed_Pixel_Presets::all() as $name => $preset) { ?>
                         <option value="<?php echo esc_attr($name); ?>" <?php selected($settings['preset'], $name); ?>><?php echo esc_html(self::profile_label($name)); ?></option>
                     <?php } ?>
                 </select></p>
                 <p class="description"><?php esc_html_e('Balanced is recommended. It adapts web versions to the image. Compatibility profiles keep the earlier fixed method.', 'wp-seed-pixel'); ?></p>
-                <details><summary><?php esc_html_e('Advanced settings', 'wp-seed-pixel'); ?></summary>
                     <p><label><input type="checkbox" name="cleanup_on_uninstall" <?php checked($settings['cleanup_on_uninstall']); ?>> <?php esc_html_e('Remove owned web versions and settings when uninstalling. Originals are always kept.', 'wp-seed-pixel'); ?></label></p>
                     <p><?php esc_html_e('Enable only after reviewing links and cached versions that may still use these files.', 'wp-seed-pixel'); ?></p>
                 </details>
                 <?php submit_button(); ?>
             </form>
-            <details class="pixel-diagnostic"><summary><?php esc_html_e('Diagnostics and developer tools', 'wp-seed-pixel'); ?></summary>
+            <details class="pixel-diagnostic"><summary><?php esc_html_e('Diagnostics and advanced tools', 'wp-seed-pixel'); ?></summary>
+            <p><a href="<?php echo esc_url(admin_url('upload.php?page=wp-seed-pixel-storage')); ?>"><?php esc_html_e('Analyze storage usage', 'wp-seed-pixel'); ?></a> | <a href="<?php echo esc_url(admin_url('upload.php?page=wp-seed-pixel-bulk')); ?>"><?php esc_html_e('Advanced batch tools', 'wp-seed-pixel'); ?></a> | <a href="<?php echo esc_url(admin_url('upload.php?page=wp-seed-pixel-quarantine')); ?>"><?php esc_html_e('Retained originals', 'wp-seed-pixel'); ?></a></p>
+            <p><a href="<?php echo esc_url(admin_url('upload.php?page=wp-seed-pixel-host')); ?>"><?php esc_html_e('Storage configuration', 'wp-seed-pixel'); ?></a> | <a href="<?php echo esc_url(admin_url('upload.php?page=wp-seed-pixel-jobs')); ?>"><?php esc_html_e('Storage simulation', 'wp-seed-pixel'); ?></a></p>
+            <p><?php echo esc_html(sprintf(__('Private updates: %s', 'wp-seed-pixel'), WP_Seed_Pixel_Updater::endpoint() ? __('Configured', 'wp-seed-pixel') : __('Endpoint not configured', 'wp-seed-pixel'))); ?></p>
             <p><?php echo esc_html('WordPress ' . get_bloginfo('version') . ' | PHP ' . PHP_VERSION . ' | WP Seed Pixel ' . WP_SEED_PIXEL_VERSION . ' | GD: ' . (extension_loaded('gd') ? __('available', 'wp-seed-pixel') : __('unavailable', 'wp-seed-pixel')) . ' | Imagick: ' . (extension_loaded('imagick') ? __('available (not certified)', 'wp-seed-pixel') : __('unavailable', 'wp-seed-pixel')) . ' | bounded-rgb-3'); ?></p>
             <p><?php esc_html_e('For normal use, choose an image in the Media Library. This fallback is for diagnosis only.', 'wp-seed-pixel'); ?></p>
             <form id="pixel-single" method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>">
@@ -187,14 +257,24 @@ final class WP_Seed_Pixel_Admin {
             </form>
             </details>
             <h2 id="pixel-bulk"><?php esc_html_e('Optimize existing images', 'wp-seed-pixel'); ?></h2>
-            <p><?php esc_html_e('Select images with the Media Library bulk action, then resume here. One image is processed at a time. You can pause or return later to resume; processing stops when this page is closed.', 'wp-seed-pixel'); ?></p>
+            <p><?php esc_html_e('Select images. Only this selection is processed, one image at a time. Closing this page stops the batch; you can resume later.', 'wp-seed-pixel'); ?></p>
+            <p><?php esc_html_e('JPEG stays JPEG. PNG stays PNG, without loss. Other formats are kept unchanged.', 'wp-seed-pixel'); ?></p>
+            <p><button class="button button-primary" id="pixel-select" type="button"><?php esc_html_e('Select images', 'wp-seed-pixel'); ?></button></p>
+            <p id="pixel-selection-count" role="status" aria-live="polite"></p>
+            <ul id="pixel-selection-review"></ul>
+            <p><button class="button button-primary" id="pixel-selected-start" type="button" disabled><?php esc_html_e('Optimize selected images', 'wp-seed-pixel'); ?></button></p>
             <noscript><p><?php esc_html_e('Batch controls require JavaScript. Single-attachment processing and settings remain available.', 'wp-seed-pixel'); ?></p></noscript>
-            <p><label><input type="checkbox" id="pixel-confirm"> <?php esc_html_e('Process the whole image library, including images already up to date', 'wp-seed-pixel'); ?></label></p>
+            <details><summary><?php esc_html_e('Advanced: whole image library', 'wp-seed-pixel'); ?></summary>
+            <p><?php esc_html_e('This can process many images. Images already up to date are reused without re-encoding.', 'wp-seed-pixel'); ?></p>
+            <p><label><input type="checkbox" id="pixel-confirm"> <?php esc_html_e('I explicitly authorize processing the whole image library.', 'wp-seed-pixel'); ?></label></p>
+            <p><button class="button" id="pixel-start" type="button"><?php esc_html_e('Start whole library', 'wp-seed-pixel'); ?></button></p>
+            </details>
+            <h2><?php esc_html_e('Recent activity', 'wp-seed-pixel'); ?></h2>
             <div class="pixel-actions">
-                <button class="button button-primary" id="pixel-start" type="button"><?php esc_html_e('Start whole library', 'wp-seed-pixel'); ?></button>
-                <button class="button" id="pixel-pause" type="button"><?php esc_html_e('Pause', 'wp-seed-pixel'); ?></button>
-                <button class="button" id="pixel-resume" type="button"><?php esc_html_e('Resume', 'wp-seed-pixel'); ?></button>
-                <button class="button" id="pixel-retry" type="button"><?php esc_html_e('Retry one failure', 'wp-seed-pixel'); ?></button>
+                <button class="button" id="pixel-pause" type="button" hidden><?php esc_html_e('Pause', 'wp-seed-pixel'); ?></button>
+                <button class="button" id="pixel-resume" type="button" hidden><?php esc_html_e('Resume', 'wp-seed-pixel'); ?></button>
+                <button class="button" id="pixel-retry" type="button" hidden><?php esc_html_e('Retry one failure', 'wp-seed-pixel'); ?></button>
+                <button class="button" id="pixel-cancel" type="button" hidden><?php esc_html_e('Cancel', 'wp-seed-pixel'); ?></button>
             </div>
             <label for="pixel-progress"><?php esc_html_e('Progress', 'wp-seed-pixel'); ?></label>
             <progress id="pixel-progress" max="1" value="0"></progress>
@@ -203,9 +283,9 @@ final class WP_Seed_Pixel_Admin {
                 <p><?php esc_html_e('Open an image to review its details. Up to ten failed items are shown; others remain in the Media Library. Retrying is explicit, with at most two retries per image.', 'wp-seed-pixel'); ?></p>
                 <ul id="pixel-failure-items"></ul>
             </details>
-            <h2><?php esc_html_e('Recent results', 'wp-seed-pixel'); ?></h2>
-            <?php $recent = get_posts(array('post_type' => 'attachment', 'post_status' => 'inherit', 'posts_per_page' => 10, 'meta_key' => WP_Seed_Pixel_Store::KEY)); ?>
-            <?php foreach ($recent as $item) { $manifest = WP_Seed_Pixel_Store::manifest($item->ID); if (!$manifest || !isset($manifest['files'])) { continue; } ?>
+            <?php $recent = get_posts(array('post_type' => 'attachment', 'post_status' => 'inherit', 'posts_per_page' => 10,
+                'meta_query' => array('relation' => 'OR', array('key' => WP_Seed_Pixel_Store::KEY, 'compare' => 'EXISTS'), array('key' => '_seed_pixel_master_state', 'compare' => 'EXISTS'), array('key' => WP_Seed_Pixel_Future_Uploads::META, 'compare' => 'EXISTS')))); ?>
+            <?php foreach ($recent as $item) { ?>
                 <details><summary><?php echo esc_html($item->post_title); ?></summary>
                     <?php echo WP_Seed_Pixel_Media::details($item->ID); ?>
                 </details>

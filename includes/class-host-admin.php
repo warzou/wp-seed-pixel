@@ -60,6 +60,11 @@ final class WP_Seed_Pixel_Host_Admin {
         echo '<p>' . esc_html__('No automatic purge. Processing requires a private recovery root and explicit engine activation.', 'wp-seed-pixel') . '</p>';
         echo '<p>' . esc_html__('Recovery history is retained. New storage jobs stop at 10,000 records; restoration and permanent deletion remain available. No automatic expiry.', 'wp-seed-pixel') . '</p>';
         submit_button(); echo '</form>';
+        self::recent();
+        echo '</div>';
+    }
+
+    public static function recent() {
         global $wpdb;
         $rows = $wpdb->get_results($wpdb->prepare("SELECT post_id,meta_value FROM {$wpdb->postmeta} WHERE meta_key=%s ORDER BY post_id DESC LIMIT 20", WP_Seed_Pixel_Future_Uploads::META), ARRAY_A);
         echo '<h2>' . esc_html__('Recent new uploads', 'wp-seed-pixel') . '</h2><table class="wp-list-table widefat fixed striped"><thead><tr>';
@@ -79,7 +84,7 @@ final class WP_Seed_Pixel_Host_Admin {
             }
             echo '<tr class="is-expanded"><td class="column-primary"><a href="' . esc_url(get_edit_post_link((int) $row['post_id'])) . '">' . esc_html(get_the_title((int) $row['post_id'])) . '</a></td><td data-colname="' . esc_attr__('State', 'wp-seed-pixel') . '">' . esc_html(self::state($job['status'] ?? ($v['state'] ?? 'review'))) . '</td><td data-colname="' . esc_attr__('Operation', 'wp-seed-pixel') . '">' . esc_html((string) ($v['job_id'] ?? 0)) . '</td><td data-colname="' . esc_attr__('Estimated peak', 'wp-seed-pixel') . '">' . esc_html($peak === null ? __('Unknown', 'wp-seed-pixel') : number_format_i18n($peak) . ' ' . $peak_scope) . '</td><td data-colname="' . esc_attr__('Reason', 'wp-seed-pixel') . '">' . esc_html(self::reason($job['error_code'] ?? ($v['reason'] ?? ''))) . '</td></tr>'; }
         if (!$rows) { echo '<tr><td colspan="5">' . esc_html__('No new uploads tracked.', 'wp-seed-pixel') . '</td></tr>'; }
-        echo '</tbody></table></div>';
+        echo '</tbody></table>';
     }
 
     public static function state($code) {

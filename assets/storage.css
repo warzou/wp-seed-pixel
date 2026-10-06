@@ -1,5 +1,11 @@
 .pixel-storage { max-width: 1100px; }
 .pixel-storage * { box-sizing: border-box; }
+.pixel-storage form { margin-bottom: 16px; }
+.pixel-storage input[type="number"] { width: 12em; max-width: 100%; }
+.pixel-storage .button { max-width: 100%; white-space: normal; height: auto; }
+.pixel-storage details { margin: 16px 0; }
+.pixel-storage details code { overflow-wrap: anywhere; }
+.pixel-storage input:focus-visible, .pixel-storage a:focus-visible { outline: 2px solid #2271b1; outline-offset: 3px; }
 .pixel-scan-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin: 16px 0; }
 .pixel-storage progress { display: block; width: 100%; max-width: 640px; height: 18px; }
 .pixel-scan-totals { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; margin: 24px 0; }

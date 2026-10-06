@@ -29,7 +29,7 @@ final class WP_Seed_Pixel_Future_Uploads {
     public static function configure($mode, $capacity_bytes = 0, $limits = null, array $formats = array('jpeg')) {
         global $wpdb;
         if (!current_user_can('manage_options') || !in_array($mode, array('off', 'analyze', 'process'), true)
-            || !is_int($capacity_bytes) || $capacity_bytes < 0 || ($mode === 'process' && $capacity_bytes < 1)) { return new WP_Error('PERMISSION_DENIED'); }
+            || !is_int($capacity_bytes) || $capacity_bytes < 0 || ($mode === 'process' && $capacity_bytes < 1 && !WP_Seed_Pixel_Quarantine::enabled())) { return new WP_Error('PERMISSION_DENIED'); }
         if (!$formats || array_diff($formats, array('jpeg', 'png')) || count(array_unique($formats)) !== count($formats)) { return new WP_Error('POLICY_INVALID'); }
         if ($limits !== null) { $limits = WP_Seed_Pixel_Storage_Budget::validate($limits); if (is_wp_error($limits)) { return $limits; } }
         $lock = WP_Seed_Pixel_Files::lock(0); if (is_wp_error($lock)) { return $lock; }
@@ -55,6 +55,8 @@ final class WP_Seed_Pixel_Future_Uploads {
     public static function created($id) {
         $s = self::settings();
         if (($s['mode'] ?? 'off') === 'off' || (int) $id <= $s['cutoff_id'] || strlen($s['generation']) !== 48) { return; }
+        $format = get_post_mime_type($id) === 'image/png' ? 'png' : (get_post_mime_type($id) === 'image/jpeg' ? 'jpeg' : '');
+        if (!in_array($format, $s['formats'], true)) { return; }
         // Import/restore tools must explicitly opt in; IDs and timestamps alone are not provenance.
         if (defined('WP_IMPORTING') && WP_IMPORTING || defined('WP_CLI') && WP_CLI) { return; }
         $path = get_attached_file($id);
@@ -158,7 +160,9 @@ final class WP_Seed_Pixel_Future_Uploads {
         try {
             $v = get_post_meta($id, self::META, true);
             if (!$v || $v['generation'] !== $settings['generation']) { return new WP_Error('SOURCE_CHANGED'); }
-            $r = WP_Seed_Pixel_Jobs::replace_one($id, array('master' => 'replace_verified'), $settings['capacity_bytes'], $settings['generation']);
+            $capacity = $settings['capacity_bytes'] > 0 ? $settings['capacity_bytes'] : WP_Seed_Pixel_Workflow::capacity(array($id));
+            if (is_wp_error($capacity)) { return $capacity; }
+            $r = WP_Seed_Pixel_Jobs::replace_one($id, array('master' => 'replace_verified'), $capacity, $settings['generation']);
             if (is_wp_error($r)) { return $r; }
             return (int) $r['id'];
         } finally { wp_set_current_user($previous); }

@@ -88,6 +88,11 @@ final class WP_Seed_Pixel_Quarantine {
         $rows = $wpdb->get_results('SELECT * FROM ' . WP_Seed_Pixel_Job_Store::table('items') . " WHERE kind='operation' AND action IN ('replace','retire') ORDER BY id DESC LIMIT 20", ARRAY_A);
         foreach ($rows as $item) {
             if (!current_user_can('edit_post', $item['attachment_id'])) { continue; }
+            $receipt = json_decode($item['receipt'], true);
+            if (!empty($receipt['cleanup_unreplaced']) && WP_Seed_Pixel_Job_Store::journal_valid($item)) {
+                $overhead = self::pending_overhead($item);
+                if (!is_wp_error($overhead) && $overhead['temporary_bytes'] === 0) { continue; }
+            }
             $v = self::inspect($item); $out['entries']++;
             if (is_wp_error($v)) { $out['needs_review']++; continue; }
             foreach (array('quarantine_bytes', 'potential_purge_bytes', 'removed_bytes') as $key) { $out[$key] += $v[$key]; }

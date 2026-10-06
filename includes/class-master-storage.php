@@ -10,7 +10,8 @@ final class WP_Seed_Pixel_Master_Storage {
         $local = defined('WP_SEED_PIXEL_M3_TESTING') && WP_SEED_PIXEL_M3_TESTING === true
             && wp_get_environment_type() === 'local' && in_array($host, array('localhost', '127.0.0.1', '::1'), true);
         $explicit = defined('WP_SEED_PIXEL_STORAGE_ENABLED') && WP_SEED_PIXEL_STORAGE_ENABLED === true;
-        return ($local || $explicit) && defined('WP_SEED_PIXEL_RECOVERY_ROOT') && PHP_OS_FAMILY === 'Linux';
+        return ($local || $explicit) && defined('WP_SEED_PIXEL_RECOVERY_ROOT') && PHP_OS_FAMILY === 'Linux'
+            && (!class_exists('WP_Seed_Pixel_Recovery_Setup') || WP_Seed_Pixel_Recovery_Setup::gate());
     }
 
     public static function directory(array $item, $create = true) {
@@ -86,6 +87,77 @@ final class WP_Seed_Pixel_Master_Storage {
 
     private static function boundary($name, array $item) { do_action('wp_seed_pixel_m3_boundary', $name, (int) $item['id']); }
 
+    /** Reclaim only pre-swap escrow, after a durable terminal decision. Never an encoder or restore. */
+    public static function cleanup_unreplaced(array $item, $token) {
+        $terminal = array('skipped', 'failed', 'needs_review', 'cancelled');
+        $journal = json_decode($item['journal'], true);
+        $receipt = json_decode($item['receipt'], true);
+        if ($item['action'] !== 'replace' || !in_array($item['stage'], $terminal, true)
+            || !WP_Seed_Pixel_Job_Store::journal_valid($item) || !is_array($journal) || !empty($journal['dropped'])
+            || !in_array($receipt['resume_stage'] ?? '', array('queued', 'preparing', 'ready'), true)) { return new WP_Error('EVIDENCE_INVALID'); }
+        foreach ($journal['events'] ?? array() as $event) {
+            if (!in_array($event['from'], array_merge(array('queued', 'preparing', 'ready'), $terminal), true)
+                || !in_array($event['stage'], array_merge(array('queued', 'preparing', 'ready'), $terminal), true)) { return new WP_Error('RECOVERY_REQUIRED'); }
+        }
+        $item = WP_Seed_Pixel_Job_Store::renew($item, $token); if (is_wp_error($item)) { return $item; }
+        $dir = self::directory($item, false);
+        if (is_wp_error($dir)) {
+            $path = defined('WP_SEED_PIXEL_RECOVERY_ROOT') ? realpath(WP_SEED_PIXEL_RECOVERY_ROOT) . '/m3-' . (int) $item['job_id'] . '-' . (int) $item['id'] : '';
+            return $dir->get_error_code() === 'BACKUP_FAILED' && $path && !file_exists($path) && !is_link($path)
+                ? array('cleanup_unreplaced' => true, 'active_delta' => 0, 'recovery_bytes' => 0, 'audit_bytes' => 0, 'temporary_bytes' => 0) : $dir;
+        }
+        $r = self::load($dir, $item); if (is_wp_error($r) || !$r) { return new WP_Error('EVIDENCE_INVALID'); }
+        if (!in_array($r['phase'], array('preparing', 'ready', 'cleanup_intent', 'cleaned'), true)) { return new WP_Error('RECOVERY_REQUIRED'); }
+        $fresh = WP_Seed_Pixel_Master_Adapter::snapshot((int) $item['attachment_id']);
+        if (is_wp_error($fresh) || $fresh !== $r['before']) { return new WP_Error('SOURCE_CHANGED'); }
+        $names = array('journal.json', 'recovery.jpg', 'candidate.jpg');
+        foreach (scandir($dir) as $name) {
+            if ($name !== '.' && $name !== '..' && !in_array($name, $names, true)) { return new WP_Error('EVIDENCE_INVALID'); }
+        }
+        if (!isset($r['cleanup'])) {
+            $r['cleanup'] = array('files' => array(), 'decision' => $item['error_code'], 'original_verified' => true);
+            foreach (array('recovery.jpg' => $r['before'], 'candidate.jpg' => $r['candidate']) as $name => $expected) {
+                $path = $dir . '/' . $name; clearstatcache(true, $path);
+                if (!file_exists($path) && !is_link($path)) { continue; }
+                $stat = lstat($path);
+                if (!is_array($expected) || is_link($path) || !is_file($path) || $stat['nlink'] !== 1
+                    || $stat['uid'] !== fileowner($dir) || $stat['size'] !== $expected['bytes']
+                    || hash_file('sha256', $path) !== $expected['sha256']) { return new WP_Error('EVIDENCE_INVALID'); }
+                $r['cleanup']['files'][$name] = array('dev' => $stat['dev'], 'ino' => $stat['ino'], 'uid' => $stat['uid'],
+                    'bytes' => $stat['size'], 'sha256' => $expected['sha256']);
+            }
+            $r['phase'] = 'cleanup_intent'; $r = self::save($dir, $r); if (is_wp_error($r)) { return $r; }
+            self::boundary('cleanup_intent', $item);
+        }
+        foreach (array('recovery.jpg', 'candidate.jpg') as $name) {
+            $path = $dir . '/' . $name; clearstatcache(true, $path);
+            if (!file_exists($path) && !is_link($path)) { continue; }
+            $identity = $r['cleanup']['files'][$name] ?? null; $stat = lstat($path);
+            $item = WP_Seed_Pixel_Job_Store::renew($item, $token); if (is_wp_error($item)) { return $item; }
+            $fresh = WP_Seed_Pixel_Master_Adapter::snapshot((int) $item['attachment_id']);
+            if (is_wp_error($fresh) || $fresh !== $r['before']) { return new WP_Error('SOURCE_CHANGED'); }
+            if (!$identity || is_link($path) || !is_file($path) || $stat['nlink'] !== 1 || $stat['dev'] !== $identity['dev']
+                || $stat['ino'] !== $identity['ino'] || $stat['uid'] !== $identity['uid'] || $stat['size'] !== $identity['bytes']
+                || hash_file('sha256', $path) !== $identity['sha256'] || !WP_Seed_Pixel_Authority::valid_all()) { return new WP_Error('EVIDENCE_INVALID'); }
+            self::boundary('cleanup_before_unlink', $item);
+            // The source is not in this allowlist; only the fenced, published private identity is eligible.
+            clearstatcache(true, $path); $now = lstat($path);
+            $item = WP_Seed_Pixel_Job_Store::renew($item, $token); if (is_wp_error($item)) { return $item; }
+            $fresh = WP_Seed_Pixel_Master_Adapter::snapshot((int) $item['attachment_id']);
+            if (is_wp_error($fresh) || $fresh !== $r['before']) { return new WP_Error('SOURCE_CHANGED'); }
+            foreach (array('dev', 'ino', 'uid', 'gid', 'mode', 'nlink', 'size', 'mtime', 'ctime') as $key) {
+                if ($now[$key] !== $stat[$key]) { return new WP_Error('EVIDENCE_INVALID'); }
+            }
+            if (!WP_Seed_Pixel_Authority::valid_all() || !unlink($path) || !self::sync_directory($dir)) { return new WP_Error('BACKUP_FAILED'); }
+            self::boundary('cleanup_after_unlink', $item);
+        }
+        $r['phase'] = 'cleaned'; $r = self::save($dir, $r); if (is_wp_error($r)) { return $r; }
+        self::boundary('cleanup_complete', $item);
+        clearstatcache(true, $dir . '/journal.json');
+        return array('cleanup_unreplaced' => true, 'active_delta' => 0, 'recovery_bytes' => 0,
+            'audit_bytes' => filesize($dir . '/journal.json'), 'temporary_bytes' => 0);
+    }
+
     public static function prepare(array $item, array $policy, $encode = true) {
         if (!WP_Seed_Pixel_Authority::valid(0) || !WP_Seed_Pixel_Authority::valid((int) $item['attachment_id'])) { return new WP_Error('LOCKED'); }
         $dir = self::directory($item); if (is_wp_error($dir)) { return $dir; }
@@ -104,6 +176,13 @@ final class WP_Seed_Pixel_Master_Storage {
                 'before' => $before, 'phase' => 'preparing', 'candidate' => null, 'after' => null, 'peak_budget' => $peak);
             $r = self::save($dir, $r); if (is_wp_error($r)) { return $r; }
             self::boundary('intent', $item);
+        }
+        if (in_array($r['phase'], array('cleanup_intent', 'cleaned'), true)) {
+            // A retry is a new preparation, never reuse a cleaned candidate identity.
+            if ($r['phase'] !== 'cleaned' || file_exists($dir . '/recovery.jpg') || file_exists($dir . '/candidate.jpg')
+                || is_link($dir . '/recovery.jpg') || is_link($dir . '/candidate.jpg')) { return new WP_Error('EVIDENCE_INVALID'); }
+            unset($r['cleanup'], $r['witness']); $r['phase'] = 'preparing'; $r['candidate'] = null; $r['after'] = null;
+            $r = self::save($dir, $r); if (is_wp_error($r)) { return $r; }
         }
         if ($r['policy_hash'] !== WP_Seed_Pixel_Policy::hash($policy) || $r['before'] !== $before) { return new WP_Error('EVIDENCE_INVALID'); }
         if (!$encode || $r['candidate']) { return $r; }

@@ -5,6 +5,35 @@ final class WP_Seed_Pixel_Jobs {
     const FLOW = array('queued', 'preparing', 'ready', 'switch_intent', 'switched', 'verified', 'retained');
 
     private static function allowed() { return current_user_can('manage_options'); }
+    private static function unstarted_review(array $item) {
+        if ($item['stage'] !== 'needs_review' || !in_array($item['action'], array('replace', 'retire'), true)
+            || (int) $item['revision'] !== 0 || (int) $item['attempts'] !== 0 || (int) $item['bytes'] !== 0
+            || !empty($item['lease']) || (int) $item['lease_until'] !== 0 || !empty($item['error_code'])
+            || !empty($item['journal']) || !empty($item['receipt'])
+            || !hash_equals($item['snapshot_hash'], hash('sha256', $item['data']))) { return false; }
+        $data = json_decode($item['data'], true);
+        return is_array($data) && array_key_exists('before', $data) && $data['before'] === null
+            && array_key_exists('original', $data) && $data['original'] === null
+            && is_string($data['reason'] ?? null) && preg_match('/^[A-Z][A-Z0-9_]+$/D', $data['reason'])
+            && ($data['planned_bytes'] ?? null) === 0 && ($data['peak_bytes'] ?? null) === 0;
+    }
+
+    private static function other_claim(array $item, $ignore_queued) {
+        global $wpdb;
+        $table = WP_Seed_Pixel_Job_Store::table('items');
+        $terminal = "'retained','purged','rolled_back','cancelled','skipped','failed'";
+        if ($ignore_queued) { $terminal .= ",'queued'"; }
+        $exclude = $ignore_queued ? 'job_id' : 'id';
+        $rows = $wpdb->get_results($wpdb->prepare("SELECT * FROM $table WHERE attachment_id=%d AND kind='operation' AND $exclude<>%d AND stage NOT IN ($terminal) ORDER BY id LIMIT 101",
+            $item['attachment_id'], $item[$exclude]), ARRAY_A);
+        if (!is_array($rows) || $wpdb->last_error !== '' || count($rows) > 100) { return true; }
+        foreach ($rows as $other) {
+            if ($ignore_queued && $other['stage'] === 'needs_review' && !in_array($other['action'], array('replace', 'retire'), true)) { continue; }
+            // A rejected plan with no snapshot or execution evidence never reserved the image.
+            if (!self::unstarted_review($other)) { return true; }
+        }
+        return false;
+    }
     private static function compatible(array $job) {
         $p = json_decode($job['policy'], true);
         $real = in_array($job['kind'], array('replace', 'retire'), true);
@@ -114,7 +143,7 @@ final class WP_Seed_Pixel_Jobs {
             $item = $item_id ? $wpdb->get_row($wpdb->prepare("SELECT * FROM $table WHERE job_id=%d AND kind='operation' AND id=%d", $id, $item_id), ARRAY_A)
                 : $wpdb->get_row($wpdb->prepare("SELECT * FROM $table WHERE job_id=%d AND kind='operation' LIMIT 1", $id), ARRAY_A);
             if (!$item || !current_user_can('edit_post', $item['attachment_id']) || !hash_equals($item['snapshot_hash'], hash('sha256', $item['data'])) || !WP_Seed_Pixel_Job_Store::journal_valid($item)) { return new WP_Error('EVIDENCE_INVALID'); }
-            if ($wpdb->get_var($wpdb->prepare("SELECT id FROM $table WHERE attachment_id=%d AND kind='operation' AND id<>%d AND stage NOT IN ('retained','purged','rolled_back','cancelled','skipped','failed') LIMIT 1", $item['attachment_id'], $item['id']))) { return new WP_Error('CLAIM_CONFLICT'); }
+            if (self::other_claim($item, false)) { return new WP_Error('CLAIM_CONFLICT'); }
             $lock = WP_Seed_Pixel_Files::lock($item['attachment_id']); if (is_wp_error($lock)) { $lock = null; return new WP_Error('LOCKED'); }
             if ($wpdb->query($wpdb->prepare("UPDATE $table SET lease=%s,lease_until=%d WHERE id=%d AND revision=%d AND lease_until<%d", $token, time() + 60, $item['id'], $item['revision'], time())) !== 1) { return new WP_Error('LOCKED'); }
             $claimed_id = (int) $item['id'];
@@ -192,7 +221,9 @@ final class WP_Seed_Pixel_Jobs {
         $policy['effective'] = array('simulation_only' => false, 'replace' => $operation === 'replace', 'retire' => $operation === 'retire', 'purge' => false);
         $policy['bulk'] = array('version' => 1, 'operation' => $operation, 'lot_size' => $lot_size, 'concurrency' => 1);
         if ($selected_ids !== null) { sort($selected_ids, SORT_NUMERIC); $policy['bulk']['selected_ids'] = array_values($selected_ids); }
-        $total = (int) $wpdb->get_var($wpdb->prepare('SELECT COUNT(*) FROM ' . WP_Seed_Pixel_Job_Store::table('items') . " WHERE job_id=%d AND kind='attachment'", $scan_id));
+        $scope = $selected_ids !== null ? ' AND attachment_id IN (' . implode(',', array_map('intval', $selected_ids)) . ')' : '';
+        $total = (int) $wpdb->get_var($wpdb->prepare('SELECT COUNT(*) FROM ' . WP_Seed_Pixel_Job_Store::table('items') . " WHERE job_id=%d AND kind='attachment'" . $scope, $scan_id));
+        if ($selected_ids !== null && $total !== count($selected_ids)) { return new WP_Error('SOURCE_CHANGED'); }
         $id = WP_Seed_Pixel_Job_Store::insert_job('plan', $scan_id, $policy, $total);
         return is_wp_error($id) ? $id : self::status($id);
     }
@@ -246,7 +277,9 @@ final class WP_Seed_Pixel_Jobs {
     private static function plan_step(array $job) {
         global $wpdb;
         $items = WP_Seed_Pixel_Job_Store::table('items'); $jobs = WP_Seed_Pixel_Job_Store::table('jobs');
-        $rows = $wpdb->get_results($wpdb->prepare("SELECT * FROM $items WHERE job_id=%d AND kind='attachment' AND id>%d ORDER BY id LIMIT 20", $job['source_id'], $job['scan_cursor']), ARRAY_A);
+        $policy = json_decode($job['policy'], true);
+        $scope = isset($policy['bulk']['selected_ids']) ? ' AND attachment_id IN (' . implode(',', array_map('intval', $policy['bulk']['selected_ids'])) . ')' : '';
+        $rows = $wpdb->get_results($wpdb->prepare("SELECT * FROM $items WHERE job_id=%d AND kind='attachment' AND id>%d" . $scope . ' ORDER BY id LIMIT 20', $job['source_id'], $job['scan_cursor']), ARRAY_A);
         _prime_post_caches(array_map('intval', array_column($rows, 'attachment_id')), false, false);
         $policy = json_decode($job['policy'], true); $hash = $job['plan_hash']; $cursor = $job['scan_cursor'];
         if ($wpdb->query('START TRANSACTION') === false) { return new WP_Error('STORE_FAILED'); }
@@ -341,6 +374,13 @@ final class WP_Seed_Pixel_Jobs {
             if ($job['kind'] === 'plan') { return $job['status'] === 'queued' ? self::plan_step($job) : self::status($id); }
             $real = in_array($job['kind'], array('replace', 'retire'), true);
             if ($real && (!WP_Seed_Pixel_Master_Storage::enabled() || $executor !== null)) { return new WP_Error('PERMISSION_DENIED'); }
+            if ($job['kind'] === 'replace') {
+                $cleanup_id = $wpdb->get_var($wpdb->prepare("SELECT id FROM $items WHERE job_id=%d AND kind='operation'
+                    AND stage='skipped' AND error_code='NO_BENEFIT' AND JSON_VALID(receipt)
+                    AND JSON_UNQUOTE(JSON_EXTRACT(receipt,'$.resume_stage')) IN ('queued','preparing','ready')
+                    AND JSON_EXTRACT(receipt,'$.cleanup_unreplaced') IS NULL ORDER BY id LIMIT 1", $id));
+                if ($cleanup_id) { return self::reconcile_unreplaced_locked($job, (int) $cleanup_id); }
+            }
             if ($job['status'] !== 'running') { return self::status($id); }
             if ((int) $job['lease_until'] >= time()) { return new WP_Error('LOCKED'); }
             $token = bin2hex(random_bytes(24));
@@ -351,8 +391,7 @@ final class WP_Seed_Pixel_Jobs {
             $handle = WP_Seed_Pixel_Files::lock((int) $item['attachment_id']); if (is_wp_error($handle)) { $handle = null; return new WP_Error('LOCKED'); }
             if ((int) $item['lease_until'] >= time()) { return new WP_Error('LOCKED'); }
             // An incomplete claimed item reserves its attachment even when its job is paused.
-            $other = $wpdb->get_var($wpdb->prepare("SELECT id FROM $items WHERE attachment_id=%d AND kind='operation' AND job_id<>%d AND (stage NOT IN ($terminal,'queued') OR (action IN ('replace','retire') AND stage='needs_review')) LIMIT 1", $item['attachment_id'], $id));
-            if ($other) { return new WP_Error('CLAIM_CONFLICT'); }
+            if (self::other_claim($item, true)) { return new WP_Error('CLAIM_CONFLICT'); }
             if ($wpdb->query($wpdb->prepare("UPDATE $items SET lease=%s,lease_until=%d WHERE id=%d AND revision=%d AND lease_until<%d", $token, time() + 60, $item['id'], $item['revision'], time())) !== 1) { return new WP_Error('CLAIM_CONFLICT'); }
             $item = WP_Seed_Pixel_Job_Store::item($item['id']);
             if (!hash_equals($item['snapshot_hash'], hash('sha256', $item['data'])) || !WP_Seed_Pixel_Job_Store::journal_valid($item)) { return self::fail($job, $item, $token, 'EVIDENCE_INVALID'); }
@@ -489,6 +528,14 @@ final class WP_Seed_Pixel_Jobs {
         if ($code === 'NO_BENEFIT' && !$recover) { $stage = 'skipped'; }
         $result = WP_Seed_Pixel_Job_Store::transition($item, $token, $stage, $code, array('simulation' => !in_array($job['kind'], array('replace', 'retire'), true), 'resume_stage' => $item['stage']));
         if (is_wp_error($result)) { return self::systemic($job['id'], 'STORE_FAILED'); }
+        if ($job['kind'] === 'replace' && !$recover) {
+            do_action('wp_seed_pixel_m3_boundary', 'terminal_decision', (int) $result['id']);
+            $cleanup = WP_Seed_Pixel_Master_Storage::cleanup_unreplaced($result, $token);
+            if (!is_wp_error($cleanup)) {
+                $result = WP_Seed_Pixel_Job_Store::record_cleanup($result, $token, $cleanup);
+                if (is_wp_error($result)) { return self::systemic($job['id'], 'STORE_FAILED'); }
+            }
+        }
         $individual_review = $stale_bulk || (isset($policy['bulk']) && !$recover && in_array($class, array('review', 'unsupported'), true));
         $failures = (int) $job['failures'] + ($individual_review ? 0 : 1);
         $wpdb->update(WP_Seed_Pixel_Job_Store::table('jobs'), array('failures' => $failures, 'error_code' => $code,
@@ -504,6 +551,44 @@ final class WP_Seed_Pixel_Jobs {
             $wpdb->update(WP_Seed_Pixel_Job_Store::table('jobs'), array('status' => $errors ? 'completed_errors' : 'completed', 'updated' => time()), array('id' => $id, 'status' => 'running'));
         }
         return self::status($id);
+    }
+
+    /** Official no-encoding reconciliation for a terminal pre-swap item, including older builds. */
+    public static function reconcile_unreplaced($id, $item_id) {
+        if (!self::allowed() || !WP_Seed_Pixel_Master_Storage::enabled()) { return new WP_Error('PERMISSION_DENIED'); }
+        $site = WP_Seed_Pixel_Files::lock(0); if (is_wp_error($site)) { return new WP_Error('LOCKED'); }
+        try {
+            $job = WP_Seed_Pixel_Job_Store::job($id);
+            if (!$job || $job['kind'] !== 'replace' || !self::compatible($job)) { return new WP_Error('JOB_REQUIRED'); }
+            return self::reconcile_unreplaced_locked($job, (int) $item_id);
+        } finally { WP_Seed_Pixel_Files::unlock($site); }
+    }
+
+    private static function reconcile_unreplaced_locked(array $job, $item_id) {
+        global $wpdb;
+        $item = WP_Seed_Pixel_Job_Store::item($item_id); $lock = null; $token = bin2hex(random_bytes(24));
+        $jobs = WP_Seed_Pixel_Job_Store::table('jobs'); $items = WP_Seed_Pixel_Job_Store::table('items');
+        if (!$item || (int) $item['job_id'] !== (int) $job['id'] || !current_user_can('edit_post', (int) $item['attachment_id'])
+            || (int) $job['lease_until'] >= time() || (int) $item['lease_until'] >= time()) { return new WP_Error('LOCKED'); }
+        if (self::other_claim($item, false)) { return new WP_Error('CLAIM_CONFLICT'); }
+        try {
+            $lock = WP_Seed_Pixel_Files::lock((int) $item['attachment_id']); if (is_wp_error($lock)) { $lock = null; return new WP_Error('LOCKED'); }
+            if ($wpdb->query($wpdb->prepare("UPDATE $jobs SET lease=%s,lease_until=%d WHERE id=%d AND revision=%d AND lease_until<%d",
+                $token, time() + 60, $job['id'], $job['revision'], time())) !== 1) { return new WP_Error('LOCKED'); }
+            if ($wpdb->query($wpdb->prepare("UPDATE $items SET lease=%s,lease_until=%d WHERE id=%d AND revision=%d AND lease_until<%d",
+                $token, time() + 60, $item_id, $item['revision'], time())) !== 1) { return new WP_Error('LOCKED'); }
+            $item = WP_Seed_Pixel_Job_Store::item($item_id);
+            $cleanup = WP_Seed_Pixel_Master_Storage::cleanup_unreplaced($item, $token); if (is_wp_error($cleanup)) { return $cleanup; }
+            $receipt = json_decode($item['receipt'], true);
+            if (empty($receipt['cleanup_unreplaced'])) {
+                $item = WP_Seed_Pixel_Job_Store::record_cleanup($item, $token, $cleanup); if (is_wp_error($item)) { return $item; }
+            }
+            return self::finish($job['id']);
+        } finally {
+            $wpdb->update($items, array('lease' => '', 'lease_until' => 0), array('id' => $item_id, 'lease' => $token));
+            $wpdb->update($jobs, array('lease' => '', 'lease_until' => 0), array('id' => $job['id'], 'lease' => $token));
+            if ($lock) { WP_Seed_Pixel_Files::unlock($lock); }
+        }
     }
 
     public static function control($id, $operation) {

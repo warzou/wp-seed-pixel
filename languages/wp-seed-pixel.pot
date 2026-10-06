@@ -24,6 +24,9 @@ msgid_plural "%d images optimized"
 msgstr[0] ""
 msgstr[1] ""
 
+msgid "%d images selected"
+msgstr ""
+
 msgid "%s%% less transfer than the original"
 msgstr ""
 
@@ -54,6 +57,9 @@ msgstr ""
 msgid "A safety check failed. Review technical details."
 msgstr ""
 
+msgid "Active image saving: %1$s (%2$s%%)."
+msgstr ""
+
 msgid "Active source bytes saved"
 msgstr ""
 
@@ -63,7 +69,19 @@ msgstr ""
 msgid "Additional disk usage: %s. This is not a disk saving."
 msgstr ""
 
+msgid "Additional site-wide storage ceiling"
+msgstr ""
+
+msgid "Advanced batch tools"
+msgstr ""
+
+msgid "Advanced hosting configuration"
+msgstr ""
+
 msgid "Advanced settings"
+msgstr ""
+
+msgid "Advanced: whole image library"
 msgstr ""
 
 msgid "Algorithm: %s | Profile: %s | Original: %s"
@@ -108,6 +126,9 @@ msgstr ""
 msgid "Analyze only"
 msgstr ""
 
+msgid "Analyze storage usage"
+msgstr ""
+
 msgid "Analyzed"
 msgstr ""
 
@@ -139,6 +160,9 @@ msgid "Attachment metadata changed concurrently or is ambiguous."
 msgstr ""
 
 msgid "Attachment not found."
+msgstr ""
+
+msgid "Automatic optimization"
 msgstr ""
 
 msgid "Available"
@@ -186,16 +210,25 @@ msgstr ""
 msgid "Cannot establish the owned staging root."
 msgstr ""
 
+msgid "Ceiling in decimal MB"
+msgstr ""
+
 msgid "Changed since analysis; analyze again"
 msgstr ""
 
 msgid "Choose existing media"
 msgstr ""
 
-msgid "Choose images in the Media Library"
+msgid "Choose the maximum temporary space per operation."
+msgstr ""
+
+msgid "Choose whether to set an additional site-wide storage ceiling."
 msgstr ""
 
 msgid "Color or orientation needs review"
+msgstr ""
+
+msgid "Color profile is checked before processing, not inferred from the file extension."
 msgstr ""
 
 msgid "Committed generation requires manual integrity review."
@@ -219,6 +252,12 @@ msgstr ""
 msgid "Completed with reservations"
 msgstr ""
 
+msgid "Configuration incomplete"
+msgstr ""
+
+msgid "Configured"
+msgstr ""
+
 msgid "Confirm the whole-library operation first."
 msgstr ""
 
@@ -226,6 +265,9 @@ msgid "Confirm the whole-library selection first."
 msgstr ""
 
 msgid "Consistent"
+msgstr ""
+
+msgid "Control how WP Seed Pixel uses disk space safely and keeps originals for restoration. Preparing storage does not optimize any image."
 msgstr ""
 
 msgid "Control write could not be verified."
@@ -246,7 +288,13 @@ msgstr ""
 msgid "Current active source bytes"
 msgstr ""
 
+msgid "Current file: %d bytes."
+msgstr ""
+
 msgid "Current physical audit"
+msgstr ""
+
+msgid "Current state: %s"
 msgstr ""
 
 msgid "Decimal MB"
@@ -264,13 +312,16 @@ msgstr ""
 msgid "Derivative not available."
 msgstr ""
 
-msgid "Diagnostics and developer tools"
+msgid "Diagnostics and advanced tools"
 msgstr ""
 
 msgid "Dimensions conflict with retained sizes"
 msgstr ""
 
 msgid "Dimensions must be 1..8192 and JPEG quality 1..100."
+msgstr ""
+
+msgid "Dimensions: %1$d x %2$d pixels"
 msgstr ""
 
 msgid "EXIF declares an uncalibrated or non-sRGB color space."
@@ -280,6 +331,12 @@ msgid "Eligible formats"
 msgstr ""
 
 msgid "Enable only after reviewing links and cached versions that may still use these files."
+msgstr ""
+
+msgid "Endpoint not configured"
+msgstr ""
+
+msgid "Error"
 msgstr ""
 
 msgid "Estimated peak"
@@ -348,6 +405,9 @@ msgstr ""
 msgid "Format is not eligible for processing"
 msgstr ""
 
+msgid "Format: %s"
+msgstr ""
+
 msgid "Generate native WordPress metadata before optimization."
 msgstr ""
 
@@ -355,6 +415,12 @@ msgid "History cleanup bookkeeping requires retry."
 msgstr ""
 
 msgid "Hosting quota is unknown."
+msgstr ""
+
+msgid "I explicitly authorize processing the whole image library."
+msgstr ""
+
+msgid "I understand that this deletion cannot be undone."
 msgstr ""
 
 msgid "I understand this version cannot be restored by Pixel after permanent deletion."
@@ -381,7 +447,7 @@ msgstr ""
 msgid "Image semantics or ownership require review."
 msgstr ""
 
-msgid "Image storage"
+msgid "Image storage analysis"
 msgstr ""
 
 msgid "Images"
@@ -414,6 +480,9 @@ msgstr ""
 msgid "Insufficient staging disk space."
 msgstr ""
 
+msgid "Insufficient verified temporary space to optimize safely. No image was changed."
+msgstr ""
+
 msgid "Invalid ICC tag boundary."
 msgstr ""
 
@@ -444,10 +513,19 @@ msgstr ""
 msgid "Invalid storage settings. Processing is blocked."
 msgstr ""
 
+msgid "Invalid update package."
+msgstr ""
+
 msgid "Items requiring a fresh physical review"
 msgstr ""
 
 msgid "JPEG compression savings not measured"
+msgstr ""
+
+msgid "JPEG stays JPEG. PNG stays PNG, without loss. Other formats are kept unchanged."
+msgstr ""
+
+msgid "JPEG web versions; other formats are kept without changes."
 msgstr ""
 
 msgid "Job state could not be saved."
@@ -474,6 +552,9 @@ msgstr ""
 msgid "Large web view"
 msgstr ""
 
+msgid "Local image optimization and verified recovery."
+msgstr ""
+
 msgid "Local image optimization. Your original is kept; no image is sent to an external service."
 msgstr ""
 
@@ -481,6 +562,15 @@ msgid "Local quality measurement failed."
 msgstr ""
 
 msgid "Local upload storage is unavailable."
+msgstr ""
+
+msgid "Lossless PNG optimization available."
+msgstr ""
+
+msgid "Lossless PNG processing is not enabled on this site. No image has been changed."
+msgstr ""
+
+msgid "Lossless optimization; transparency is preserved and PNG remains PNG. Existing media are not processed automatically."
 msgstr ""
 
 msgid "Low margin"
@@ -522,6 +612,9 @@ msgstr ""
 msgid "Maximum operation budget"
 msgstr ""
 
+msgid "Maximum temporary space per operation"
+msgstr ""
+
 msgid "Measure current file space"
 msgstr ""
 
@@ -538,9 +631,6 @@ msgid "Metric unavailable: conservative fixed Q94 fallback."
 msgstr ""
 
 msgid "Missing file"
-msgstr ""
-
-msgid "Needs attention"
 msgstr ""
 
 msgid "Needs review"
@@ -564,6 +654,9 @@ msgstr ""
 msgid "Next"
 msgstr ""
 
+msgid "No additional site ceiling; keep per-operation and physical-space checks"
+msgstr ""
+
 msgid "No analysis yet"
 msgstr ""
 
@@ -577,6 +670,9 @@ msgid "No candidate meets the quality floor; source retained, dimension target m
 msgstr ""
 
 msgid "No eligible failures remain to retry."
+msgstr ""
+
+msgid "No internal web-directory fallback is used. If an outside location cannot be proved private, processing stays blocked. Host-defined storage settings are never overwritten."
 msgstr ""
 
 msgid "No matching images"
@@ -603,13 +699,22 @@ msgstr ""
 msgid "No simulation yet"
 msgstr ""
 
+msgid "No useful saving"
+msgstr ""
+
 msgid "No useful saving; source preserved."
+msgstr ""
+
+msgid "No writable private location outside the public web root is available."
 msgstr ""
 
 msgid "Not optimized"
 msgstr ""
 
 msgid "Not replaced"
+msgstr ""
+
+msgid "Not yet optimized."
 msgstr ""
 
 msgid "Off"
@@ -630,6 +735,9 @@ msgstr ""
 msgid "Operational ceiling (0: disabled)"
 msgstr ""
 
+msgid "Optimization unavailable"
+msgstr ""
+
 msgid "Optimize"
 msgstr ""
 
@@ -637,6 +745,18 @@ msgid "Optimize existing images"
 msgstr ""
 
 msgid "Optimize new JPEG uploads automatically"
+msgstr ""
+
+msgid "Optimize new PNG uploads without loss"
+msgstr ""
+
+msgid "Optimize selected images"
+msgstr ""
+
+msgid "Optimize the %d images"
+msgstr ""
+
+msgid "Optimize this image"
 msgstr ""
 
 msgid "Optimize with WP Seed Pixel"
@@ -648,19 +768,43 @@ msgstr ""
 msgid "Optimized native image"
 msgstr ""
 
+msgid "Optimized version"
+msgstr ""
+
+msgid "Original"
+msgstr ""
+
 msgid "Original already suitable; reused without a new copy."
 msgstr ""
 
 msgid "Original bytes to review"
 msgstr ""
 
+msgid "Original permanently deleted. Restoration is no longer available."
+msgstr ""
+
+msgid "Original retained for restoration"
+msgstr ""
+
+msgid "Original retained for restoration. Its space has not yet been freed."
+msgstr ""
+
+msgid "PNG guidance: 128 decimal MB covers the maximum temporary estimate for the supported PNG limits. This is a suggestion, not a preselected value. JPEG images may need more."
+msgstr ""
+
 msgid "PNG lossless savings not measured"
+msgstr ""
+
+msgid "PNG settings"
 msgstr ""
 
 msgid "PNG: explicit lossless processing available"
 msgstr ""
 
 msgid "PNG: lossless only, 8-bit non-interlaced, up to 4 megapixels and 16 MiB. Unsupported cases are preserved."
+msgstr ""
+
+msgid "PNG: not processed"
 msgstr ""
 
 msgid "POST required."
@@ -681,6 +825,9 @@ msgstr ""
 msgid "Permanent deletion stopped."
 msgstr ""
 
+msgid "Permanently delete original"
+msgstr ""
+
 msgid "Permanently deleted previous version"
 msgstr ""
 
@@ -688,9 +835,6 @@ msgid "Permission denied."
 msgstr ""
 
 msgid "Photo album (compatibility)"
-msgstr ""
-
-msgid "Pixel - Image storage"
 msgstr ""
 
 msgid "Pixel - New uploads"
@@ -705,7 +849,19 @@ msgstr ""
 msgid "Pixel - Storage saver"
 msgstr ""
 
+msgid "Pixel could not confirm that this image can be optimized safely. The original is unchanged; review the technical details before retrying."
+msgstr ""
+
+msgid "Pixel could not verify every related file. The image is unchanged; check its technical inventory before retrying."
+msgstr ""
+
+msgid "Pixel creates and checks its own protected location outside the public web root. No server path, FTP or configuration-file edit is needed. No image is optimized by this action."
+msgstr ""
+
 msgid "Pixel file relationships are ambiguous"
+msgstr ""
+
+msgid "Pixel keeps the original so you can restore the image until you explicitly delete that original permanently. There is no automatic expiry or purge."
 msgstr ""
 
 msgid "Pixel sections"
@@ -729,13 +885,19 @@ msgstr ""
 msgid "Potential bytes removable by explicit purge"
 msgstr ""
 
-msgid "Potential is conditional, not freed space. Quarantine would still occupy storage. Filesystem allocation and hosting quota are unknown."
+msgid "Potential is conditional, not freed space. Originals retained for restoration still occupy storage. Filesystem allocation and hosting quota are unknown."
 msgstr ""
 
 msgid "Preexisting media are never processed automatically. Saving establishes a new baseline for subsequent uploads."
 msgstr ""
 
 msgid "Preexisting media: protected from automatic processing"
+msgstr ""
+
+msgid "Prepare recovery storage"
+msgstr ""
+
+msgid "Prepare the protected storage for originals first."
 msgstr ""
 
 msgid "Preparing candidate"
@@ -765,16 +927,16 @@ msgstr ""
 msgid "Private engine disabled or incompatible storage."
 msgstr ""
 
+msgid "Private update information is unavailable."
+msgstr ""
+
+msgid "Private updates: %s"
+msgstr ""
+
 msgid "Process eligible new images"
 msgstr ""
 
-msgid "Process the whole image library, including images already up to date"
-msgstr ""
-
 msgid "Processing"
-msgstr ""
-
-msgid "Processing could not finish. Check the technical details before retrying."
 msgstr ""
 
 msgid "Processing could not finish. Your original is preserved."
@@ -804,6 +966,9 @@ msgstr ""
 msgid "Protected manifest write requires recovery."
 msgstr ""
 
+msgid "Protected storage for originals"
+msgstr ""
+
 msgid "Provider quota (information only)"
 msgstr ""
 
@@ -819,22 +984,28 @@ msgstr ""
 msgid "RGB ICC conversion requires Imagick with LittleCMS. MASTER and existing mappings were retained."
 msgstr ""
 
+msgid "Read release notes"
+msgstr ""
+
 msgid "Ready"
 msgstr ""
 
 msgid "Reason"
 msgstr ""
 
-msgid "Recent new uploads"
+msgid "Recent activity"
 msgstr ""
 
-msgid "Recent results"
+msgid "Recent new uploads"
 msgstr ""
 
 msgid "Reconcile the interrupted item before cancelling."
 msgstr ""
 
 msgid "Reconciliation required"
+msgstr ""
+
+msgid "Recoverable and freed space"
 msgstr ""
 
 msgid "Recoverable space after permanent deletion"
@@ -850,6 +1021,15 @@ msgid "Recovery integrity needs review"
 msgstr ""
 
 msgid "Recovery journal is invalid; no files were deleted."
+msgstr ""
+
+msgid "Recovery storage and images are on different filesystems. Optimization is blocked."
+msgstr ""
+
+msgid "Recovery storage changed or disappeared. Optimization is blocked; existing images are unchanged."
+msgstr ""
+
+msgid "Recovery storage is controlled by this host. Its existing configuration is preserved."
 msgstr ""
 
 msgid "Reference rotation failed."
@@ -906,6 +1086,9 @@ msgstr ""
 msgid "Restoration unavailable"
 msgstr ""
 
+msgid "Restore original"
+msgstr ""
+
 msgid "Restore this version"
 msgstr ""
 
@@ -924,6 +1107,9 @@ msgstr ""
 msgid "Retained image versions"
 msgstr ""
 
+msgid "Retained originals"
+msgstr ""
+
 msgid "Retained recovery: %s"
 msgstr ""
 
@@ -936,6 +1122,9 @@ msgstr ""
 msgid "Retire preserved originals"
 msgstr ""
 
+msgid "Retry"
+msgstr ""
+
 msgid "Retry failed items"
 msgstr ""
 
@@ -943,6 +1132,12 @@ msgid "Retry limit reached; review required."
 msgstr ""
 
 msgid "Retry one failure"
+msgstr ""
+
+msgid "Return to WP Seed Pixel settings"
+msgstr ""
+
+msgid "Review the invalid site storage limit."
 msgstr ""
 
 msgid "Run simulation"
@@ -954,7 +1149,13 @@ msgstr ""
 msgid "Running simulation"
 msgstr ""
 
+msgid "Safe optimization briefly needs extra space before it saves space. This allowance is checked for each image; too small an allowance skips that image rather than risking storage exhaustion. No amount is selected for you."
+msgstr ""
+
 msgid "Safety reserve"
+msgstr ""
+
+msgid "Save space choices"
 msgstr ""
 
 msgid "Saved evidence is inconsistent; review required."
@@ -969,7 +1170,10 @@ msgstr ""
 msgid "Select between 1 and 1000 media items."
 msgstr ""
 
-msgid "Select images with the Media Library bulk action, then resume here. One image is processed at a time. You can pause or return later to resume; processing stops when this page is closed."
+msgid "Select images"
+msgstr ""
+
+msgid "Select images. Only this selection is processed, one image at a time. Closing this page stops the batch; you can resume later."
 msgstr ""
 
 msgid "Selected media"
@@ -978,7 +1182,7 @@ msgstr ""
 msgid "Sensitive metadata or unapplied orientation remained in the derivative."
 msgstr ""
 
-msgid "Settings"
+msgid "Set a site-wide ceiling"
 msgstr ""
 
 msgid "Settings saved. Existing images have not been reprocessed."
@@ -1023,6 +1227,15 @@ msgstr ""
 msgid "Source already bounded, light and metadata-safe."
 msgstr ""
 
+msgid "Space freed: %s."
+msgstr ""
+
+msgid "Space is not permanently freed while the original is retained for restoration. Potential savings are not reclaimed bytes."
+msgstr ""
+
+msgid "Space limits"
+msgstr ""
+
 msgid "Space reclaimed"
 msgstr ""
 
@@ -1041,7 +1254,28 @@ msgstr ""
 msgid "Storage analysis"
 msgstr ""
 
+msgid "Storage configuration"
+msgstr ""
+
+msgid "Storage is not prepared yet."
+msgstr ""
+
+msgid "Storage preparation could not be verified. No image was changed."
+msgstr ""
+
+msgid "Storage preparation was interrupted before ownership could be verified. No image will be processed."
+msgstr ""
+
+msgid "Storage settings saved. No image was processed and PNG was not enabled."
+msgstr ""
+
 msgid "Storage simulation"
+msgstr ""
+
+msgid "Storage status"
+msgstr ""
+
+msgid "Storage technical details"
 msgstr ""
 
 msgid "Supported policies: JPEG, sensitive metadata removal, color preservation and no upscaling."
@@ -1066,6 +1300,9 @@ msgid "The color-managed reference failed validation."
 msgstr ""
 
 msgid "The color-managed sRGB transform failed."
+msgstr ""
+
+msgid "The current image is already sufficiently optimized without loss."
 msgstr ""
 
 msgid "The decoded source profile does not match the validated JPEG profile."
@@ -1098,7 +1335,22 @@ msgstr ""
 msgid "The next media item is no longer editable. Review the selection before resuming."
 msgstr ""
 
+msgid "The optimized file did not pass the safety checks. The original has been preserved."
+msgstr ""
+
 msgid "The original and attached files must share a local upload directory."
+msgstr ""
+
+msgid "The original cannot be kept safely for restoration. Optimization is blocked; see advanced diagnostics."
+msgstr ""
+
+msgid "The original will be permanently deleted. Restoration will no longer be possible; retained storage will then be released."
+msgstr ""
+
+msgid "The original will be retained for restoration."
+msgstr ""
+
+msgid "The package is not the expected Pixel version."
 msgstr ""
 
 msgid "The path is outside the current site upload directory."
@@ -1111,6 +1363,15 @@ msgid "The preset must contain exactly the documented keys."
 msgstr ""
 
 msgid "The processing backend is unavailable."
+msgstr ""
+
+msgid "The proposed directory already belongs to something else. Pixel will not use or change it."
+msgstr ""
+
+msgid "The public web root could not be verified. No original will be stored."
+msgstr ""
+
+msgid "The recovery location is no longer provably private. Optimization is blocked."
 msgstr ""
 
 msgid "The request was interrupted."
@@ -1140,6 +1401,9 @@ msgstr ""
 msgid "The simulated switch failed."
 msgstr ""
 
+msgid "The site limit needs a current complete hosting measurement or more available margin."
+msgstr ""
+
 msgid "The source cannot be read."
 msgstr ""
 
@@ -1158,10 +1422,25 @@ msgstr ""
 msgid "This analysis has already finished."
 msgstr ""
 
+msgid "This can process many images. Images already up to date are reused without re-encoding."
+msgstr ""
+
+msgid "This host cannot prove safe private recovery storage. Optimization remains unavailable."
+msgstr ""
+
+msgid "This host explicitly disabled recovery processing. Pixel will not override that choice."
+msgstr ""
+
 msgid "This image was preserved because its format or image profile is not supported, or processing was excluded."
 msgstr ""
 
+msgid "This is your limit for total hosting usage, not free disk space and not the temporary allowance for one image. A ceiling requires a current complete hosting measurement; Pixel will block work if that measurement is unavailable."
+msgstr ""
+
 msgid "Thumbnail"
+msgstr ""
+
+msgid "To configure"
 msgstr ""
 
 msgid "Total bytes"
@@ -1218,6 +1497,12 @@ msgstr ""
 msgid "Unsupported operation"
 msgstr ""
 
+msgid "Update metadata or compatibility could not be verified."
+msgstr ""
+
+msgid "Update package integrity check failed. Nothing was installed."
+msgstr ""
+
 msgid "Usage must include quarantine and all hosting storage. An uploaded file already occupies space before Pixel runs."
 msgstr ""
 
@@ -1233,10 +1518,16 @@ msgstr ""
 msgid "Verified hosting budget (MiB)"
 msgstr ""
 
-msgid "Verified quarantine bytes removed"
+msgid "Verified retained-original bytes removed"
 msgstr ""
 
 msgid "Verified; previous version quarantined"
+msgstr ""
+
+msgid "WP Seed Pixel - Storage"
+msgstr ""
+
+msgid "WP Seed Pixel - Storage and recovery"
 msgstr ""
 
 msgid "Waiting"
@@ -1270,6 +1561,9 @@ msgid "WordPress sizes"
 msgstr ""
 
 msgid "Your original is kept."
+msgstr ""
+
+msgid "ZIP validation is unavailable. Use the verified manual recovery procedure."
 msgstr ""
 
 msgid "already up to date"

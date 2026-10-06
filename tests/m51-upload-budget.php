@@ -96,7 +96,7 @@ foreach (array('normal' => 'm3-small.jpeg', 'big' => 'm3-large.jpg', 'icc' => 'm
     $after = get_post_meta($id, WP_Seed_Pixel_Future_Uploads::META, true);
     m51_assert(($after['job_id'] ?? 0) === $job_id, "$label duplicate hook no duplicate job");
     m51_assert(is_file(get_attached_file($id)) && wp_get_attachment_url($id) === $url, "$label successful WordPress upload remains usable");
-    if ($label === 'unsupported') { m51_assert(!$job_id && $marker['state'] === 'skipped', 'PNG inventoried safely M6 not started'); }
+    if ($label === 'unsupported') { m51_assert(!$job_id && empty($marker), 'PNG excluded at enrollment under JPEG-only policy'); }
     else {
         if (!$job_id) { throw new RuntimeException('Enrollment delta: ' . wp_json_encode(array('marker' => $marker, 'expected' => $GLOBALS['m51_native_expected'][$id], 'observed' => wp_get_attachment_metadata($id)))); }
         m51_assert($job_id > 0, "$label uses accepted M2 job");
@@ -107,6 +107,7 @@ foreach (array('normal' => 'm3-small.jpeg', 'big' => 'm3-large.jpg', 'icc' => 'm
         if ($label === 'big') {
             m51_assert(!empty($native_before['original_image']) && strpos($native_before['file'], '-scaled') !== false, 'WordPress big-image native graph established before Pixel');
             m51_assert(wp_get_attachment_metadata($id)['original_image'] === $native_before['original_image'] && is_file(wp_get_original_image_path($id)), 'Original-image preserved');
+            if ($item['stage'] === 'retained') { $panel=WP_Seed_Pixel_Media::details($id); m51_assert(str_contains($panel,'Original') && str_contains($panel,'Optimized version'), 'Scaled native graph has clear Original and Optimized UI'); }
         }
         $results[$label] = array('id' => $id, 'job' => $job_id, 'stage' => $item['stage'], 'reason' => $item['error_code']);
     }

@@ -8,12 +8,12 @@ m5_result(WP_Seed_Pixel_Jobs::bulk_step($id)); remove_filter('wp_image_editors',
 $item = m5_items($id)[0]; $dir = WP_Seed_Pixel_Master_Storage::directory($item, false);
 $journal = file_get_contents($dir . '/journal.json');
 $a = m5_result(WP_Seed_Pixel_Jobs::storage_audit($id));
-m5_assert($a['complete'] && $a['temporary_bytes'] > 0 && $a['net_reclaimed_bytes'] < 0, 'failed escrow is measured without fictional saving');
+m5_assert($a['complete'] && $a['temporary_bytes'] === 0 && $a['audit_bytes'] > 0 && $a['net_reclaimed_bytes'] === -$a['audit_bytes'], 'failed cleanup measures remaining metadata without fictional saving');
 file_put_contents($dir . '/foreign.txt', 'synthetic foreign evidence');
 $a = m5_result(WP_Seed_Pixel_Jobs::storage_audit($id));
 m5_assert(!$a['complete'] && $a['net_reclaimed_bytes'] === null && $a['quarantine_bytes'] === null, 'foreign pending file suppresses uncertain totals');
 m5_assert(file_exists($dir . '/foreign.txt'), 'read-only audit never deletes a foreign file'); unlink($dir . '/foreign.txt');
-link($dir . '/recovery.jpg', $dir . '/hardlink.jpg');
+link($dir . '/journal.json', $dir . '/hardlink.jpg');
 $a = m5_result(WP_Seed_Pixel_Jobs::storage_audit($id));
 m5_assert(!$a['complete'] && $a['temporary_bytes'] === null, 'linked pending escrow cannot create a trusted physical total'); unlink($dir . '/hardlink.jpg');
 $r = json_decode($journal, true); $r['checksum'] = str_repeat('0', 64); file_put_contents($dir . '/journal.json', wp_json_encode($r));

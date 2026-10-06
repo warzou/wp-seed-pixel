@@ -48,15 +48,21 @@ final class WP_Seed_Pixel_Scan {
         return true;
     }
 
-    public static function start() {
+    public static function start($selected_ids = null) {
         global $wpdb;
         if (!current_user_can('manage_options')) { return new WP_Error('pixel_scan_permission', __('Permission denied.', 'wp-seed-pixel')); }
+        if ($selected_ids !== null && (!is_array($selected_ids) || !$selected_ids || count($selected_ids) > 500
+            || count(array_unique($selected_ids)) !== count($selected_ids)
+            || array_filter($selected_ids, static function ($id) { return !is_int($id) || $id < 1 || get_post_type($id) !== 'attachment' || !current_user_can('edit_post', $id); }))) { return new WP_Error('POLICY_INVALID'); }
+        if ($selected_ids !== null) { $installed = WP_Seed_Pixel_Job_Store::install(); if (is_wp_error($installed)) { return $installed; } }
         $installed = self::install(); if (is_wp_error($installed)) { return $installed; }
         $current = self::current();
         if ($current && in_array($current['status'], array('running', 'paused'), true)) { return new WP_Error('pixel_scan_active', __('Finish or cancel the current analysis first.', 'wp-seed-pixel')); }
         $ceiling = (int) $wpdb->get_var("SELECT MAX(ID) FROM $wpdb->posts WHERE post_type='attachment' AND post_status <> 'trash'");
-        $total = (int) $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM $wpdb->posts WHERE post_type='attachment' AND post_status <> 'trash' AND ID <= %d", $ceiling));
-        $ok = $wpdb->insert(self::table('jobs'), array('kind' => 'scan', 'status' => $total ? 'running' : 'complete', 'scan_cursor' => 0, 'ceiling' => $ceiling, 'total' => $total, 'actor' => get_current_user_id(), 'created' => time()));
+        $total = $selected_ids !== null ? count($selected_ids) : (int) $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM $wpdb->posts WHERE post_type='attachment' AND post_status <> 'trash' AND ID <= %d", $ceiling));
+        $values = array('kind' => 'scan', 'status' => $total ? 'running' : 'complete', 'scan_cursor' => 0, 'ceiling' => $ceiling, 'total' => $total, 'actor' => get_current_user_id(), 'created' => time());
+        if ($selected_ids !== null) { sort($selected_ids, SORT_NUMERIC); $values['policy'] = wp_json_encode(array('selected_scan' => $selected_ids)); }
+        $ok = $wpdb->insert(self::table('jobs'), $values);
         if (!$ok) { return new WP_Error('pixel_scan_store', __('Analysis state could not be saved.', 'wp-seed-pixel')); }
         return self::status((int) $wpdb->insert_id);
     }
@@ -72,6 +78,13 @@ final class WP_Seed_Pixel_Scan {
         global $wpdb;
         if ((int) get_option('wp_seed_pixel_scan_schema') !== self::SCHEMA) { return null; }
         return $wpdb->get_row($wpdb->prepare('SELECT * FROM ' . self::table('jobs') . " WHERE id=%d AND kind='scan'", $id), ARRAY_A);
+    }
+
+    public static function selection($id) {
+        if (!current_user_can('manage_options')) { return null; }
+        $job = self::job($id);
+        $policy = $job ? json_decode($job['policy'] ?? '', true) : null;
+        return $policy['selected_scan'] ?? null;
     }
 
     public static function status($id) {
@@ -106,7 +119,12 @@ final class WP_Seed_Pixel_Scan {
         if (!$claimed) { $job = self::job($id); return $job && $job['status'] !== 'running' ? self::status($id) : new WP_Error('pixel_scan_busy', __('Analysis is busy. Resume later.', 'wp-seed-pixel')); }
         try {
             $job = self::job($id);
-            $next = (int) $wpdb->get_var($wpdb->prepare("SELECT ID FROM $wpdb->posts WHERE post_type='attachment' AND post_status<>'trash' AND ID>%d AND ID<=%d ORDER BY ID LIMIT 1", $job['scan_cursor'], $job['ceiling']));
+            $policy = json_decode($job['policy'] ?? '', true);
+            $selected = $policy['selected_scan'] ?? null;
+            if ($selected !== null && (!is_array($selected) || !$selected || count($selected) > 500
+                || array_filter($selected, static function ($value) { return !is_int($value) || $value < 1; }))) { return new WP_Error('EVIDENCE_INVALID'); }
+            $scope = $selected !== null ? ' AND ID IN (' . implode(',', $selected) . ')' : '';
+            $next = (int) $wpdb->get_var($wpdb->prepare("SELECT ID FROM $wpdb->posts WHERE post_type='attachment' AND post_status<>'trash' AND ID>%d AND ID<=%d" . $scope . ' ORDER BY ID LIMIT 1', $job['scan_cursor'], $job['ceiling']));
             if (!$next) { $wpdb->update($jobs, array('status' => 'complete'), array('id' => $id, 'lease' => $token)); return self::status($id); }
             $result = WP_Seed_Pixel_Analyzer::analyze($next);
             if (is_wp_error($result)) { $result = array('attachment_id' => $next, 'title' => '', 'health' => 'needs_review', 'issues' => array($result->get_error_code()), 'files' => array(), 'storage' => array(), 'opportunities' => array(), 'stale' => false); }

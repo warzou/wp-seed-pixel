@@ -1,5 +1,49 @@
 # WP Seed Pixel
 
+## 2026-10-06 - 0.4.0 final candidate certified and deployed to PDE DEV
+
+Feature scope is frozen. Runtime version 0.4.0, private build private.9. The
+generic pre-swap cleanup persists its terminal decision and fenced cleanup
+intent before removing verified, owned, unnecessary recovery/candidate copies.
+Unknown generations, ownership, links or possible swaps remain fail-closed;
+successful replacements retain their original until explicit permanent deletion.
+Official reconciliation is idempotent and never re-encodes a NO_BENEFIT item.
+
+Two successful final disposable cycles use byte-identical frozen runtime:
+1,001 primary core checks per cycle, plus 73 cleanup checks including four real
+process-kill boundaries, 42 simplified workflow checks, 27 isolated browser
+checks and 486 native updater checks. Other focused post-cycle regressions pass.
+Preliminary harness failures were corrected without changing production code or
+weakening assertions. Six bounded final review areas have zero Critical/Major.
+Production GD deprecations are fixed; remaining PHP 8.5 fixture-only warnings
+are Minor. Existing accepted real MySQL/NFS authority evidence applies to the
+unchanged coordination primitives; this closure does not claim a new NFS run.
+
+PDE DEV now runs the exact runtime-only ZIP: 192,569 bytes, 665,673 installed
+bytes, 55 files; SHA-256
+`512d7685b42b7dfddc308be25ae882bb22ad8314cbbf14fa89cf4f38d0a87712`.
+ZIP, manifest and source match. No development files are packaged. The modest
+growth from private.8 includes the administrator README and lifecycle/UI fixes.
+
+Attachment 6354 remains NO_BENEFIT, source 2,189,717 bytes and all 11 native
+derivatives unchanged. Official reconcile_unreplaced(10, 576) removes its
+unnecessary full-size recovery: recovery/candidate/temporary bytes zero;
+active saving zero; retained journal 5,795 logical / 8,192 allocated bytes.
+Repeated reconciliation changes nothing. One French panel, no optimize/restore/
+purge control, collapsed details; headless DEV 15 checks pass through 320 px and
+200% CSS zoom. No real encoding occurs. Protected Albums, Events, other media,
+Content Kit, ShortPixel and Pixel settings/other jobs remain unchanged.
+
+Targeted private backup and exact rollback remain outside the web root:
+pixel-final-closure-20261006T111127Z. AskPass/helpers, owned lab/services and
+isolated browser sessions are closed and physically cleaned. Production is
+untouched. Local isolated Pixel commit is authorized; no push/tag/public release.
+Updater implementation and local end-to-end are ready; official remote endpoint
+awaits owner publication/configuration and is not a code-freeze blocker.
+Final evidence: ignored reports/final-closure-20261006 and PDE
+reports/pixel-final-closure-20261006.md. User guide and 0.4.0 changelog are final.
+NEXT: owner may publish/deploy this candidate; no automatic production action.
+
 ## 2026-10-05 - Private 0.4.0 V1 candidate frozen; next gate is PDE 6354
 
 Accepted M1-M5.1 JPEG/storage primitives are preserved. M6 now supports bounded
@@ -395,3 +439,192 @@ Final evidence and visual review are in ignored reports/final. Distribution is
 allowlisted under dist. Tests/tools are development source only, never installed.
 Public GitHub publication is now authorized for 0.3.0 after its release gate.
 Any consuming-site pilot remains a separate operation requiring authorization.
+
+## 2026-10-06 - Private 0.4.0 status-only candidate 2
+
+PDE DEV attachment6354 exposed a generic presentation defect: PNG processing
+was described as available even when the host storage/recovery gate was OFF.
+The inactive state now says PNG: not processed, explains that lossless processing
+is not enabled, and hides the unavailable action. No encoder, job, policy,
+authority or storage primitive changed; no attachment-specific condition.
+
+Build identity0.4.0-private.2, version0.4.0, base commit
+fca9110ebb47e3c941664a777656fcb01395458a plus an uncommitted status/i18n diff.
+Five runtime files changed. ZIP159529 bytes / runtime543957 bytes /50 files;
+SHA-2568fb92e6e5e949f6d6b5f7c195399fc160837e4cbd8424e705a619c2c7225e112.
+The accepted original ZIP remains unchanged. No new commit, push, tag or release.
+
+58/58 status/i18n contracts and22/22 presentation contracts pass;432 gettext
+messages, no missing translation;126 PHP sources lint. DEV frontend200;
+French attachment panel1440/390/200% is readable, no overflow or JS error.
+All media/Albums guards match; no image processing or new job. Events had no
+write/action in this lot; its wp_seed_ CPTs were not in the initial SQL digest,
+so an exact full Events before/after hash is not claimed.
+Evidence stays in ignored PDE reports/pixel-0.4-pde-6354-20261006.
+Human status acceptance and any real image processing are separate next gates.
+
+## 2026-10-06 - Private productization candidate 3, DEV human review
+
+Build 0.4.0-private.3 adds explicit JPEG/PNG controls, native Media Library
+selection, a main-screen adapter to the existing selected M5 coordinator,
+consolidated ordinary menus and nonempty native technical details. PNG defaults
+and host recovery gates are retained; legacy JPEG remains independent.
+
+Private updates use a trusted, explicitly configured HTTPS manifest and the
+core Plugin_Upgrader with SHA-256/archive verification before unpacking. No
+default endpoint, publication or credential is included. Hosting remains an
+owner decision. See docs/PRIVATE-UPDATES.md. Tests and certification evidence
+remain outside the runtime package; no public release or commit is authorized.
+
+Private.3 ZIP172732 bytes, SHA-256
+1aa4187a7aa229fb6d40d6613a55ea15b6445f3b77775289e3ea12e504884523;
+runtime53 files/584917 bytes. Two scoped productization cycles passed: native
+admin54/41 assertions, core-updater92/50, headless UI15 per cycle. Additional
+M6 regression61 and format routing11 passed; the entire acquired V1 engine
+suite was not replayed. Local actual Plugin_Upgrader used controlled transport,
+not a real TLS release service. The disposable WP config emitted an ABSPATH
+redefinition warning; no runtime plugin fatal was observed.
+
+DEV exact runtime read-back and PHP38/38 passed; isolated French admin checks15
+passed at1440/820/390 with keyboard disclosure and CSS200% reflow. Attachment6354
+and all twelve native file hashes preserved, no media processing or new Pixel
+job. Immediate deployment guards identical. A later aggregate plugin-post hash
+changed while every other guard stayed identical; read-only inspection found
+recent seed_directory activity outside this Pixel lot. It was not restored or
+silently treated as full global equality. HTTPS200/noindex; PNG host gate OFF,
+legacy JPEG unchanged. HUMAN PASS and approved update hosting remain pending.
+Evidence: PDE reports/pixel-productization-20261006. No production, commit,
+push, tag or public release.
+
+## 2026-10-06 - Private recovery storage self-configuration
+
+Private build0.4.0-private.5 adds a generic native admin preparation adapter
+to the existing authority/jobs/master-storage lifecycle, not a second engine.
+On supported single-site Linux, the nearest safe owned parent of the verified
+DOCUMENT_ROOT is selected within two ancestor levels, on the uploads device.
+Group/world-writable parents are skipped, never chmodded. An owned0700 root,
+0600 marker and durable identity are revalidated before destructive eligibility;
+foreign collisions, symlinks, mount/permission changes and ambiguous incomplete
+setup fail closed. No internal public-directory or Apache-only fallback.
+
+Normal users never enter server paths. The two ordinary menus are WP Seed Pixel
+and WP Seed Pixel -- Stockage (localized long dash). Whole-site optional ceiling
+and mandatory per-operation temporary allowance are distinct, explicitly chosen.
+No automatic amount, PNG enablement, old-media work, expiry or permanent purge.
+Original retained for restoration is the recovery wording. Uninstall preserves
+owned recovery originals/configuration; core private updater preserves state.
+
+Two clean final cycles: recovery34, browser17, admin43, routing11, M4 lifecycle28,
+PNG61, native updater84, presentation22 and media/i18n58 each. Actual Linux different
+device, shared-host group-writable parent skip, foreign ownership, interruption,
+repeat setup and disappearing storage tested. Error/unsafe retry UI tested separately.
+Actual local WordPress7.1.2/PHP8.5.4; Windows and DEV PHP8.4 syntax39/39. Browser
+CSS zoom200% reflow, not physical OS/browser zoom. Full acquired engine suite not
+replayed. Native updater used controlled local transport, no new TLS endpoint.
+
+Final ZIP185673 bytes; SHA-256
+138c7c389104aa0baf9b89725aeb6f1c71eb353914920d7ddbafb13663bc930a;
+runtime54 files/630098 bytes. Runtime-only private candidate, no tests/media/secret.
+DEV UI13 checks passed; native preparation available, no choices saved, PNG OFF,
+JPEG unchanged. Attachment6354 and its12 files preserved, no jobs/image processing.
+External page6448 changed before final deployment baseline; final scoped guards
+match, no rollback of unrelated content or claim of whole-lot page equality.
+HUMAN PASS pending; no processing6354, production, commit, push, tag or release.
+
+## 2026-10-06 - Simplified V1 administration, private.6
+
+One ordinary WP Seed Pixel menu with three sections: automatic JPEG/PNG,
+native Media Library selection, recent activity. Storage, simulation and
+whole-library screens remain advanced; no mandatory scan or manual temporary
+allowance. Explicit format opt-in or manual processing prepares managed recovery
+through the accepted adapter. Displaying the main page does not prepare storage
+or change Pixel options. Existing operation limits and optional site ceilings
+are preserved, with physical peak admission, DB authority and ownership intact.
+
+Manual single-image and selected1/5/50 flows use the same Scan/Jobs/M4/M5/M6
+lifecycle. Attachment UI presents current bytes/dimensions, clear unprocessed
+state, actual Original/Optimized values, retained-space truth, exact restore and
+explicit generation-guarded permanent deletion. Native derivatives are collapsed.
+JPEG remains JPEG, PNG remains lossless PNG. No ordinary WebP/AVIF interface.
+
+Two final cycles on fresh disposable WordPress7.1.2/PHP8.5.4: recovery34,
+simplified workflow42, isolated French browser24, M4 lifecycle28, PNG61,
+upload/budget63, M5 order/security10, DB authority28, i18n22, media status60 and
+actual core-updater418 checks per cycle. Exact scoped counts are in the logs.
+Headless1440/820/390/320, keyboard optimization/restore and CSS200% reflow passed.
+Actual NFS-host certification previously acquired was not repeated; DB-authority
+concurrency and physical ownership regressions were rerun. No Critical/Major in
+the scoped final review. Windows and installed DEV PHP syntax40/40 PASS.
+
+Frozen runtime54 files/640050 bytes; private ZIP185632 bytes, SHA-256
+f739c669dd863406a9d45d8ac84c9214abd933bda0e95f29e9845dfdc7a8f4f3.
+Path: reports/simplified-ux/certification-candidate-6/. Runtime only, no tests,
+reports, fixtures, private media or credentials. Core updater uses controlled
+local transport; no public update hosting/tag/release is introduced.
+
+Exact private.6 deployed DEV after snapshot pixel-simplified-ux-20261006T063159Z.
+Guarded same-device rename pair, verified read-back and runtime-only rollback
+preserving backup; not a rename-exchange claim. No SQL or image processing.
+DEV headless21 checks PASS; existing JPEG/PNG settings already ON, preserved
+without saving them. 6354 still1023x1537/2189717 bytes with its12 native hashes
+exact; attachment posts/metas, Pixel options/jobs, Albums options and other
+plugin runtimes unchanged. HTTPS200/noindex. Evidence in PDE ignored reports/
+pixel-simplified-ux-20261006/, final report appended to pixel-png-storage-ux.
+HUMAN PASS only main Pixel and6354; STOP before real optimization. No production,
+commit, push, tag or public release.
+
+## 2026-10-06 - Real PNG forensic: private.7 DEV, private.8 local candidate
+
+- Human6354 attempt refused before mutation because the sibling inventory capped
+  TOTAL month entries at128, while the real month has1367. Generic scan now
+  bounds10000 total/128 related and excludes only explicitly owned other native
+  attachment graphs; unknown siblings remain fail-closed. Inventory reason
+  explicit. Legacy attachment wrapper merged: one panel/one collapsed details.
+- Private.7 certified in two clean targeted cycles and deployed after exact
+  scoped private snapshot pixel-png-6354-20261006T070327Z. Runtime54 files,
+  PHP40/40, immutable ZIP187079 bytes, SHA-256
+  b208bad72ff594c61bc9dd08d5c59aa36b4b7dff85192cbe15ebf656311d6b8f.
+- Exactly one authorized image_start retry6354: scan5/plan6 passed; operation7
+  stopped CLAIM_CONFLICT before any execution. Historical operation546 is an
+  unstarted needs_review plan but the old coordinator still reserves its image.
+  Source2189717 bytes and all11 derivatives exact; no candidate/recovery/image
+  mutation. Job7 remains blocked/running logically, item561 queued revision0;
+  attempted guarded native cancellation did not succeed. No second retry.
+- Generic second fix distinguishes an unstarted rejected plan using checksummed
+  zero-execution evidence and leaves started/ambiguous/recovery claims blocked.
+  Historical rows not modified. Private.8 LOCAL ONLY, not deployed. Two clean
+  cycles: claim21, dense13, recovery34, workflow42, headless27, M4=28, PNG61,
+  upload/admission63, order/security10, authority28, i18n22, media76, updater431.
+  Immutable ZIP187445 bytes,54 files, SHA-256
+  2a733941e5d73fec80f3e20fc1b689b674dffb96f17eafbd9a6c5d46fcd0fd5b.
+- DEV still exact private.7. No purge, other media, production, commit/push/tag
+  or release. Target _edit_lock changed through authorized editor access;
+  functional metadata unchanged. Detailed scoped evidence and report in PDE
+  reports/pixel-png-storage-ux-20261006.md and pixel-real-png-6354-20261006/.
+  BLOCKED: any further deployment or6354 resume requires a new human gate.
+
+## 2026-10-06 - Private.8 deployed; scoped6354 completion, no useful saving
+
+- New owner authorization covers exact private.8, official stale-plan cancellation
+  and ONE NEW6354 attempt. Immutable ZIP187445 bytes/SHA-256
+  2a733941e5d73fec80f3e20fc1b689b674dffb96f17eafbd9a6c5d46fcd0fd5b,
+  runtime54 files/647058 bytes/PHP40/40. Private targeted snapshot and guarded
+  runtime-only rollback verified; deployment inert. No recertification/rebuild.
+- Official native_cancel7 -> job7/item561 cancelled/revision1/attempts0. Two
+  identical independent PDO reads, authority free; historical546 unstarted
+  rejection retained. No manual SQL, lease edits or authority weakening.
+- Exactly one fresh chain8/9/10, item576 skipped/NO_BENEFIT, errors0.
+  Complete1367-entry inventory. SourcePNG1023x1537/2189717 bytes and11 derivatives
+  byte-identical. Current pixels/color unchanged; no optimized master published.
+- Candidate byte count is not persisted for rejected no-benefit candidates;
+  no extra encode to invent it. Active saving0; recovery image2189717 + journal5574
+  retained. Measured added allocated blocks2199552 bytes, excluding safety backup
+  and directory/DB metadata. DB zero recovery counter omits this preparing copy;
+  final report explicitly distinguishes physical observation from counters.
+- One panel/one collapsed details, calm current no-gain UI, headless1440/820/390/
+  320/CSS200%/keyboard, authenticatedREST and direct/source/srcset checks.
+  No visible Chrome use, other media processing, original deletion, production,
+  commit, push, tag or release. Runtime source unchanged during this run.
+  Helpers physically removed; legitimate recovery preserved. PDE report:
+  reports/pixel-png-storage-ux-20261006.md, proofs pixel-6354-private8-completion.
+  NO USEFUL SAVING; STOP before any further processing or purge.

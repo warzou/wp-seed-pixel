@@ -19,6 +19,9 @@ $by=array_column(m5_items($id),null,'attachment_id');
 m5_assert($by[$healthy]['stage']==='retained','healthy item completed despite mixed peers');
 m5_assert($by[$stale]['stage']==='needs_review' && wp_get_attachment_metadata($stale)['external']==='kept','external stale metadata preserved');
 m5_assert($by[$retry]['stage']==='failed'&&$by[$retry]['error_code']==='CANDIDATE_INVALID','real editor retryable failure');
+$failed_dir=WP_Seed_Pixel_Master_Storage::directory($by[$retry],false);
+m5_assert(!is_wp_error($failed_dir)&&!file_exists($failed_dir.'/recovery.jpg')&&!file_exists($failed_dir.'/candidate.jpg')
+    &&!empty(json_decode($by[$retry]['receipt'],true)['cleanup_unreplaced']),'safe failed-before-replacement copy cleaned before explicit retry');
 if($by[$review]['stage']!=='needs_review'){throw new RuntimeException('Mixed orientation state '.wp_json_encode(array('job'=>$job,'orientation'=>array_intersect_key($by[$review],array_flip(array('stage','error_code','error_class'))),'states'=>array_map(static function($r){return array($r['stage'],$r['error_code']);},$by))));}m5_assert(true,'orientation review no destructive shortcut');
 m5_assert($by[$png]['stage']==='skipped','unsupported PNG excluded');
 m5_assert($by[$shared]['stage']==='needs_review'&&$by[$alias]['stage']==='needs_review','shared physical file excluded');
@@ -35,7 +38,8 @@ $r=WP_Seed_Pixel_Jobs::quarantine_action($id,'purge',m4_approval($v),(int)$item[
 m5_assert(is_wp_error($r)&&m5_result(WP_Seed_Pixel_Jobs::status($id))['storage']['removed_source_bytes']===0,'failed physical purge never increases removed counter');
 $r=m5_result(WP_Seed_Pixel_Jobs::quarantine_action($id,'purge',m4_approval($v),(int)$item['id']));
 $a=m5_result(WP_Seed_Pixel_Jobs::storage_audit($id));m5_assert($a['removed_source_bytes']===$r['removed_bytes'],'fresh audit verifies physical removal');
-m5_assert(!$a['complete']&&$a['net_reclaimed_bytes']===null&&$a['known_subtotals']['temporary_bytes']>0,'uncertain totals withheld and verified pending escrow counted as temporary overhead');
+m5_assert(!$a['complete']&&$a['net_reclaimed_bytes']===null&&$a['known_subtotals']['temporary_bytes']===0
+    &&$a['known_subtotals']['audit_bytes']>0,'uncertain totals withheld; safe pre-swap escrow removed, bounded metadata counted');
 m5_result(WP_Seed_Pixel_Jobs::quarantine_action($id,'purge',m4_approval($v),(int)$item['id']));$b=m5_result(WP_Seed_Pixel_Jobs::storage_audit($id));m5_assert($a['removed_source_bytes']===$b['removed_source_bytes'],'repeat purge does not double-count');
 wp_set_current_user(0);m5_assert(is_wp_error(WP_Seed_Pixel_Jobs::storage_audit($id))&&is_wp_error(WP_Seed_Pixel_Jobs::bulk_step($id)),'anonymous audit and execution refused');wp_set_current_user(1);
 $second=$by[$retry];m5_assert(is_wp_error(WP_Seed_Pixel_Jobs::quarantine_action($single['id'],'restore',array(),(int)$second['id'])),'wrong job-item pair refused');

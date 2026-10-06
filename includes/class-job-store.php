@@ -163,6 +163,23 @@ final class WP_Seed_Pixel_Job_Store {
         return hash_equals($hash, hash('sha256', wp_json_encode($j)));
     }
 
+    public static function record_cleanup(array $item, $token, array $receipt) {
+        global $wpdb;
+        if (!WP_Seed_Pixel_Authority::valid(0) || !WP_Seed_Pixel_Authority::valid((int) $item['attachment_id'])
+            || !self::journal_valid($item) || $item['action'] !== 'replace'
+            || !in_array($item['stage'], array('skipped', 'failed', 'needs_review', 'cancelled'), true)
+            || ($receipt['cleanup_unreplaced'] ?? false) !== true || ($receipt['recovery_bytes'] ?? -1) !== 0) { return new WP_Error('EVIDENCE_INVALID'); }
+        $j = json_decode($item['journal'], true); unset($j['checksum']);
+        $j['storage'] = array('active_delta' => 0, 'recovery_bytes' => 0);
+        $j['cleanup_unreplaced'] = $receipt;
+        $j['checksum'] = hash('sha256', wp_json_encode($j));
+        $merged = array_merge(json_decode($item['receipt'], true) ?: array(), $receipt);
+        $ok = $wpdb->query($wpdb->prepare('UPDATE ' . self::table('items') .
+            ' SET revision=revision+1,journal=%s,receipt=%s,updated=%d WHERE id=%d AND revision=%d AND lease=%s AND lease_until>=%d',
+            wp_json_encode($j), wp_json_encode($merged), time(), $item['id'], $item['revision'], $token, time()));
+        return $ok === 1 ? self::item($item['id']) : new WP_Error('STORE_FAILED');
+    }
+
     /** Only explicitly requested, old, fully terminal simulation history is eligible. */
     public static function prune($before, $limit = 20) {
         global $wpdb;

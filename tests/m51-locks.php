@@ -4,7 +4,8 @@ $checks = array(); $latencies = array();
 function m51_check($ok, $name) { global $checks; $checks[$name] = (bool) $ok; if (!$ok) { throw new RuntimeException('FAIL: ' . $name); } }
 function m51_worker($id, $at, $hold) {
     $root = getenv('PIXEL_M3_ROOT'); $ext = "$root/root/usr/lib/php/20250925";
-    $cmd = array(PHP_BINARY, '-d', "extension=$ext/gd.so", '-d', "extension=$ext/mysqli.so", '-d', "extension=$ext/imagick.so", __DIR__ . '/m51-lock-worker.php', (string) $id, (string) $at, (string) $hold);
+    $mysql = getenv('PHPRC') === "$root/child.ini" ? array() : array('-d', "extension=$ext/mysqlnd.so");
+    $cmd = array_merge(array(PHP_BINARY), $mysql, array('-d', "extension=$ext/gd.so", '-d', "extension=$ext/mysqli.so", '-d', "extension=$ext/imagick.so", __DIR__ . '/m51-lock-worker.php', (string) $id, (string) $at, (string) $hold));
     $p = proc_open($cmd, array(0 => array('pipe', 'r'), 1 => array('pipe', 'w'), 2 => array('pipe', 'w')), $pipes);
     if (!is_resource($p)) { throw new RuntimeException('Worker unavailable'); } fclose($pipes[0]);
     return array($p, $pipes);

@@ -4,6 +4,8 @@ defined('ABSPATH') || exit;
 /** Inspection only: no encoder, filesystem writes or canonical metadata setters. */
 final class WP_Seed_Pixel_Analyzer {
     const VERSION = 1;
+    const MAX_DIRECTORY_ENTRIES = 10000;
+    const MAX_RELATED_ENTRIES = 128;
     const ROLES = array('operational', 'preserved_original', 'pixel_current', 'pixel_history', 'wp_sizes', 'edit_backups', 'unattributed');
 
     public static function analyze($id) {
@@ -64,17 +66,22 @@ final class WP_Seed_Pixel_Analyzer {
         // A bounded sibling check, never a recursive uploads crawler or ownership claim.
         $extra_complete = true;
         if ($attached && !is_wp_error(WP_Seed_Pixel_Files::path($attached))) {
-            $handle = @opendir($directory); $visited = 0;
+            $handle = @opendir($directory); $visited = 0; $related = 0;
             $stem = pathinfo($attached, PATHINFO_FILENAME);
+            $foreign = self::foreign_native_files($id, $directory, $root, $stem);
+            if (is_wp_error($foreign)) { $extra_complete = false; $foreign = array(); }
             if ($handle) {
                 try {
                     while (false !== ($name = readdir($handle))) {
                         if ($name === '.' || $name === '..') { continue; }
-                        if (++$visited > 128) { $extra_complete = false; break; }
+                        if (++$visited > self::MAX_DIRECTORY_ENTRIES) { $extra_complete = false; break; }
                         $path = $directory . '/' . $name;
-                        if (is_file($path) && strpos($name, $stem) === 0) {
+                        if (strpos($name, $stem) === 0 && (is_file($path) || is_link($path))) {
+                            if (isset($foreign[$path])) { continue; }
+                            if (++$related > self::MAX_RELATED_ENTRIES) { $extra_complete = false; break; }
                             $file = self::inspect_file($path, $root);
-                            if (!is_wp_error($file) && !isset($files[$file['identity']])) { $add($path, 'unattributed'); }
+                            if (is_wp_error($file)) { $issues[] = $file->get_error_code(); }
+                            elseif (!isset($files[$file['identity']])) { $add($path, 'unattributed'); }
                         }
                     }
                 } finally { closedir($handle); }
@@ -122,6 +129,30 @@ final class WP_Seed_Pixel_Analyzer {
         $host = $preview ? wp_parse_url($preview, PHP_URL_HOST) : null;
         if (!$preview || $host !== wp_parse_url(home_url(), PHP_URL_HOST) || wp_parse_url($preview, PHP_URL_USER) || wp_parse_url($preview, PHP_URL_PASS)) { $preview = ''; }
         return array('analysis_version' => self::VERSION, 'attachment_id' => (int) $id, 'title' => get_the_title($id), 'preview_url' => $preview, 'scanned_at' => time(), 'metadata_revision' => self::revision($id), 'health' => $health, 'issues' => $issues, 'image' => $image, 'files' => array_values($files), 'storage' => array('unique_logical_bytes' => $bytes, 'by_role' => $roles, 'potential_original_bytes' => $potential, 'uncertain_bytes' => $uncertain, 'reclaimed_bytes' => 0, 'allocated_bytes' => null, 'quota_bytes' => null), 'opportunities' => $opportunities, 'extra_inventory_complete' => $extra_complete, 'deep_analysis' => false, 'stale' => false, 'capabilities' => array('gd' => extension_loaded('gd'), 'imagick' => extension_loaded('imagick'), 'managed_rgb' => WP_Seed_Pixel_Color::available(), 'exif' => function_exists('exif_read_data'), 'destructive' => false));
+    }
+
+    /** Ignore only paths explicitly mapped to another native attachment, never filename guesses. */
+    private static function foreign_native_files($id, $directory, $root, $stem) {
+        global $wpdb;
+        $relative = ltrim(substr($directory, strlen($root)), '/');
+        $needle = $wpdb->esc_like(($relative === '' ? '' : $relative . '/') . $stem) . '%';
+        $owners = $wpdb->get_col($wpdb->prepare("SELECT m.post_id FROM {$wpdb->postmeta} m JOIN {$wpdb->posts} p ON p.ID=m.post_id WHERE m.post_id<>%d AND p.post_type='attachment' AND m.meta_key='_wp_attached_file' AND m.meta_value LIKE %s LIMIT 129", $id, $needle));
+        if ($wpdb->last_error || count($owners) > 128) { return new WP_Error('INVENTORY_INCOMPLETE'); }
+        $paths = array();
+        foreach (array_unique($owners) as $owner) {
+            $attached = get_attached_file((int) $owner, true);
+            if (!is_string($attached) || dirname($attached) !== $directory || is_wp_error(WP_Seed_Pixel_Files::path($attached))) { continue; }
+            $paths[$attached] = true;
+            $meta = wp_get_attachment_metadata((int) $owner);
+            $sizes = array_merge((array) ($meta['sizes'] ?? array()), (array) get_post_meta((int) $owner, '_wp_attachment_backup_sizes', true));
+            if (count($sizes) > 256) { return new WP_Error('INVENTORY_INCOMPLETE'); }
+            $names = array_column($sizes, 'file');
+            if (!empty($meta['original_image'])) { $names[] = $meta['original_image']; }
+            foreach ($names as $name) {
+                if (is_string($name) && basename($name) === $name && $name !== '.' && $name !== '..') { $paths[$directory . '/' . $name] = true; }
+            }
+        }
+        return $paths;
     }
 
     public static function revision($id) {

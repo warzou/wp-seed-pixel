@@ -20,7 +20,8 @@ final class WP_Seed_Pixel_Plugin {
     }
 
     public static function uploaded($meta_id, $id, $key, $value) {
-        if ((WP_Seed_Pixel_Future_Uploads::settings()['mode'] ?? 'off') !== 'off') { return; }
+        $future = WP_Seed_Pixel_Future_Uploads::settings();
+        if ($future['mode'] !== 'off' && in_array('jpeg', $future['formats'], true)) { return; }
         if ($key !== '_wp_attachment_metadata' || !self::settings()['automatic'] || get_post_mime_type($id) !== 'image/jpeg' || wp_next_scheduled('wp_seed_pixel_auto', array((int) $id))) {
             return;
         }
@@ -29,7 +30,8 @@ final class WP_Seed_Pixel_Plugin {
     }
 
     public static function automatic($id) {
-        if (WP_Seed_Pixel_Future_Uploads::settings()['mode'] !== 'off') { return; }
+        $future = WP_Seed_Pixel_Future_Uploads::settings();
+        if ($future['mode'] !== 'off' && in_array('jpeg', $future['formats'], true)) { return; }
         $settings = self::settings();
         if ($settings['automatic']) {
             $result = wp_seed_pixel_optimize((int) $id, $settings['preset']);

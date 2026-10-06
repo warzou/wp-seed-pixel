@@ -23,7 +23,9 @@ final class WP_Seed_Pixel_Master_Adapter {
         $path = get_attached_file($id, true); $safe = WP_Seed_Pixel_Files::path($path);
         if (is_wp_error($safe) || get_attached_file($id) !== $path) { return new WP_Error('UNSUPPORTED_STORAGE'); }
         $a = WP_Seed_Pixel_Analyzer::analyze($id);
-        if (is_wp_error($a) || (!$transitional && $a['health'] !== 'healthy') || !$a['extra_inventory_complete']) { return new WP_Error('NEEDS_REVIEW'); }
+        if (is_wp_error($a)) { return new WP_Error('NEEDS_REVIEW'); }
+        if (!$a['extra_inventory_complete']) { return new WP_Error('INVENTORY_INCOMPLETE'); }
+        if (!$transitional && $a['health'] !== 'healthy') { return new WP_Error('NEEDS_REVIEW'); }
         $rows = array();
         foreach (self::KEYS as $key) {
             $values = $wpdb->get_col($wpdb->prepare("SELECT meta_value FROM {$wpdb->postmeta} WHERE post_id=%d AND meta_key=%s ORDER BY meta_id", $id, $key));

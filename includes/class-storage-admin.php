@@ -3,9 +3,82 @@ defined('ABSPATH') || exit;
 
 final class WP_Seed_Pixel_Storage_Admin {
     public static function boot() {
-        add_action('admin_menu', static function () { add_media_page(__('Image storage', 'wp-seed-pixel'), __('Pixel - Image storage', 'wp-seed-pixel'), 'manage_options', 'wp-seed-pixel-storage', array(__CLASS__, 'page')); });
+        add_action('admin_menu', static function () { add_media_page(__('WP Seed Pixel - Storage and recovery', 'wp-seed-pixel'), __('WP Seed Pixel - Storage', 'wp-seed-pixel'), 'manage_options', 'wp-seed-pixel-storage', array(__CLASS__, 'page')); });
+        add_action('admin_post_wp_seed_pixel_storage_setup', array(__CLASS__, 'setup'));
         add_action('admin_enqueue_scripts', array(__CLASS__, 'assets'));
         add_action('wp_ajax_wp_seed_pixel_scan', array(__CLASS__, 'ajax'));
+    }
+
+    public static function save_policy(array $input) {
+        if (!current_user_can('manage_options')) { return new WP_Error('PERMISSION_DENIED'); }
+        $choice = $input['ceiling_policy'] ?? '';
+        if (!in_array($choice, array('none', 'limit'), true)) { return new WP_Error('POLICY_INVALID'); }
+        $limits = WP_Seed_Pixel_Storage_Budget::settings();
+        if (is_wp_error($limits)) { return $limits; }
+        $ceiling = WP_Seed_Pixel_Host_Admin::mb($choice === 'none' ? '0' : ($input['ceiling'] ?? ''));
+        $capacity = WP_Seed_Pixel_Host_Admin::mb($input['capacity'] ?? '');
+        if (is_wp_error($ceiling) || is_wp_error($capacity) || $capacity < 1 || ($choice === 'limit' && $ceiling < 1)) { return new WP_Error('POLICY_INVALID'); }
+        $limits['operational_ceiling_bytes'] = $ceiling;
+        $future = WP_Seed_Pixel_Future_Uploads::settings();
+        $r = WP_Seed_Pixel_Future_Uploads::configure($future['mode'], $capacity, $limits, $future['formats']);
+        if (is_wp_error($r)) { return $r; }
+        update_option('wp_seed_pixel_storage_policy_confirmed', 'chosen', false);
+        return get_option('wp_seed_pixel_storage_policy_confirmed') === 'chosen' ? true : new WP_Error('STORE_FAILED');
+    }
+
+    public static function setup() {
+        if (($_SERVER['REQUEST_METHOD'] ?? '') !== 'POST' || !current_user_can('manage_options')) { wp_die(esc_html__('Permission denied.', 'wp-seed-pixel'), '', array('response' => 403)); }
+        check_admin_referer('wp_seed_pixel_storage_setup');
+        $operation = isset($_POST['operation']) && is_string($_POST['operation']) ? sanitize_key(wp_unslash($_POST['operation'])) : '';
+        $r = $operation === 'prepare' ? WP_Seed_Pixel_Recovery_Setup::prepare()
+            : ($operation === 'policy' ? self::save_policy(wp_unslash($_POST)) : new WP_Error('POLICY_INVALID'));
+        $code = is_wp_error($r) ? $r->get_error_code() : 'saved';
+        wp_safe_redirect(add_query_arg('storage_result', $code, admin_url('upload.php?page=wp-seed-pixel-storage'))); exit;
+    }
+
+    private static function setup_form($operation) {
+        echo '<form method="post" action="' . esc_url(admin_url('admin-post.php')) . '"><input type="hidden" name="action" value="wp_seed_pixel_storage_setup"><input type="hidden" name="operation" value="' . esc_attr($operation) . '">';
+        wp_nonce_field('wp_seed_pixel_storage_setup');
+    }
+
+    public static function configuration() {
+        $missing = WP_Seed_Pixel_Recovery_Setup::png_requirements();
+        $recovery = WP_Seed_Pixel_Recovery_Setup::verify();
+        $ready = !isset($missing['recovery']);
+        $limits = WP_Seed_Pixel_Storage_Budget::settings(); $future = WP_Seed_Pixel_Future_Uploads::settings();
+        echo '<h2>' . esc_html__('Storage status', 'wp-seed-pixel') . '</h2><p role="status"><strong>' . esc_html($missing ? __('Configuration incomplete', 'wp-seed-pixel') : __('Ready', 'wp-seed-pixel')) . '</strong></p>';
+        if ($missing) { echo '<ul>'; foreach ($missing as $reason) { echo '<li>' . esc_html($reason) . '</li>'; } echo '</ul>'; }
+        if (isset($_GET['storage_result']) && is_string($_GET['storage_result'])) {
+            $code = sanitize_key(wp_unslash($_GET['storage_result']));
+            echo '<div class="notice ' . ($code === 'saved' ? 'notice-success' : 'notice-error') . '"><p>' . esc_html($code === 'saved' ? __('Storage settings saved. No image was processed and PNG was not enabled.', 'wp-seed-pixel') : WP_Seed_Pixel_Recovery_Setup::message(strtoupper($code))) . '</p></div>';
+        }
+        echo '<h2>' . esc_html__('Original retained for restoration', 'wp-seed-pixel') . '</h2><p>' . esc_html__('Pixel keeps the original so you can restore the image until you explicitly delete that original permanently. There is no automatic expiry or purge.', 'wp-seed-pixel') . '</p>';
+        echo '<p>' . esc_html__('Protected storage for originals', 'wp-seed-pixel') . ': <strong>' . esc_html($ready ? __('Ready', 'wp-seed-pixel') : (get_option(WP_Seed_Pixel_Recovery_Setup::OPTION, null) === null ? __('To configure', 'wp-seed-pixel') : __('Error', 'wp-seed-pixel'))) . '</strong></p>';
+        if (!$ready) {
+            $candidate = WP_Seed_Pixel_Recovery_Setup::candidate();
+            if (is_wp_error($candidate)) { echo '<p>' . esc_html(WP_Seed_Pixel_Recovery_Setup::message($candidate->get_error_code())) . '</p>'; }
+            else {
+                self::setup_form('prepare');
+                submit_button(__('Prepare recovery storage', 'wp-seed-pixel'), 'secondary', 'submit', false);
+                echo '</form><p>' . esc_html__('Pixel creates and checks its own protected location outside the public web root. No server path, FTP or configuration-file edit is needed. No image is optimized by this action.', 'wp-seed-pixel') . '</p>';
+            }
+        }
+        echo '<h2>' . esc_html__('Space limits', 'wp-seed-pixel') . '</h2>';
+        if (!is_wp_error($limits)) {
+            $chosen = get_option('wp_seed_pixel_storage_policy_confirmed', '') === 'chosen';
+            $choice = $chosen ? ($limits['operational_ceiling_bytes'] > 0 ? 'limit' : 'none') : '';
+            self::setup_form('policy');
+            echo '<fieldset><legend><strong>' . esc_html__('Additional site-wide storage ceiling', 'wp-seed-pixel') . '</strong></legend><p>' . esc_html__('This is your limit for total hosting usage, not free disk space and not the temporary allowance for one image. A ceiling requires a current complete hosting measurement; Pixel will block work if that measurement is unavailable.', 'wp-seed-pixel') . '</p>';
+            echo '<p><label><input type="radio" name="ceiling_policy" value="none" required ' . checked($choice, 'none', false) . '> ' . esc_html__('No additional site ceiling; keep per-operation and physical-space checks', 'wp-seed-pixel') . '</label></p>';
+            echo '<p><label><input type="radio" name="ceiling_policy" value="limit" ' . checked($choice, 'limit', false) . '> ' . esc_html__('Set a site-wide ceiling', 'wp-seed-pixel') . '</label> <label for="pixel-site-ceiling">' . esc_html__('Ceiling in decimal MB', 'wp-seed-pixel') . '</label> <input id="pixel-site-ceiling" name="ceiling" type="number" min="0" step="0.000001" value="' . esc_attr($limits['operational_ceiling_bytes'] ? number_format($limits['operational_ceiling_bytes'] / 1000000, 6, '.', '') : '') . '"></p></fieldset>';
+            echo '<p><label for="pixel-operation-space"><strong>' . esc_html__('Maximum temporary space per operation', 'wp-seed-pixel') . '</strong></label><br><input id="pixel-operation-space" name="capacity" type="number" min="0.000001" step="0.000001" required value="' . esc_attr($future['capacity_bytes'] ? number_format($future['capacity_bytes'] / 1000000, 6, '.', '') : '') . '"> ' . esc_html__('Decimal MB', 'wp-seed-pixel') . '</p><p>' . esc_html__('Safe optimization briefly needs extra space before it saves space. This allowance is checked for each image; too small an allowance skips that image rather than risking storage exhaustion. No amount is selected for you.', 'wp-seed-pixel') . '</p>';
+            echo '<p class="description">' . esc_html__('PNG guidance: 128 decimal MB covers the maximum temporary estimate for the supported PNG limits. This is a suggestion, not a preselected value. JPEG images may need more.', 'wp-seed-pixel') . '</p>';
+            submit_button(__('Save space choices', 'wp-seed-pixel'), 'primary', 'submit', false); echo '</form>';
+        }
+        echo '<p><a class="button" href="' . esc_url(admin_url('upload.php?page=wp-seed-pixel#pixel-png')) . '">' . esc_html__('Return to WP Seed Pixel settings', 'wp-seed-pixel') . '</a></p>';
+        echo '<details><summary>' . esc_html__('Storage technical details', 'wp-seed-pixel') . '</summary><p>' . esc_html__('No internal web-directory fallback is used. If an outside location cannot be proved private, processing stays blocked. Host-defined storage settings are never overwritten.', 'wp-seed-pixel') . '</p>';
+        if (!is_wp_error($recovery)) { echo '<p><code>' . esc_html($recovery['path']) . '</code></p>'; }
+        echo '<p><a href="' . esc_url(admin_url('upload.php?page=wp-seed-pixel-host')) . '">' . esc_html__('Advanced hosting configuration', 'wp-seed-pixel') . '</a></p></details>';
     }
 
     public static function labels() {
@@ -36,7 +109,7 @@ final class WP_Seed_Pixel_Storage_Admin {
 
     public static function assets($hook) {
         if ($hook !== 'media_page_wp-seed-pixel-storage') { return; }
-        wp_enqueue_style('wp-seed-pixel-storage', plugins_url('assets/storage.css', WP_SEED_PIXEL_FILE), array(), WP_Seed_Pixel_Analyzer::VERSION);
+        wp_enqueue_style('wp-seed-pixel-storage', plugins_url('assets/storage.css', WP_SEED_PIXEL_FILE), array(), WP_SEED_PIXEL_BUILD);
         wp_enqueue_script('wp-seed-pixel-storage', plugins_url('assets/storage.js', WP_SEED_PIXEL_FILE), array(), WP_Seed_Pixel_Analyzer::VERSION, true);
         wp_localize_script('wp-seed-pixel-storage', 'wpSeedPixelScan', array('url' => admin_url('admin-ajax.php'), 'nonce' => wp_create_nonce('wp_seed_pixel_scan'), 'labels' => array_merge(self::labels(), self::issue_labels()), 'error' => __('Request failed. Resume later; no automatic retry was sent.', 'wp-seed-pixel'), 'locale' => str_replace('_', '-', get_user_locale())));
     }
@@ -65,7 +138,12 @@ final class WP_Seed_Pixel_Storage_Admin {
         if (!current_user_can('manage_options')) { return; }
         ?>
         <div class="wrap pixel-storage">
-            <h1><?php esc_html_e('Image storage', 'wp-seed-pixel'); ?></h1>
+            <h1><?php esc_html_e('WP Seed Pixel - Storage and recovery', 'wp-seed-pixel'); ?></h1>
+            <p><?php esc_html_e('Control how WP Seed Pixel uses disk space safely and keeps originals for restoration. Preparing storage does not optimize any image.', 'wp-seed-pixel'); ?></p>
+            <?php self::configuration(); ?>
+            <h2><?php esc_html_e('Recoverable and freed space', 'wp-seed-pixel'); ?></h2>
+            <p><?php esc_html_e('Space is not permanently freed while the original is retained for restoration. Potential savings are not reclaimed bytes.', 'wp-seed-pixel'); ?></p>
+            <h2><?php esc_html_e('Image storage analysis', 'wp-seed-pixel'); ?></h2>
             <p><?php esc_html_e('Analysis only. Images and their WordPress data are not changed.', 'wp-seed-pixel'); ?></p>
             <div class="pixel-scan-actions">
                 <button type="button" class="button button-primary" id="pixel-scan-start"><?php esc_html_e('Analyze library', 'wp-seed-pixel'); ?></button>
@@ -82,7 +160,7 @@ final class WP_Seed_Pixel_Storage_Admin {
                 <div><dt><?php esc_html_e('Uncertain or shared bytes', 'wp-seed-pixel'); ?></dt><dd id="pixel-scan-uncertain">—</dd></div>
                 <div><dt><?php esc_html_e('Space reclaimed', 'wp-seed-pixel'); ?></dt><dd id="pixel-scan-reclaimed">0</dd></div>
             </dl>
-            <p><?php esc_html_e('Potential is conditional, not freed space. Quarantine would still occupy storage. Filesystem allocation and hosting quota are unknown.', 'wp-seed-pixel'); ?></p>
+            <p><?php esc_html_e('Potential is conditional, not freed space. Originals retained for restoration still occupy storage. Filesystem allocation and hosting quota are unknown.', 'wp-seed-pixel'); ?></p>
             <h2><?php esc_html_e('Where the bytes are', 'wp-seed-pixel'); ?></h2>
             <ul id="pixel-scan-roles"></ul>
             <?php if (WP_Seed_Pixel_Quarantine::enabled()) { ?>
@@ -91,7 +169,7 @@ final class WP_Seed_Pixel_Storage_Admin {
             <dl>
                 <dt><?php esc_html_e('Retained bytes', 'wp-seed-pixel'); ?></dt><dd><?php echo esc_html(number_format_i18n($q['quarantine_bytes'])); ?> B</dd>
                 <dt><?php esc_html_e('Recoverable space after permanent deletion', 'wp-seed-pixel'); ?></dt><dd><?php echo esc_html(number_format_i18n($q['potential_purge_bytes'])); ?> B</dd>
-                <dt><?php esc_html_e('Verified quarantine bytes removed', 'wp-seed-pixel'); ?></dt><dd><?php echo esc_html(number_format_i18n($q['removed_bytes'])); ?> B</dd>
+                <dt><?php esc_html_e('Verified retained-original bytes removed', 'wp-seed-pixel'); ?></dt><dd><?php echo esc_html(number_format_i18n($q['removed_bytes'])); ?> B</dd>
             </dl>
             <p><a href="<?php echo esc_url(admin_url('upload.php?page=wp-seed-pixel-quarantine')); ?>"><?php esc_html_e('Retained image versions', 'wp-seed-pixel'); ?></a></p>
             <?php } ?>

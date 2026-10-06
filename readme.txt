@@ -11,9 +11,9 @@ Local image optimization, storage analysis, verified recovery and resumable jobs
 
 == Description ==
 
-0.4.0 is a PRIVATE review candidate, not a public release. The stable public tag
-above remains unchanged. Storage replacement is separately enabled by a host
-administrator with private recovery; activation itself changes no image.
+0.4.0 is a private release candidate until owner publication. The public stable
+tag above remains unchanged. Safe private recovery is automatically prepared on
+supported hosts; activation itself changes no image.
 Future upload processing defaults OFF. JPEG and bounded lossless PNG are opt-in;
 existing media require an explicit selected plan. Recovery occupies hosting space.
 Permanent deletion requires separate per-version approval and removes rollback.
@@ -54,7 +54,9 @@ on Windows. Other platforms and production hosting remain uncertified.
 == Frequently Asked Questions ==
 
 = Does it delete my master? =
-No. WordPress may delete originals when the user deletes an attachment.
+Native replacement is explicit and verified. The recovery original remains
+until separate permanent-deletion approval. No useful saving leaves the active
+file unchanged and cleans only proven unnecessary pre-swap resources.
 
 = Can a batch resume? =
 Yes. Its cursor, active attachment and counters persist. Resume from the admin.
@@ -77,6 +79,17 @@ No. They use protected postmeta, separate from WordPress public media details.
 WordPress still provides normal public derivative URLs for public attachments.
 
 == Changelog ==
+
+= 0.4.0 =
+Verified native JPEG and lossless PNG storage replacement, private recovery,
+exact restore and explicitly confirmed permanent deletion. Persistent selected
+jobs share database authority, lease/CAS fencing, crash reconciliation and
+truthful active/recovery/metadata accounting. Protected old media and opt-in
+future uploads. One normal admin page and one attachment panel, French UI,
+safe recovery self-configuration and native private updater with manual ZIP
+fallback. No useful saving now reclaims unnecessary pre-swap escrow without
+encoding again; successful recovery remains intact. No media processing on
+activation/update and no external image service. Multisite remains unsupported.
 
 = 0.3.0 =
 Human-readable media status, native attachment details in list and grid, selected

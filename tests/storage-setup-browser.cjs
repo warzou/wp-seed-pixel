@@ -1,0 +1,101 @@
+const { chromium } = require('playwright');
+const fs = require('fs');
+const path = require('path');
+const assert = require('assert/strict');
+(async () => {
+  const login = JSON.parse(fs.readFileSync(process.env.PIXEL_LAB_LOGIN, 'utf8'));
+  const out = process.env.PIXEL_QA_OUT;
+  fs.mkdirSync(out, {recursive: true});
+  const browser = await chromium.launch({headless: true, executablePath: 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe'});
+  const checks = {}, errors = [];
+  try {
+    const context = await browser.newContext({viewport: {width: 1440, height: 1000}});
+    const page = await context.newPage();
+    page.on('pageerror', e => errors.push(e.message));
+    const base = 'http://127.0.0.1:8877';
+    await page.goto(base + '/wp-login.php');
+    await page.locator('#user_login').fill(login.user);
+    await page.locator('#user_pass').fill(login.password);
+    await Promise.all([page.waitForURL(/wp-admin/), page.locator('#wp-submit').click()]);
+    await page.goto(base + '/wp-admin/upload.php?page=wp-seed-pixel');
+    assert.equal(await page.locator('input[name="png"]').isDisabled(), true);
+    checks.missingRecoveryDisablesPNG = true;
+    const action = page.getByRole('link', {name: 'Configurer le stockage', exact: true});
+    await action.focus(); await page.keyboard.press('Enter');
+    await page.waitForURL(/page=wp-seed-pixel-storage/);
+    assert.match(await page.locator('h1').innerText(), /WP Seed Pixel.*Stockage et récupération/);
+    assert.equal(await page.locator('#adminmenu a[href^="upload.php?page=wp-seed-pixel"]').count(), 2);
+    assert.equal(await page.locator('input[name="ceiling_policy"]:checked').count(), 0);
+    assert.equal(await page.locator('#pixel-operation-space').inputValue(), '');
+    checks.noPolicyDefaults = true; checks.keyboardNavigation = true; checks.twoMenus = true;
+    for (const width of [1440, 820, 390, 320]) {
+      await page.setViewportSize({width, height: 1000});
+      assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth + 2), false);
+      await page.screenshot({path: path.join(out, `storage-first-${width}.png`), fullPage: true});
+      checks['storage' + width] = true;
+    }
+    await page.setViewportSize({width: 1440, height: 1000});
+    const prepare = page.getByRole('button', {name: 'Préparer le stockage de récupération', exact: true});
+    await prepare.focus();
+    await Promise.all([page.waitForURL(/storage_result=saved/), page.keyboard.press('Enter')]);
+    assert.match(await page.locator('.pixel-storage').innerText(), /Stockage protégé des originaux\s*:\s*Prêt/);
+    assert.equal(await page.getByRole('button', {name: 'Préparer le stockage de récupération', exact: true}).count(), 0);
+    checks.oneClickPreparation = true;
+    const root = await page.locator('details code').first().textContent();
+    const sentinelName = '.public-probe-' + Date.now();
+    const sentinel = '\\\\wsl.localhost\\Ubuntu' + root.replaceAll('/', '\\') + '\\' + sentinelName;
+    const witness = 'synthetic-pixel-setup-probe-' + Date.now();
+    fs.writeFileSync(sentinel, witness, {flag: 'wx'});
+    const anonymous = await browser.newContext();
+    try {
+      for (const url of ['/' + root.split('/').pop() + '/' + sentinelName, '/%2e%2e/' + root.split('/').pop() + '/' + sentinelName]) {
+        const response = await anonymous.request.get(base + url);
+        assert.notEqual(response.status(), 200);
+        assert.equal((await response.text()).includes(witness), false);
+      }
+      checks.outsideSentinelNotPubliclyServed = true;
+    } finally { await anonymous.close(); fs.unlinkSync(sentinel); }
+    await page.getByRole('link', {name: 'Retourner aux réglages WP Seed Pixel', exact: true}).click();
+    assert.equal(await page.locator('input[name="png"]').isDisabled(), true);
+    assert.match(await page.locator('.wrap').innerText(), /espace temporaire maximal/);
+    checks.recoveryAloneDoesNotEnablePNG = true;
+    await page.getByRole('link', {name: 'Configurer le stockage', exact: true}).click();
+    await page.locator('input[name="ceiling_policy"][value="limit"]').check();
+    await page.locator('#pixel-site-ceiling').fill('600');
+    await page.locator('#pixel-operation-space').fill('128');
+    await Promise.all([page.waitForNavigation({waitUntil: 'domcontentloaded'}), page.getByRole('button', {name: 'Enregistrer les limites d’espace', exact: true}).click()]);
+    await page.getByRole('link', {name: 'Retourner aux réglages WP Seed Pixel', exact: true}).click();
+    assert.equal(await page.locator('input[name="png"]').isDisabled(), true);
+    assert.match(await page.locator('.wrap').innerText(), /mesure complète et récente/);
+    checks.unavailableHostingMeasurementBlocksCeiling = true;
+    await page.getByRole('link', {name: 'Configurer le stockage', exact: true}).click();
+    await page.locator('input[name="ceiling_policy"][value="none"]').check();
+    await Promise.all([page.waitForNavigation({waitUntil: 'domcontentloaded'}), page.getByRole('button', {name: 'Enregistrer les limites d’espace', exact: true}).click()]);
+    await page.getByRole('link', {name: 'Retourner aux réglages WP Seed Pixel', exact: true}).click();
+    const png = page.locator('input[name="png"]');
+    assert.equal(await png.isEnabled(), true); assert.equal(await png.isChecked(), false);
+    checks.setupDoesNotEnablePNG = true;
+    await page.waitForLoadState('load');
+    await png.focus();
+    assert.equal(await png.evaluate(el => document.activeElement === el), true);
+    await png.press('Space');
+    await page.waitForFunction(() => document.querySelector('input[name="png"]').checked);
+    assert.equal(await png.isChecked(), true);
+    await Promise.all([page.waitForURL(/saved=1/), page.locator('form[action$="admin-post.php"]').first().getByRole('button').click()]);
+    await page.reload(); assert.equal(await png.isChecked(), true);
+    checks.pngPersisted = true;
+    await page.goto(base + '/wp-admin/upload.php?page=wp-seed-pixel-storage');
+    await page.locator('details').first().locator('summary').focus(); await page.keyboard.press('Enter');
+    assert.equal(await page.locator('details').first().getAttribute('open'), ''); checks.detailsKeyboard = true;
+    await page.locator('details').first().locator('summary').press('Space');
+    assert.equal(await page.locator('details').first().getAttribute('open'), null);
+    await page.evaluate(() => document.body.style.zoom = '2');
+    assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth + 2), false);
+    await page.screenshot({path: path.join(out, 'storage-zoom200.png'), fullPage: true});
+    checks.cssZoom200 = true;
+    assert.deepEqual(errors, []); checks.noPageErrors = true;
+    fs.writeFileSync(path.join(out, 'storage-browser.json'), JSON.stringify({checks, errors, mediaProcessingClicks: 0}, null, 2));
+    console.log(JSON.stringify({result: 'PASS', checks: Object.keys(checks).length}));
+    await context.close();
+  } finally { await browser.close(); }
+})().catch(e => { console.error(e.stack); process.exitCode = 1; });

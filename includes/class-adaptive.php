@@ -105,7 +105,7 @@ final class WP_Seed_Pixel_Adaptive {
                 if (!$rotated) {
                     return new WP_Error('pixel_metric_orientation', 'Reference rotation failed.');
                 }
-                imagedestroy($source);
+                unset($source);
                 $source = $rotated;
             }
             $w = imagesx($out);
@@ -145,10 +145,9 @@ final class WP_Seed_Pixel_Adaptive {
             }
             return array('method' => '64-stratified-8px-luma-blocks+RGB-PSNR', 'ssim' => round(array_sum($scores) / count($scores), 6), 'psnr' => $mse === 0 ? 99.0 : round(10 * log10(65025 / ($mse / $samples)), 3));
         } finally {
-            imagedestroy($source);
-            imagedestroy($out);
+            unset($source, $out);
             if ($reference) {
-                imagedestroy($reference);
+                unset($reference);
             }
         }
     }

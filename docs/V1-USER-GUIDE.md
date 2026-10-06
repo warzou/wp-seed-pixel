@@ -1,72 +1,79 @@
-# Pixel V1 - private candidate administration
+# WP Seed Pixel 0.4.0 - Guide d'administration
 
-## Setup and ordinary behavior
+## Installation
 
-Activation/update does not change images or enable automation. The legacy web
-version API and its engine generation stay compatible. Images remain native
-WordPress attachments when Pixel is inactive/removed. Do not uninstall if you
-still need Pixel recovery actions; owned recovery resources are not silently
-erased. Use a tested host backup for full disaster recovery.
+Sauvegarder la base, les medias et le plugin installe. Installer le ZIP approuve
+depuis Extensions > Ajouter une extension > Televerser une extension.
+Une mise a jour remplace le plugin : ne pas le desinstaller d'abord.
+L'activation ne traite aucun ancien media et n'active pas un nouveau format.
 
-Storage processing requires an explicitly configured private recovery directory
-outside all public roots, same-filesystem certified rename/fsync, InnoDB tables
-and a DB session with advisory-lock authority. A file lock is not authority.
-Define WP_SEED_PIXEL_STORAGE_ENABLED=true only after host prerequisites pass,
-and WP_SEED_PIXEL_RECOVERY_ROOT to that private directory. Unknown ownership,
-unsupported storage/multisite, incomplete capacity or third-party changes stop
-destructive work. Never place recovery under uploads or claim quota from df.
+## Reglages Principaux
 
-## New uploads
+Ouvrir Medias > WP Seed Pixel. La page normale contient l'optimisation
+automatique, les images existantes selectionnees et l'activite recente.
+Activer JPEG et/ou PNG uniquement pour les futurs envois souhaites. PNG reste
+sans perte et conserve son format. Les anciens medias ne sont pas traites
+automatiquement ; changer ce choix etablit une nouvelle baseline d'envois.
 
-Media > Pixel - New uploads: OFF, Analyze only, or Process eligible new images.
-Choose JPEG and optionally bounded lossless PNG. Save establishes a fresh ID/UTC
-baseline; only subsequent ordinary authenticated uploads with completed native
-metadata can enroll. Imports/restores and preexisting IDs are protected. Existing
-JPEG-only settings never become PNG-enabled on upgrade. Turning OFF does not
-delete images, jobs or quarantine. Retry/resume existing jobs is explicit.
+La recuperation privee est preparee automatiquement sur un hebergement
+compatible. Aucun chemin FTP/SSH ni budget MiB manuel obligatoire.
+Si les preuves de securite du stockage manquent, Pixel refuse le traitement
+et conserve le media. Le plafond global facultatif appartient aux reglages
+avances et ne remplace pas le controle de l'espace physique.
 
-Storage fields use decimal MB; MiB is explicitly marked where used. A provider
-quota is information, not measured usage. An operational ceiling needs a live,
-complete trusted usage adapter including private recovery/DB/all account storage.
-Unknown usage is UNKNOWN and blocks admission when the operational ceiling is
-enabled. Disabling that optional ceiling does not certify provider quota/usage;
-the explicit operation budget and physical free-space gates still apply.
-Upload bytes already exist before Pixel starts; estimated peak includes staging,
-escrow and reserves. A tiny quota
-cannot be financed by deleting the source first.
+## Optimiser Une Image
 
-## Existing media
+Dans la mediatheque, ouvrir l'image puis Optimiser cette image.
+Le panneau indique son format, ses dimensions et son poids. Ne pas relancer
+un traitement sans raison : une image peut deja ne presenter aucun gain utile.
+Ce resultat est normal ; l'image actuelle reste intacte. La copie temporaire
+inutile est nettoyee si Pixel prouve qu'aucun remplacement n'a eu lieu.
+Un petit historique technique peut rester, sans copie de recuperation inutile.
 
-Run read-only image storage analysis, then Storage saver. Choose existing media
-in the native WordPress selector (up to 500), budget and operation. Build the
-plan; inspect proposed eligible/excluded/review states before starting. No work
-starts automatically from analysis. Requests process one image by default;
-pause/resume/cancel retain completed results. Browser closure requires explicit
-resume. Never regenerate unchanged work to chase savings.
+## Optimiser Des Images Selectionnees
 
-## Recovery and real savings
+Dans la page Pixel, ouvrir le selecteur WordPress, choisir les images
+(maximum 500), verifier le nombre selectionne et lancer cette selection.
+Aucun media hors selection n'est traite. Les jobs persistent ; utiliser
+Pause/Reprendre si necessaire. Lancer un traitement de toute la mediatheque
+reste une action avancee distincte et explicite.
 
-Retained versions: original bytes still occupy hosting space. Restore verifies
-the live original and current attachment before exact rollback. Delete permanently
-requires a separate acknowledgment bound to one verified generation; thereafter
-Restore is unavailable. The Media editor reflects live recovery availability,
-not a historical promise. Active savings, quarantine, pending temporary state,
-journal overhead, net file reclaim and physical deletion are distinct. Provider
-quota/allocation remains unknown unless independently measured.
+## Original, Version Optimisee Et Gain
 
-## State size and retention
+Apres remplacement, le panneau distingue les dimensions et poids de l'original
+et de la version optimisee, puis le gain de l'image active.
+Conserve pour restauration signifie que l'original occupe encore du disque.
+Le gain actif ne constitue donc pas encore de l'espace definitivement libere.
+Aucun gain utile n'est pas une erreur et ne propose pas de faux bouton Restaurer.
 
-Two lifecycle tables, bounded 32-event item journals and temporary files owned
-by one operation. UI results are paged (20) and recent uploads limited to 20.
-No unbounded debug log or automatic purge. New real storage jobs stop at 10,000
-records; existing restore/purge still work. Historical scan/plan rows grow only
-through explicit requests. Old terminal simulation pruning is separately explicit
-and does not delete real recovery receipts. No supported automatic real-history
-archiving in V1: retain evidence and obtain an explicit maintenance plan.
-Shared-host processing stays one item/request; conservative memory/peak gates can
-refuse large inputs. PNG limits and skips are described in PNG-LOSSLESS.md.
+## Restaurer Ou Supprimer L'Original
 
-Conflict warnings do not disable ShortPixel or another optimizer. Resolve ownership
-before co-processing. No external image transmission, telemetry or cloud account.
-English and fr_FR are supported; keyboard/native focus and responsive UI are
-checked, not a blanket WCAG or screen-reader certification.
+Restaurer l'original verifie la generation courante et remet ses octets exacts.
+Supprimer definitivement l'original requiert une confirmation separee pour
+cette version. Cette action est irreversible et retire la possibilite de
+restauration. Une recuperation necessaire n'expire pas automatiquement.
+Une situation ambigue conserve les preuves et les octets pour controle.
+
+## Mises A Jour
+
+Lorsqu'une adresse HTTPS de distribution approuvee par le proprietaire est
+configuree, utiliser Extensions > WP Seed Pixel > Mettre a jour maintenant.
+Le plugin controle version, compatibilite et SHA-256 avant remplacement.
+Un echec reseau ou d'integrite bloque la mise a jour ; aucun media n'est traite.
+
+Sans cette adresse, installer manuellement le ZIP approuve et verifier son
+SHA-256. Sauvegarder le runtime et les reglages avant remplacement. Une mise a
+jour conserve les choix JPEG/PNG, les anciens medias, les jobs et recuperations.
+
+## Limites Et Suppression Du Plugin
+
+Les images restent locales, sans cloud ni telemetrie. JPEG reste JPEG, PNG
+reste PNG ; aucune conversion ordinaire WebP/AVIF.
+Les limites PNG et les hebergements certifies sont documentes separement.
+Pixel ne remplace pas la protection d'acces d'un album prive.
+
+Desactiver le plugin arrete l'automatisation mais laisse des medias WordPress
+valides. La desinstallation ne supprime pas silencieusement les originaux de
+recuperation. Reinstaller le runtime approuve pour retrouver ces commandes.
+Conserver une sauvegarde d'hebergement pour la recuperation apres sinistre.
+Les details techniques restent replies dans l'interface normale.

@@ -3,6 +3,7 @@
 define('ABSPATH', __DIR__ . '/');
 define('WP_SEED_PIXEL_FILE', dirname(__DIR__) . '/wp-seed-pixel.php');
 define('WP_SEED_PIXEL_VERSION', '0.4.0');
+define('WP_SEED_PIXEL_BUILD', '0.4.0-private.3');
 $translations = json_decode(file_get_contents(dirname(__DIR__) . '/tools/i18n-fr.json'), true, 512, JSON_THROW_ON_ERROR);
 $locale = 'en_US'; $localized = array(); $options = array('automatic' => false, 'preset' => 'balanced', 'cleanup_on_uninstall' => false);
 function __($s, $domain = null) { global $translations, $locale; if ($domain !== 'wp-seed-pixel') { throw new RuntimeException('Wrong domain'); } return $locale === 'fr_FR' && isset($translations[$s]) && is_string($translations[$s]) ? $translations[$s] : $s; }
@@ -18,6 +19,7 @@ function load_plugin_textdomain(...$args) {}
 function plugin_basename($f) { return basename($f); }
 function wp_enqueue_style(...$args) {}
 function wp_enqueue_script(...$args) {}
+function wp_enqueue_media() {}
 function wp_localize_script($name, $object, $value) { global $localized; $localized[$object] = $value; }
 function current_user_can(...$args) { return true; }
 function admin_url($path) { return 'https://example.invalid/' . $path; }
@@ -25,6 +27,7 @@ function plugins_url($path, $file) { return '../' . $path; }
 function wp_create_nonce($s) { return 'synthetic-unit-nonce'; }
 function wp_nonce_field($s) {}
 function checked($a) { if ($a) { echo 'checked'; } }
+function disabled($a) { if ($a) { echo 'disabled'; } }
 function selected($a, $b) { if ($a === $b) { echo 'selected'; } }
 function submit_button() { global $locale; echo '<button type="submit">' . ($locale === 'fr_FR' ? 'Enregistrer les modifications' : 'Save Changes') . '</button>'; }
 function get_posts($args) { return array(); }
@@ -40,7 +43,11 @@ function is_wp_error($s) { return false; }
 function update_option($key, $value, $autoload) { global $options; $options = $value; }
 function wp_safe_redirect($url) { throw new RuntimeException('unit-redirect'); }
 class WP_Seed_Pixel_Store { const KEY = '_seed_pixel_manifest'; static function manifest($id) { return false; } }
-class WP_Seed_Pixel_Future_Uploads { const META = '_seed_pixel_future_upload'; static function settings() { return array('mode' => 'off', 'cutoff_id' => 0); } }
+class WP_Seed_Pixel_Future_Uploads { const META = '_seed_pixel_future_upload'; static function settings() { return array('mode' => 'off', 'cutoff_id' => 0, 'capacity_bytes' => 0, 'formats' => array('jpeg')); } }
+class WP_Seed_Pixel_Quarantine { static function enabled() { return false; } }
+class WP_Seed_Pixel_Selected_Admin { static function available() { return false; } }
+class WP_Seed_Pixel_Host_Admin { static function recent() {} }
+class WP_Seed_Pixel_Updater { static function endpoint() { return ''; } }
 class WP_Seed_Pixel_Job_Store { const SCHEMA = 2; }
 class WP_Seed_Pixel_Presets { static function all() { return array('balanced'=>array(), 'web'=>array(), 'participant_album'=>array()); } static function get($key) { return array(); } }
 require dirname(__DIR__) . '/includes/class-i18n.php';

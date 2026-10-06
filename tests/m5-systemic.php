@@ -9,7 +9,7 @@ m5_assert($s['status']==='failed_systemic','actual absent editor backend pauses 
 m5_assert(($s['states']['queued']??0)===2&&($s['states']['failed']??0)===1,'no cascade of backend failures');
 foreach($ids as$i){m5_assert(hash_file('sha256',get_attached_file($i))===$before[$i],'backend failure source untouched '.$i);}
 $a=m5_result(WP_Seed_Pixel_Jobs::storage_audit($j['id']));
-m5_assert($a['complete']&&$a['temporary_bytes']>0&&$a['quarantine_bytes']===0&&$a['net_reclaimed_bytes']===-$a['audit_bytes']-$a['temporary_bytes'],'failed pre-switch escrow has exact negative net accounting');
+m5_assert($a['complete']&&$a['temporary_bytes']===0&&$a['audit_bytes']>0&&$a['quarantine_bytes']===0&&$a['net_reclaimed_bytes']===-$a['audit_bytes'],'failed pre-switch cleanup retains only exactly accounted audit metadata');
 $r=m5_result(WP_Seed_Pixel_Jobs::control($j['id'],'retry'));m5_assert($r['status']==='paused','retry queues without starting');
 m5_result(WP_Seed_Pixel_Jobs::control($j['id'],'resume'));$s=m5_finish($j['id']);m5_assert(($s['states']['retained']??0)===3,'backend restored resumes exact job');
 m5_report('systemic');
