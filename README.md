@@ -1,8 +1,9 @@
-# WP Seed Pixel 0.5.0
+# WP Seed Pixel 0.5.1
 
 Local WordPress image optimization and storage management. Images never leave
 the host: no external image service, telemetry, account or AI runtime.
-This release preparation does not publish a distribution endpoint.
+Version 0.5.1 adds the verified GitHub stable update channel without changing
+image optimization, stored policies or recovery behavior.
 
 Version 0.5.0 adds optional, single-image PNG to JPEG
 conversion in the existing attachment panel. Analyze prepares a private JPEG
@@ -25,11 +26,17 @@ the approved runtime ZIP through Plugins > Add New > Upload Plugin. Confirm
 replacement when updating; do not uninstall to update. Activation and upgrade
 do not process existing media or enable a new format.
 
-An owner-approved HTTPS distribution endpoint enables the native Plugins
-update row. There is no default endpoint. The updater validates version,
+Version 0.5.1 defaults to the repository-bound GitHub stable manifest at
+https://raw.githubusercontent.com/warzou/wp-seed-pixel/main/updates/stable.json.
+An explicit WP_SEED_PIXEL_UPDATE_MANIFEST constant overrides this source;
+an empty or invalid override disables updates without falling back.
+The updater validates version,
 compatibility, archive identity and SHA-256 before WordPress replaces runtime
-files. Network or integrity failure refuses the update. Manual approved ZIP
-installation is the fallback. See [private updates](docs/PRIVATE-UPDATES.md).
+files, including one explicitly validated GitHub release-asset redirect.
+Network or integrity failure refuses the update. The published 0.5.0 requires
+verified manual ZIP replacement or its existing private endpoint to bootstrap
+0.5.1; it cannot consume the new stable feed itself.
+See [updates and release gates](docs/PRIVATE-UPDATES.md).
 
 ## Ordinary Administration
 
@@ -105,6 +112,6 @@ to use recovery actions. A host backup remains necessary for disaster recovery.
 
 Runtime packaging uses tools/private-release.py into a fresh ignored directory.
 It excludes tests, tools, labs, screenshots, reports, credentials and media.
-No distribution endpoint, public publication or consumer deployment is implied
-by a local build. M1-M6 describe developer certification only, not normal admin
+No endpoint publication or consumer deployment is implied by a local build.
+M1-M6 describe developer certification only, not normal admin
 steps. PHP >= 8.1 and WordPress >= 6.6 are API floors, not universal host claims.

@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.5.1 - 2026-10-07
+
+- Built-in repository-bound GitHub stable manifest; explicit HTTPS private
+  override remains isolated and never silently falls back to the stable feed.
+- One manually validated 302 to release-assets.githubusercontent.com; no
+  automatic/third-hop redirect, userinfo, fragment or unexpected host/path.
+- Reject oversized/truncated metadata before JSON parsing. Compatibility,
+  SHA-256 and archive identity remain required before native replacement.
+- Existing media engines, policies, profiles, claims and recovery are unchanged.
+- Bootstrap existing 0.5.0 installations using verified native ZIP replacement
+  or their existing private feed; subsequent stable updates use GitHub.
+
 ## 0.5.0 - 2026-10-07
 
 - Explicit single-image PNG to JPEG comparison, conversion and exact restoration;

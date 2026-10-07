@@ -3,7 +3,7 @@ Tags: images, jpeg, png, media, optimization
 Requires at least: 6.6
 Tested up to: 7.1
 Requires PHP: 8.1
-Stable tag: 0.5.0
+Stable tag: 0.5.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -88,6 +88,13 @@ No. They use protected postmeta, separate from WordPress public media details.
 WordPress still provides normal public derivative URLs for public attachments.
 
 == Changelog ==
+
+= 0.5.1 =
+Repository-bound GitHub stable updates by default, explicit private override,
+one validated release-assets redirect, bounded metadata and pre-install SHA/ZIP
+verification. No image engine, profile, recovery or stored policy changes.
+Existing 0.5.0 installations need verified ZIP replacement or their existing
+private feed to bootstrap 0.5.1; subsequent stable updates use GitHub by default.
 
 = 0.5.0 =
 Explicit single-image PNG to JPEG comparison and conversion, with retained

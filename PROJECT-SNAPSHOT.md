@@ -1,5 +1,50 @@
 # WP Seed Pixel
 
+## 2026-10-07 - official 0.5.1 release gate
+
+- Owner authorizes source commit, annotated tag, official GitHub release,
+  verified asset-first publication and fast-forward-only main promotion.
+  Production remains excluded; PDE deployment requires its targeted snapshot.
+- Final README/readme release wording replaces local-candidate notices only.
+  Final ZIP: 60 runtime files, 218958 bytes, SHA-256
+  9cf806c71e218454cbe6063d1b2f63a7be08fbcc808bd7f521c9d9a77e71b439.
+  The approved candidate and official 0.5.0 ZIP remain immutable.
+- Two new exact-release cycles pass: 132 security assertions, three isolated
+  override cases, stable/private native UI updates (10 checks each), exact
+  settings/jobs/files preservation and retained-conversion restoration.
+  One intermediate console assertion failed without captured detail; a fresh
+  reproduction and complete instrumented final cycle pass. No runtime change
+  was made for this non-reproduced test observation. Final browser errors: zero.
+- PHP 8.4.23 lint: 48/48. Media implementation invariance: 55 files. Final
+  stable.json binds 0.5.1 to the exact ZIP SHA, PHP 8.1 / WP 6.6 / tested 7.1.
+  Real public parser/asset and consumer validation are post-publication gates,
+  not implied by the local fixture tests. Evidence: ignored release-0.5.1 report.
+
+## 2026-10-07 - local 0.5.1 GitHub stable updater gate
+
+- Branch codex/github-stable-updater, exact published 0.5.0 base
+  22ab28b00eedb26af73d80be3fe61cb5ac036283; no commit/publication/deployment.
+- Built-in exact raw GitHub stable endpoint, isolated explicit private override,
+  strict repository/version paths and one manually validated release-assets 302.
+  Oversized/declared-truncated manifests rejected before decoding; SHA and ZIP
+  guards precede native installation. No image runtime/policy/recovery changes.
+- Two fresh final cycles on the exact candidate: 132 matrix assertions plus
+  three override isolation checks, two 10-check native headless UI updates and
+  two exact settings/jobs/files/retained-conversion restoration validations each.
+  WordPress 7.1.2, PHP 8.5.4, MariaDB 11.8.6; PHP 8.4.23 lint 48/48.
+- Stable transport is tested on an explicitly labelled 0.5.0 bridge fixture
+  (only updater replaced). Unmodified published 0.5.0 -> 0.5.1 is separately
+  certified through its private override. Stable.json alone cannot bootstrap
+  0.5.0: verified native ZIP replacement/private feed is required once.
+- Actual GitHub 0.5.0 asset downloaded by the new production transport and
+  verified: 217912 bytes, published SHA exact, not installed or changed.
+- Final candidate: 60 runtime files, 218894 bytes, SHA-256
+  b086e673512162ccf611d7494762f466683427bed9533faf9c264854f7b8cf41.
+  Local stable.json still describes official 0.5.0. Main is behind3/ahead0;
+  fast-forward-only promotion plan documented, not executed.
+- Evidence: ignored reports/updater-0.5.1-20261007/final. Further main promotion,
+  release/tag/manifest publication and PDE validation require owner approval.
+
 ## 2026-10-07 - Explicit PNG to JPEG development increment
 
 Isolated branch `codex/png-jpeg-explicit-conversion`, based on frozen 0.4.0

@@ -1,0 +1,13 @@
+{
+  "schema": 1,
+  "slug": "wp-seed-pixel",
+  "channel": "stable",
+  "version": "0.5.1",
+  "requires": "6.6",
+  "tested": "7.1",
+  "requires_php": "8.1",
+  "package": "https://github.com/warzou/wp-seed-pixel/releases/download/v0.5.1/wp-seed-pixel-0.5.1.zip",
+  "sha256": "9cf806c71e218454cbe6063d1b2f63a7be08fbcc808bd7f521c9d9a77e71b439",
+  "released": "2026-10-07",
+  "notes_url": "https://github.com/warzou/wp-seed-pixel/releases/tag/v0.5.1"
+}

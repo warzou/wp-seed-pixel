@@ -1,10 +1,13 @@
 <?php
 defined('ABSPATH') || exit;
 
-/** Private updates use the core upgrader; this adapter never changes media or policy. */
+/** Verified updates use the core upgrader; this adapter never changes media or policy. */
 final class WP_Seed_Pixel_Updater {
     const ID = 'wp-seed-pixel/wp-seed-pixel.php';
     const SCHEMA = 1;
+    const OFFICIAL_MANIFEST = 'https://raw.githubusercontent.com/warzou/wp-seed-pixel/main/updates/stable.json';
+    const MANIFEST_LIMIT = 16384;
+    const PACKAGE_LIMIT = 16777216;
 
     public static function boot() {
         add_filter('pre_set_site_transient_update_plugins', array(__CLASS__, 'offer'));
@@ -14,12 +17,12 @@ final class WP_Seed_Pixel_Updater {
     }
 
     public static function endpoint() {
-        $url = defined('WP_SEED_PIXEL_UPDATE_MANIFEST') ? WP_SEED_PIXEL_UPDATE_MANIFEST : '';
+        $url = defined('WP_SEED_PIXEL_UPDATE_MANIFEST') ? WP_SEED_PIXEL_UPDATE_MANIFEST : self::OFFICIAL_MANIFEST;
         return self::https($url) ? $url : '';
     }
 
     private static function https($url) {
-        if (!is_string($url) || strlen($url) > 2048) { return false; }
+        if (!is_string($url) || strlen($url) > 2048 || preg_match('/[\x00-\x20\x7f\\\\]/', $url)) { return false; }
         $p = wp_parse_url($url);
         return is_array($p) && ($p['scheme'] ?? '') === 'https' && !empty($p['host'])
             && !isset($p['user'], $p['pass']) && !isset($p['user']) && !isset($p['pass'])
@@ -30,16 +33,22 @@ final class WP_Seed_Pixel_Updater {
     public static function validate($v, $endpoint) {
         $keys = array('schema', 'slug', 'channel', 'version', 'requires', 'tested', 'requires_php', 'package', 'sha256', 'released', 'notes_url');
         if (!is_array($v) || array_diff(array_keys($v), $keys) || array_diff($keys, array_keys($v))
-            || $v['schema'] !== self::SCHEMA || $v['slug'] !== 'wp-seed-pixel' || $v['channel'] !== 'private') { return false; }
+            || $v['schema'] !== self::SCHEMA || $v['slug'] !== 'wp-seed-pixel'
+            || !in_array($v['channel'], array('stable', 'private'), true)) { return false; }
         foreach (array('version', 'requires', 'tested', 'requires_php') as $key) {
             if (!is_string($v[$key]) || !preg_match('/^[0-9]+\.[0-9]+(?:\.[0-9]+)?(?:-(?:alpha|beta|rc|private)\.[0-9]+)?$/D', $v[$key])) { return false; }
         }
         if (!self::https($endpoint) || !self::https($v['package']) || !self::https($v['notes_url'])
-            || strtolower(wp_parse_url($v['package'], PHP_URL_HOST)) !== strtolower(wp_parse_url($endpoint, PHP_URL_HOST))
-            || strtolower(wp_parse_url($v['notes_url'], PHP_URL_HOST)) !== strtolower(wp_parse_url($endpoint, PHP_URL_HOST))
             || !preg_match('/\.zip$/D', wp_parse_url($v['package'], PHP_URL_PATH) ?? '')
             || !is_string($v['sha256']) || !preg_match('/^[a-f0-9]{64}$/D', $v['sha256'])
             || !is_string($v['released']) || !preg_match('/^\d{4}-\d{2}-\d{2}$/D', $v['released'])) { return false; }
+        if ($v['channel'] === 'stable') {
+            if ($endpoint !== self::OFFICIAL_MANIFEST || !preg_match('/^[0-9]+\.[0-9]+\.[0-9]+$/D', $v['version'])
+                || $v['package'] !== 'https://github.com/warzou/wp-seed-pixel/releases/download/v' . $v['version'] . '/wp-seed-pixel-' . $v['version'] . '.zip'
+                || $v['notes_url'] !== 'https://github.com/warzou/wp-seed-pixel/releases/tag/v' . $v['version']) { return false; }
+        } elseif ($endpoint === self::OFFICIAL_MANIFEST
+            || strtolower(wp_parse_url($v['package'], PHP_URL_HOST)) !== strtolower(wp_parse_url($endpoint, PHP_URL_HOST))
+            || strtolower(wp_parse_url($v['notes_url'], PHP_URL_HOST)) !== strtolower(wp_parse_url($endpoint, PHP_URL_HOST))) { return false; }
         return $v;
     }
 
@@ -51,10 +60,18 @@ final class WP_Seed_Pixel_Updater {
             return is_array($cached) ? self::validate($cached, $url) : false;
         }
         // No site URL, user, media, locale or credential is added to this GET.
-        $r = wp_safe_remote_get($url, array('timeout' => 10, 'redirection' => 0, 'limit_response_size' => 16384,
-            'user-agent' => 'WP-Seed-Pixel-Updater/1', 'cookies' => array()));
-        $v = !is_wp_error($r) && wp_remote_retrieve_response_code($r) === 200
-            ? self::validate(json_decode(wp_remote_retrieve_body($r), true), $url) : false;
+        $r = wp_safe_remote_get($url, array('timeout' => 10, 'redirection' => 0, 'limit_response_size' => self::MANIFEST_LIMIT + 1,
+            'user-agent' => 'WP-Seed-Pixel-Updater/1', 'cookies' => array(), 'headers' => array('Accept-Encoding' => 'identity')));
+        $v = false;
+        if (!is_wp_error($r) && wp_remote_retrieve_response_code($r) === 200) {
+            $body = wp_remote_retrieve_body($r);
+            $length = wp_remote_retrieve_header($r, 'content-length');
+            // A valid JSON prefix must not conceal a truncated, oversized response.
+            if (is_string($body) && strlen($body) <= self::MANIFEST_LIMIT
+                && ($length === '' || (is_scalar($length) && ctype_digit((string) $length) && (int) $length === strlen($body)))) {
+                $v = self::validate(json_decode($body, true), $url);
+            }
+        }
         set_site_transient($key, $v ?: 'unavailable', $v ? 6 * HOUR_IN_SECONDS : 15 * MINUTE_IN_SECONDS);
         return $v;
     }
@@ -63,7 +80,8 @@ final class WP_Seed_Pixel_Updater {
         if (!is_object($t)) { return $t; }
         unset($t->response[self::ID], $t->no_update[self::ID]);
         $m = self::manifest();
-        if (!$m) { return $t; }
+        if (!$m || version_compare(PHP_VERSION, $m['requires_php'], '<')
+            || version_compare(get_bloginfo('version'), $m['requires'], '<')) { return $t; }
         $current = $t->checked[self::ID] ?? WP_SEED_PIXEL_VERSION;
         $data = (object) array('slug' => 'wp-seed-pixel', 'plugin' => self::ID, 'new_version' => $m['version'],
             'url' => $m['notes_url'], 'package' => $m['package'], 'requires' => $m['requires'],
@@ -120,15 +138,38 @@ final class WP_Seed_Pixel_Updater {
         if (!$file) { return new WP_Error('pixel_update_temp'); }
         $accepted = false;
         try {
-            $r = wp_safe_remote_get($package, array('timeout' => 60, 'redirection' => 0, 'stream' => true,
-                'filename' => $file, 'limit_response_size' => 16 * 1024 * 1024, 'user-agent' => 'WP-Seed-Pixel-Updater/1', 'cookies' => array()));
+            $r = self::package_request($package, $file, $m['channel'] === 'stable');
             if (is_wp_error($r) || wp_remote_retrieve_response_code($r) !== 200 || !is_file($file)
+                || filesize($file) > self::PACKAGE_LIMIT
                 || !hash_equals($m['sha256'], hash_file('sha256', $file))) { return new WP_Error('pixel_update_integrity', __('Update package integrity check failed. Nothing was installed.', 'wp-seed-pixel')); }
             $ok = self::archive($file, $m);
             if (is_wp_error($ok)) { return $ok; }
             $accepted = true;
             return $file;
         } finally { if (!$accepted && is_file($file)) { unlink($file); } }
+    }
+
+    private static function asset_location($url) {
+        if (!is_string($url) || strlen($url) > 8192 || preg_match('/[\x00-\x20\x7f\\\\]/', $url)) { return false; }
+        $p = wp_parse_url($url);
+        return is_array($p) && ($p['scheme'] ?? '') === 'https'
+            && ($p['host'] ?? '') === 'release-assets.githubusercontent.com'
+            && !isset($p['user']) && !isset($p['pass']) && !isset($p['fragment'])
+            && (!isset($p['port']) || $p['port'] === 443)
+            && preg_match('~^/github-production-release-asset/[0-9]+/[A-Za-z0-9-]+$~D', $p['path'] ?? '');
+    }
+
+    private static function package_request($url, $file, $official) {
+        $args = array('timeout' => 60, 'redirection' => 0, 'stream' => true, 'filename' => $file,
+            'limit_response_size' => self::PACKAGE_LIMIT + 1, 'user-agent' => 'WP-Seed-Pixel-Updater/1', 'cookies' => array());
+        $r = wp_safe_remote_get($url, $args);
+        if ($official && !is_wp_error($r) && wp_remote_retrieve_response_code($r) === 302) {
+            $location = wp_remote_retrieve_header($r, 'location');
+            if (!self::asset_location($location)) { return new WP_Error('pixel_update_redirect'); }
+            // Signed queries exist only in memory; no automatic or third-hop redirects.
+            $r = wp_safe_remote_get($location, $args);
+        }
+        return $r;
     }
 
     public static function complete($upgrader, $extra) {
