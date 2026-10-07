@@ -1,0 +1,14 @@
+.pixel-format-panel, .pixel-format-opportunity { max-width: 100%; overflow-wrap: anywhere; }
+.pixel-format-panel button, .pixel-format-opportunity button { white-space: normal; min-height: 36px; }
+.pixel-format-panel input { margin-right: 6px; }
+.pixel-format-images { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-top: 12px; }
+.pixel-format-comparison figure { margin: 0; min-width: 0; }
+.pixel-format-comparison img { display: block; width: 100%; height: auto; object-fit: contain; }
+.pixel-format-panel :focus-visible, .pixel-format-opportunity :focus-visible { outline: 2px solid #135e96; outline-offset: 3px; }
+@media (max-width: 600px) { .pixel-format-images { grid-template-columns: minmax(0, 1fr); } }
+.pixel-format-profiles { margin: 1em 0; min-width: 0; }
+.pixel-format-profiles legend { font-weight: 600; }
+.pixel-format-profile { display: flex; gap: 8px; align-items: flex-start; margin: 12px 0; }
+.pixel-format-profile > span { min-width: 0; overflow-wrap: anywhere; }
+.pixel-format-profile span span { display: block; }
+.pixel-format-profile input { flex: 0 0 auto; margin-top: 3px; }

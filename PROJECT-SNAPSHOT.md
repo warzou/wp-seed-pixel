@@ -1,5 +1,52 @@
 # WP Seed Pixel
 
+## 2026-10-07 - Explicit PNG to JPEG development increment
+
+Isolated branch `codex/png-jpeg-explicit-conversion`, based on frozen 0.4.0
+commit `a423f374cf283272c81aae43ec76bd1ca95cc118`. Version/build
+`0.5.0-private.1` is a private development candidate, not a release. The accepted
+0.4.0 checkout and artifact are not replaced. Existing JPEG and lossless PNG
+engines, automatic enrollment and updater implementation remain unchanged.
+
+Single-attachment analysis uses actual candidate bytes, Q98 then Q100 from the
+accepted master profile, unchanged SSIM/PSNR guards, and a conservative useful
+benefit floor. Comparison and explicit approval are in the existing media
+panel. caBX requires independent acknowledgement; exact original PNG bytes
+remain in private recovery and at their old public addresses until explicit
+purge. Unsupported color/metadata states stay unchanged.
+
+The dedicated format coordinator reuses the existing job tables, immutable
+snapshots, checksummed journals, storage admission and M5.1 SQL session fences.
+Each candidate slot has durable inode ownership before encoding; JPEG resources
+are published with same-device, no-clobber hard links, then attachment MIME and
+metadata change in an InnoDB transaction. Native derivatives are converted
+from their exact private PNG crops, never recompressed from a lossy JPEG master.
+Restore reverses the complete owned graph. Purge is separately confirmed,
+blocks known direct URL references, and warns about unknown external links.
+
+Certification evidence belongs in ignored `reports/png-jpeg/`. This increment
+has no DEV/production mutation, no real migration, no commit/push/tag/release.
+Guillaume's Charlotte Q100/Q98/Q94 Human Pass is image-specific research;
+the global quality floor is not relaxed. See `docs/PNG-JPEG-CONVERSION.md`.
+
+Final local cycles 1 and 2 each pass 172 checks: 56 conversion/matrix, 22
+security, 78 actual process-death/concurrency and 16 isolated browser checks.
+Fourteen SIGKILL boundaries include candidate/derivative encoding, publication,
+DB switch, restore and purge. Final review additionally witnesses public mode,
+UID and GID; permission changes block publication, restore or purge.
+Existing lossless PNG regression passes 61 checks, bilingual presentation 22,
+and the unchanged native updater accepts the exact candidate (3 package checks).
+PHP 8.4.23 lint passes for 51 runtime/new-test files; real runtime is WordPress
+7.1.2 / PHP 8.5.4 / MariaDB 11.8.6. Responsive 1440/820/390/320 and 200% CSS
+zoom pass; this is not a blanket accessibility or fresh real-NFS certification.
+
+Private runtime ZIP: 212,593 bytes, 744,992 installed bytes, 60 files, SHA-256
+`1369943c9df3f9cb24e777e44f74d39afe7358aa74decc9ca0c8cf0e0cce7647`.
+Source, runtime manifest and ZIP match; no tests or private images are packaged.
+The disposable local server/DB/recovery and browser session files are removed.
+Final scoped review has zero open Critical/Major. Next is owner review before
+an explicitly authorized 6354 pilot, including a fresh reference/host inventory.
+
 ## 2026-10-06 - 0.4.0 final candidate certified and deployed to PDE DEV
 
 Feature scope is frozen. Runtime version 0.4.0, private build private.9. The
@@ -628,3 +675,101 @@ commit, push, tag or public release.
   Helpers physically removed; legitimate recovery preserved. PDE report:
   reports/pixel-png-storage-ux-20261006.md, proofs pixel-6354-private8-completion.
   NO USEFUL SAVING; STOP before any further processing or purge.
+
+## 2026-10-07 - private.2 scoped format-result UX
+
+- Private.1 and frozen 0.4.0 preserved. New private.2 ZIP: 213423 bytes,
+  60 runtime files, SHA-256 ab2fe8d3a7929a4b75c5521b0744073f4e3b4afd127c3a035f427801b4e5a334.
+- Generic retained UI: original/active master dimensions and sizes, master-only
+  saving, truthful provenance/recovery states. No lifecycle/schema change.
+- Runtime delta vs private.1: Format Admin, three catalogs, README/build identity.
+- Two exact-runtime final cycles: 186 PASS each; JPEG71, PNG61, selected25,
+  presentation22 and updater3 PASS. Headless 1440/820/390/320/CSS200% inspected.
+- Targeted DEV deployment validated, but analyze6354 refused CLAIM_CONFLICT:
+  historical operation546/job4 remains needs_review. No conversion item created,
+  no real encoding; 6354 native state unchanged. Exact 0.4 runtime rolled back.
+- No reconciliation/lease edit/policy weakening. STOP for separately scoped
+  historical-operation resolution; real JPEG Human Pass is not ready.
+- Evidence: reports/png-jpeg-ux-private2; PDE ignored pilot report 20261007.
+  No commit/push/tag/release or production mutation.
+
+## 2026-10-07 - private.3 historical review guard and real DEV pilot
+
+- Shared Jobs::review_claims/reconcile_claims validate a terminal, checksummed,
+  never-started review with no owner, reservation or recovery evidence. No fake
+  state transition or target-specific exception. Active and ambiguous work blocks.
+- Two final cycles228/228 each, including42 authority/reconciliation checks.
+  PHP43/43, updater3/3. Immutable ZIP213855 bytes/60 runtime files, SHA-256
+  bc7da003fbee737dac31bc9934de6fc2c0f885aa67955d9223ce182d274085e8.
+- Targeted DEV snapshot and exact deploy. Historical546 unchanged; official
+  reconciliation twice NO-OP. One convert6354: job11/item577 retained, active
+  JPEG805265 bytes, Q98, SSIM0.996506/PSNR47.909; exact original recovery retained.
+- Real editor headless responsive panel passes. Browser REST403 from unbound CLI
+  nonce stopped HTTP phase; direct HTTP/consumer/browser REST QA remains PARTIAL.
+  No full remote QA claim. Human review pending; no permanent delete/other media/
+  production/commit/push/tag/release. PDE report pixel-claim-reconcile-6354-20261007.
+
+## 2026-10-07 - private.3 final browser-facing gaps closed
+
+- Real browser-bound WP nonce: attachment6354 REST200/JPEG/all11 sizes. Public
+  REST401 is the intentional DEV MU-plugin guard, not a Pixel permission defect.
+- Active JPEG, compatibility PNG and four native JPEG sizes: HTTP200, exact
+  hashes/bytes/decoded dimensions. Actual Divi/Content Kit Intervenants card
+  loads correctly1440/820/390/320; consumer uses fixed largeJPEG without srcset,
+  native WP srcset coherent. Annuaire does not select this Intervenant-only profile.
+- Before/after media/postmeta/runtime/history identical; original recovery exact.
+  No product changes, new jobs, conversion, restore, delete or production action.
+  Technical READY TO CLOSE0.5.0; Human Pass PENDING, release gate remains separate.
+- Session/helpers cleaned. No commit/push/tag/release. PDE final-browser6354 report.
+
+## 2026-10-07 - per-image JPEG profile choice, private.4
+
+- Owner confirms HUMAN PASS on research Q100/Q98/Q94 and the real Q98 migrated
+  image/result panel. Q90 has no HUMAN PASS and no real conversion authorization.
+- Exact local Charlotte Q90: 363563 bytes, sampled SSIM0.989857/PSNR43.128,
+  rejected by unchanged guard. Q94:480781/SSIM0.992989, also rejected. Q98 exactly
+  matches805265/SSIM0.996506 and remains the default for Charlotte.
+- Three measured per-image candidates with accessible labelled radios, dynamic
+  smallest-passing default, verified reuse, durable selection and stale-profile
+  conversion rejection. No global setting or ordinary JPEG/lossless PNG change.
+- Multi-profile admission/accounting and identity-safe cleanup share the existing
+  SQL authority and recovery journal. Native derivative quality stays conservative.
+- No DEV/production mutation in this lot. Private.3 and frozen0.4 artifacts retained.
+  No commit/push/tag/release. Final certification evidence in ignored reports.
+
+## 2026-10-07 - final manual profile policy, private.5
+
+- Owner decision supersedes private.4 disabled quality-failing profiles. The
+  lightest quality-passing choice alone is recommended; no passing choice has
+  no default. Safe beneficial Q90/Q94 choices remain available manually.
+- Independent quality acknowledgement is enforced server-side, with open
+  comparison and durable profile/actual quality/guard/override evidence.
+- Charlotte Q98 remains recommended; Q94 Human Pass acquired, Q90 pending.
+  No real attachment conversion, remote deployment, commit/push/tag/release.
+- SQL authority, claims, recovery, provenance and native derivative guards
+  remain unchanged. Two fresh isolated final cycles: 471/471 each, browser errors
+  0; selected JPEG regression25/25 and lossless PNG61/61. Private.5 ZIP217526 bytes,
+  SHA-25657866805e16e7c1d87eb1653a5dbb040adf232c457e8943732f9a74f6da1feb0.
+  Runtime/ZIP identity and cleanup PASS. Final Human Review remains required.
+
+## 2026-10-07 - official 0.5.0 release preparation gate
+
+- Exact private.5 runtime promoted by metadata only: header/version/build 0.5.0,
+  release-facing README/readme updated. Includes/assets/languages byte-identical;
+  legacy engine identity 0.3.1 and schema 2 remain unchanged. No new behavior.
+- Two fresh final-ZIP cycles: 476/476 each (471 product checks plus 5 native
+  installation checks). JPEG25/25, lossless PNG61/61, runtime PHP8.4.23 lint43/43,
+  French570 strings/missing0, headless console errors0. No owner desktop control.
+- Native updater 0.4.0 -> 0.5.0 preserves settings/jobs/data and rejects a bad
+  checksum before replacement. Private.3/private.5 use native ZIP overwrite:
+  PHP orders private.N after the final version. Their exact retained conversions
+  restore under 0.5.0; private.5 Q90/profile/override evidence stays byte-exact.
+- Real6354 pilot evidence preserved; no reconversion/remote mutation. Q90 Human
+  Pass is not a release gate for explicit warned, server-confirmed manual choices.
+- Frozen0.4.0 and private.1 through private.5 archives remain immutable. Fresh
+  runtime ZIP: 60 files, 217912 bytes, SHA-256
+  b9013b0f4e9564b69563104fc7710d9789341ed615b147f9e476bc23fb1375f7.
+  Two deterministic builds are byte-identical; endpoint manifest stays local.
+- Local release-preparation commit only after final hygiene gates. Push/tag/public
+  release/endpoint publication/consumer deployment require separate authorization.
+  Evidence: ignored reports/release-0.5.0-20261007/final.

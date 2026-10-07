@@ -14,6 +14,12 @@ released (YYYY-MM-DD), notes_url. Version is the WordPress plugin version, not
 the private build identifier; same-version private builds require an explicit
 manual installation and do not pretend to be version upgrades.
 
+PHP orders the nonstandard `private.N` suffix after final `0.5.0`. Moving from
+0.5.0-private.3/private.5 to 0.5.0 therefore uses the verified native ZIP upload
+replacement, not the update row. Do not uninstall or rewrite version constants.
+The standard 0.4.0 to 0.5.0 path uses the native updater when its trusted endpoint
+is configured. Neither path processes media or changes stored profile approvals.
+
 Run `tools/private-release.py --output <private-output> --tested <tested-WP>`.
 An explicitly approved `--endpoint https://<host>/<path>/manifest.json` also
 generates the corresponding manifest. Upload immutable ZIP and notes first,
@@ -54,8 +60,9 @@ with controlled HTTP transport fixtures for failure injection. They are not a
 certification of a real HTTPS hosting endpoint. Real endpoint/TLS/update-screen
 download remains an owner gate after hosting has been approved.
 
-Runtime 0.4.0 has a separate private build identifier. PDE DEV deployment is
-targeted and backed up; settings are preserved. A local transport-fixture E2E
+Runtime 0.5.0 reports version/build 0.5.0; the legacy engine identity remains
+0.3.1 for generation compatibility. Updates preserve settings and do not process
+media. A local transport-fixture E2E
 PASS does not certify an unpublished remote distribution endpoint. Endpoint
 publication/configuration is an owner gate, not a code-freeze blocker.
 

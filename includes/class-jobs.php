@@ -18,6 +18,45 @@ final class WP_Seed_Pixel_Jobs {
             && ($data['planned_bytes'] ?? null) === 0 && ($data['peak_bytes'] ?? null) === 0;
     }
 
+    /** Read-only reconciliation: a rejected, never-started plan is not an image owner. */
+    public static function review_claims($id) {
+        global $wpdb;
+        $id = (int) $id;
+        if (!self::allowed() || !current_user_can('edit_post', $id)
+            || !WP_Seed_Pixel_Authority::valid(0) || !WP_Seed_Pixel_Authority::valid($id)) { return new WP_Error('LOCKED'); }
+        $rows = $wpdb->get_results($wpdb->prepare('SELECT * FROM ' . WP_Seed_Pixel_Job_Store::table('items') .
+            " WHERE attachment_id=%d AND kind='operation' AND action<>'convert' AND stage NOT IN ('retained','purged','rolled_back','skipped','failed','cancelled') ORDER BY id LIMIT 101", $id), ARRAY_A);
+        if (!is_array($rows) || $wpdb->last_error || count($rows) > 100) { return new WP_Error('CLAIM_CONFLICT'); }
+        $proofs = array();
+        foreach ($rows as $item) {
+            $job = WP_Seed_Pixel_Job_Store::job($item['job_id']);
+            $root = defined('WP_SEED_PIXEL_RECOVERY_ROOT') ? realpath(WP_SEED_PIXEL_RECOVERY_ROOT) : false;
+            $path = $root ? $root . '/m3-' . (int) $item['job_id'] . '-' . (int) $item['id'] : '';
+            if (!self::unstarted_review($item) || (int) $item['owners'] !== 0 || !$job || !self::compatible($job)
+                || !in_array($job['status'], array('completed_errors', 'cancelled'), true)
+                || !empty($job['lease']) || (int) $job['lease_until'] !== 0 || !$root
+                || is_link(WP_SEED_PIXEL_RECOVERY_ROOT) || file_exists($path) || is_link($path)) { return new WP_Error('CLAIM_CONFLICT'); }
+            $proofs[] = array('item_id' => (int) $item['id'], 'job_id' => (int) $job['id'],
+                'classification' => 'unstarted_terminal_review', 'state' => $item['stage'],
+                'reason' => json_decode($item['data'], true)['reason'],
+                'item_sha256' => hash('sha256', wp_json_encode($item)), 'job_sha256' => hash('sha256', wp_json_encode($job)));
+        }
+        return array('attachment_id' => $id, 'blocked' => false, 'reviews' => $proofs, 'mutations' => 0);
+    }
+
+    public static function reconcile_claims($id) {
+        if (!self::allowed() || !current_user_can('edit_post', (int) $id) || !WP_Seed_Pixel_Master_Storage::enabled()) { return new WP_Error('PERMISSION_DENIED'); }
+        $site = WP_Seed_Pixel_Files::lock(0); if (is_wp_error($site)) { return $site; }
+        $image = null;
+        try {
+            $image = WP_Seed_Pixel_Files::lock((int) $id); if (is_wp_error($image)) { return $image; }
+            return self::review_claims($id);
+        } finally {
+            if ($image && !is_wp_error($image)) { WP_Seed_Pixel_Files::unlock($image); }
+            WP_Seed_Pixel_Files::unlock($site);
+        }
+    }
+
     private static function other_claim(array $item, $ignore_queued) {
         global $wpdb;
         $table = WP_Seed_Pixel_Job_Store::table('items');

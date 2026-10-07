@@ -5,6 +5,8 @@ defined('ABSPATH') || exit;
 final class WP_Seed_Pixel_Master_Processor {
     const VERSION = 'm3-jpeg-q98-q100-1';
 
+    public static function quality_profile() { return array(98, 100); }
+
     public static function headers($path) {
         $f = @fopen($path, 'rb'); $out = '';
         if (!$f) { return new WP_Error('CANDIDATE_INVALID'); }

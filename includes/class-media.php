@@ -94,6 +94,8 @@ final class WP_Seed_Pixel_Media {
     }
 
     public static function details($id) {
+        $conversion = WP_Seed_Pixel_Format_Admin::panel($id);
+        if ($conversion) { return $conversion; }
         $native = wp_get_attachment_metadata($id);
         $path = get_attached_file($id, true);
         $bytes = is_string($path) && !is_wp_error(WP_Seed_Pixel_Files::path($path)) && is_file($path) ? filesize($path) : null;
@@ -146,6 +148,7 @@ final class WP_Seed_Pixel_Media {
                     <p><?php echo self::button($id); ?></p>
                 <?php }
             } ?>
+            <?php echo WP_Seed_Pixel_Format_Admin::opportunity($id); ?>
             <details><summary><?php esc_html_e('Technical details', 'wp-seed-pixel'); ?></summary>
                 <p><?php echo esc_html(sprintf(__('Current file: %d bytes.', 'wp-seed-pixel'), (int) $bytes)); ?></p>
                 <?php foreach (($native['sizes'] ?? array()) as $name => $size) { ?><p><?php echo esc_html($name . ': ' . $size['width'] . ' × ' . $size['height']); ?></p><?php } ?>

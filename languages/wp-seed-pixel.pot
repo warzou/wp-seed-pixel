@@ -60,6 +60,9 @@ msgstr ""
 msgid "Active image saving: %1$s (%2$s%%)."
 msgstr ""
 
+msgid "Active saving: %1$s. Recovery: %2$s. Old URLs: %3$s. Net logical space freed: %4$s."
+msgstr ""
+
 msgid "Active source bytes saved"
 msgstr ""
 
@@ -115,6 +118,9 @@ msgid "Analysis only. Images and their WordPress data are not changed."
 msgstr ""
 
 msgid "Analysis state could not be saved."
+msgstr ""
+
+msgid "Analyze a JPEG version"
 msgstr ""
 
 msgid "Analyze image storage"
@@ -180,6 +186,9 @@ msgstr ""
 msgid "Batch controls require JavaScript. Single-attachment processing and settings remain available."
 msgstr ""
 
+msgid "Best quality"
+msgstr ""
+
 msgid "Blocked"
 msgstr ""
 
@@ -222,6 +231,9 @@ msgstr ""
 msgid "Choose the maximum temporary space per operation."
 msgstr ""
 
+msgid "Choose the optimization level"
+msgstr ""
+
 msgid "Choose whether to set an additional site-wide storage ceiling."
 msgstr ""
 
@@ -232,6 +244,12 @@ msgid "Color profile is checked before processing, not inferred from the file ex
 msgstr ""
 
 msgid "Committed generation requires manual integrity review."
+msgstr ""
+
+msgid "Compare original and JPEG"
+msgstr ""
+
+msgid "Compare this version and explicitly confirm the compression level before converting."
 msgstr ""
 
 msgid "Complete"
@@ -267,6 +285,9 @@ msgstr ""
 msgid "Consistent"
 msgstr ""
 
+msgid "Content Credentials will not be preserved in the JPEG. I accept this; the exact PNG is retained."
+msgstr ""
+
 msgid "Control how WP Seed Pixel uses disk space safely and keeps originals for restoration. Preparing storage does not optimize any image."
 msgstr ""
 
@@ -274,6 +295,9 @@ msgid "Control write could not be verified."
 msgstr ""
 
 msgid "Controls require JavaScript. No work starts automatically."
+msgstr ""
+
+msgid "Convert this image to JPEG"
 msgstr ""
 
 msgid "Could not persist the recovery journal."
@@ -351,6 +375,9 @@ msgstr ""
 msgid "Excluded from simulation"
 msgstr ""
 
+msgid "Existing content still uses the PNG. Its original cannot be deleted."
+msgstr ""
+
 msgid "Expected a positive attachment ID and a derivative name."
 msgstr ""
 
@@ -411,10 +438,22 @@ msgstr ""
 msgid "Generate native WordPress metadata before optimization."
 msgstr ""
 
+msgid "Good quality"
+msgstr ""
+
 msgid "History cleanup bookkeeping requires retry."
 msgstr ""
 
 msgid "Hosting quota is unknown."
+msgstr ""
+
+msgid "I accept the JPEG and understand that deleting the original removes restoration."
+msgstr ""
+
+msgid "I compared the images and choose to convert this image to JPEG."
+msgstr ""
+
+msgid "I compared this version and want to use this compression level."
 msgstr ""
 
 msgid "I explicitly authorize processing the whole image library."
@@ -519,7 +558,16 @@ msgstr ""
 msgid "Items requiring a fresh physical review"
 msgstr ""
 
+msgid "JPEG active. Original PNG and old URLs are retained; this storage has not been freed."
+msgstr ""
+
 msgid "JPEG compression savings not measured"
+msgstr ""
+
+msgid "JPEG conversion is optional. Compare a local candidate before deciding."
+msgstr ""
+
+msgid "JPEG may introduce a small visual difference. This conversion is optional."
 msgstr ""
 
 msgid "JPEG stays JPEG. PNG stays PNG, without loss. Other formats are kept unchanged."
@@ -538,6 +586,9 @@ msgid "Job version is incompatible; review required."
 msgstr ""
 
 msgid "Jobs"
+msgstr ""
+
+msgid "Keep PNG and discard comparison"
 msgstr ""
 
 msgid "Kept without changes"
@@ -690,6 +741,9 @@ msgstr ""
 msgid "No processing started. Select images in the Media Library or confirm the whole library below."
 msgstr ""
 
+msgid "No profile passed automatic quality validation. Choose a level explicitly to compare it; no conversion is selected by default."
+msgstr ""
+
 msgid "No retryable failures remain (maximum two retries per attachment)."
 msgstr ""
 
@@ -697,6 +751,9 @@ msgid "No sanitized candidate meets the quality floor. MASTER and existing mappi
 msgstr ""
 
 msgid "No simulation yet"
+msgstr ""
+
+msgid "No useful JPEG saving. The PNG is unchanged."
 msgstr ""
 
 msgid "No useful saving"
@@ -718,6 +775,9 @@ msgid "Not yet optimized."
 msgstr ""
 
 msgid "Off"
+msgstr ""
+
+msgid "Old PNG URLs will stop working. Unknown external links cannot be checked."
 msgstr ""
 
 msgid "Open an image to review its details. Up to ten failed items are shown; others remain in the Media Library. Retrying is explicit, with at most two retries per image."
@@ -771,7 +831,13 @@ msgstr ""
 msgid "Optimized version"
 msgstr ""
 
+msgid "Optional PNG to JPEG conversion"
+msgstr ""
+
 msgid "Original"
+msgstr ""
+
+msgid "Original PNG"
 msgstr ""
 
 msgid "Original already suitable; reused without a new copy."
@@ -798,6 +864,9 @@ msgstr ""
 msgid "PNG settings"
 msgstr ""
 
+msgid "PNG: %1$s. Proposed JPEG: %2$s."
+msgstr ""
+
 msgid "PNG: explicit lossless processing available"
 msgstr ""
 
@@ -817,6 +886,9 @@ msgid "Paused"
 msgstr ""
 
 msgid "Paused; resume when ready"
+msgstr ""
+
+msgid "Permanent deletion has started. Resume to finish removing the remaining PNG files."
 msgstr ""
 
 msgid "Permanent deletion is separate. Open retained versions to select one image and acknowledge the loss of restoration."
@@ -945,6 +1017,9 @@ msgstr ""
 msgid "Processing is local; no image is sent to an external service."
 msgstr ""
 
+msgid "Processing locally. No other image is changed."
+msgstr ""
+
 msgid "Processing stopped safely; retry after checking the local environment."
 msgstr ""
 
@@ -952,6 +1027,9 @@ msgid "Processing; keep this page open."
 msgstr ""
 
 msgid "Progress"
+msgstr ""
+
+msgid "Proposed JPEG"
 msgstr ""
 
 msgid "Protected history is ambiguous or malformed; no history files were deleted."
@@ -970,6 +1048,12 @@ msgid "Protected storage for originals"
 msgstr ""
 
 msgid "Provider quota (information only)"
+msgstr ""
+
+msgid "Quality automatically validated by Pixel."
+msgstr ""
+
+msgid "Quality not automatically validated by Pixel. This version is lighter but may show more visual differences. Compare it before confirming."
 msgstr ""
 
 msgid "Quarantine bytes still on disk"
@@ -1083,6 +1167,9 @@ msgstr ""
 msgid "Restoration available"
 msgstr ""
 
+msgid "Restoration is unavailable. Review the original evidence."
+msgstr ""
+
 msgid "Restoration unavailable"
 msgstr ""
 
@@ -1098,7 +1185,16 @@ msgstr ""
 msgid "Resume"
 msgstr ""
 
+msgid "Resume JPEG analysis"
+msgstr ""
+
 msgid "Resume or finish the existing batch before starting another."
+msgstr ""
+
+msgid "Resume original restoration"
+msgstr ""
+
+msgid "Resume the confirmed conversion"
 msgstr ""
 
 msgid "Retained bytes"
@@ -1159,6 +1255,9 @@ msgid "Save space choices"
 msgstr ""
 
 msgid "Saved evidence is inconsistent; review required."
+msgstr ""
+
+msgid "Saving on this image"
 msgstr ""
 
 msgid "Scan storage could not be prepared."
@@ -1293,6 +1392,12 @@ msgstr ""
 msgid "The EXIF extension is required for this source orientation."
 msgstr ""
 
+msgid "The JPEG does not contain the original provenance information."
+msgstr ""
+
+msgid "The JPEG quality is insufficient. The PNG is unchanged."
+msgstr ""
+
 msgid "The atomic metadata update could not be verified."
 msgstr ""
 
@@ -1335,6 +1440,9 @@ msgstr ""
 msgid "The next media item is no longer editable. Review the selection before resuming."
 msgstr ""
 
+msgid "The operation stopped safely. Review the technical details before resuming."
+msgstr ""
+
 msgid "The optimized file did not pass the safety checks. The original has been preserved."
 msgstr ""
 
@@ -1342,6 +1450,9 @@ msgid "The original and attached files must share a local upload directory."
 msgstr ""
 
 msgid "The original cannot be kept safely for restoration. Optimization is blocked; see advanced diagnostics."
+msgstr ""
+
+msgid "The original contains provenance information not retained in the JPEG. It remains in the original kept for restoration."
 msgstr ""
 
 msgid "The original will be permanently deleted. Restoration will no longer be possible; retained storage will then be released."
@@ -1431,6 +1542,9 @@ msgstr ""
 msgid "This host explicitly disabled recovery processing. Pixel will not override that choice."
 msgstr ""
 
+msgid "This image contains unsupported color or metadata information. It is preserved."
+msgstr ""
+
 msgid "This image was preserved because its format or image profile is not supported, or processing was excluded."
 msgstr ""
 
@@ -1446,6 +1560,9 @@ msgstr ""
 msgid "Total bytes"
 msgstr ""
 
+msgid "Transparency or palette information must be preserved. JPEG conversion is unavailable."
+msgstr ""
+
 msgid "Twenty previous generations are retained. Back up and review cached URLs before explicitly pruning history with the PHP API."
 msgstr ""
 
@@ -1453,6 +1570,9 @@ msgid "Twenty retained operations per page. File space excludes database overhea
 msgstr ""
 
 msgid "Unattributed related files"
+msgstr ""
+
+msgid "Unavailable for this image: insufficient saving."
 msgstr ""
 
 msgid "Uncertain or shared bytes"
@@ -1539,6 +1659,9 @@ msgstr ""
 msgid "Waiting for automatic processing"
 msgstr ""
 
+msgid "Web"
+msgstr ""
+
 msgid "Web versions"
 msgstr ""
 
@@ -1585,6 +1708,9 @@ msgid "need attention"
 msgstr ""
 
 msgid "optimized"
+msgstr ""
+
+msgid "recommended"
 msgstr ""
 
 msgid "source"

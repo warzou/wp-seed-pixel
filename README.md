@@ -1,8 +1,22 @@
-# WP Seed Pixel 0.4.0
+# WP Seed Pixel 0.5.0
 
 Local WordPress image optimization and storage management. Images never leave
 the host: no external image service, telemetry, account or AI runtime.
-The release candidate remains private until the owner publishes it.
+This release preparation does not publish a distribution endpoint.
+
+Version 0.5.0 adds optional, single-image PNG to JPEG
+conversion in the existing attachment panel. Analyze prepares a private JPEG
+comparison; only explicit approval changes the attachment. Provenance loss
+requires a separate acknowledgement. Original PNG URLs and private recovery
+remain until a separately confirmed purge. No automatic upload or bulk format
+conversion is added. The frozen 0.4.0 artifact is not replaced.
+See [conversion scope and safety](docs/PNG-JPEG-CONVERSION.md).
+
+Choose Web Q90, Good quality Q94 or Best quality Q98 after measured comparison.
+Pixel recommends the lightest available profile passing its quality guards;
+if none passes, it selects none automatically. A technically safe, beneficial
+profile failing quality guards needs a clear warning, comparison and an extra
+explicit acknowledgement enforced by the server. Metrics are not human approval.
 
 ## Install and Update
 
@@ -49,7 +63,8 @@ certification. Frontend media do not require Pixel JavaScript.
 
 ## Image and Host Safety
 
-JPEG remains JPEG; PNG remains PNG. No ordinary WebP/AVIF conversion.
+Ordinary optimization keeps JPEG as JPEG and lossless PNG as PNG. Optional
+explicit PNG to JPEG conversion is a separate action. No WebP/AVIF conversion.
 - JPEG candidates use bounded local quality and byte gates, no enlargement,
   arbitrary crop or aesthetic editing. The metric is not human quality approval.
 - Lossless PNG supports bounded 8-bit non-interlaced inputs, up to 4 megapixels

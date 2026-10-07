@@ -1,5 +1,6 @@
 """Produce a runtime-only private candidate and optional HTTPS update manifest."""
 import argparse
+from datetime import date
 import hashlib
 import json
 from pathlib import Path
@@ -11,6 +12,7 @@ p = argparse.ArgumentParser()
 p.add_argument('--output', required=True)
 p.add_argument('--endpoint')
 p.add_argument('--tested', required=True)
+p.add_argument('--released', default=date.today().isoformat())
 p.add_argument('--name', choices=['wp-seed-pixel-0.4.0.zip'])
 a = p.parse_args()
 root = Path(__file__).resolve().parents[1]
@@ -50,6 +52,6 @@ if a.endpoint:
         raise ValueError('Explicit credential-free HTTPS endpoint required')
     base = a.endpoint.rsplit('/', 1)[0]
     m = {'schema': 1, 'slug': 'wp-seed-pixel', 'channel': 'private', 'version': version, 'requires': '6.6', 'tested': a.tested,
-         'requires_php': '8.1', 'package': base + '/' + name, 'sha256': sha, 'released': '2026-10-06', 'notes_url': base + '/release-notes.html'}
+         'requires_php': '8.1', 'package': base + '/' + name, 'sha256': sha, 'released': a.released, 'notes_url': base + '/release-notes.html'}
     (out / 'update-manifest.json').write_text(json.dumps(m, indent=2), encoding='utf-8', newline='\n')
 print(json.dumps({k: v for k, v in result.items() if k != 'files'}))

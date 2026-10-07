@@ -81,7 +81,7 @@ final class WP_Seed_Pixel_Job_Store {
 
     public static function job($id) {
         global $wpdb;
-        return $wpdb->get_row($wpdb->prepare('SELECT * FROM ' . self::table('jobs') . " WHERE id=%d AND kind IN ('plan','simulation','replace','retire')", $id), ARRAY_A);
+        return $wpdb->get_row($wpdb->prepare('SELECT * FROM ' . self::table('jobs') . " WHERE id=%d AND kind IN ('plan','simulation','replace','retire','convert')", $id), ARRAY_A);
     }
     public static function item($id) { global $wpdb; return $wpdb->get_row($wpdb->prepare('SELECT * FROM ' . self::table('items') . ' WHERE id=%d', $id), ARRAY_A); }
 
@@ -101,8 +101,8 @@ final class WP_Seed_Pixel_Job_Store {
     public static function insert_job($kind, $source, array $policy, $total) {
         global $wpdb;
         // Stop admission, never erase recovery receipts to make room for new work.
-        if (in_array($kind, array('replace', 'retire'), true)) {
-            $count = $wpdb->get_var('SELECT COUNT(*) FROM ' . self::table('jobs') . " WHERE kind IN ('replace','retire')");
+        if (in_array($kind, array('replace', 'retire', 'convert'), true)) {
+            $count = $wpdb->get_var('SELECT COUNT(*) FROM ' . self::table('jobs') . " WHERE kind IN ('replace','retire','convert')");
             if ($wpdb->last_error || $count === null) { return new WP_Error('STORE_FAILED'); }
             if ((int) $count >= self::MAX_STORAGE_JOBS) { return new WP_Error('HISTORY_FULL'); }
         }
@@ -125,11 +125,11 @@ final class WP_Seed_Pixel_Job_Store {
     /** Only a fenced owner may append a transition. Journal is bounded and checksummed. */
     public static function transition(array $item, $token, $stage, $code = '', array $receipt = array()) {
         global $wpdb;
-        if (in_array($item['action'], array('replace', 'retire'), true) && !WP_Seed_Pixel_Authority::valid_all()) { return new WP_Error('LOCKED'); }
+        if (in_array($item['action'], array('replace', 'retire', 'convert'), true) && !WP_Seed_Pixel_Authority::valid_all()) { return new WP_Error('LOCKED'); }
         $allowed = array('queued' => array('preparing', 'failed', 'needs_review', 'skipped'), 'preparing' => array('ready', 'failed', 'needs_review', 'skipped'),
             'ready' => array('switch_intent', 'failed', 'needs_review'), 'switch_intent' => array('switched', 'recovery_required'),
             'switched' => array('verified', 'recovery_required'), 'verified' => array('retained', 'recovery_required'),
-            'retained' => in_array($item['action'], array('replace', 'retire'), true) ? array('retained', 'recovery_required', 'purge_intent') : array(),
+            'retained' => in_array($item['action'], array('replace', 'retire', 'convert'), true) ? array('retained', 'recovery_required', 'purge_intent') : array(),
             'purge_intent' => array('purged', 'retained', 'needs_review'),
             'recovery_required' => array('switch_intent', 'switched', 'verified', 'needs_review', 'rolled_back'));
         if (!in_array($stage, $allowed[$item['stage']] ?? array(), true)) { return new WP_Error('CLAIM_CONFLICT'); }
@@ -145,7 +145,7 @@ final class WP_Seed_Pixel_Job_Store {
         }
         if (isset($receipt['quarantine_hash'])) { $journal['quarantine_hash'] = $receipt['quarantine_hash']; }
         $journal['events'][] = array('revision' => (int) $item['revision'] + 1, 'from' => $item['stage'], 'stage' => $stage,
-            'attempt' => (int) $item['attempts'], 'code' => $code, 'at' => time(), 'simulation' => !in_array($item['action'], array('replace', 'retire'), true));
+            'attempt' => (int) $item['attempts'], 'code' => $code, 'at' => time(), 'simulation' => !in_array($item['action'], array('replace', 'retire', 'convert'), true));
         while (count($journal['events']) > 32) { array_shift($journal['events']); $journal['dropped']++; }
         $payload = wp_json_encode($journal);
         $journal['checksum'] = hash('sha256', $payload);

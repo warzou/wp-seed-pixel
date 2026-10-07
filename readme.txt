@@ -3,7 +3,7 @@ Tags: images, jpeg, png, media, optimization
 Requires at least: 6.6
 Tested up to: 7.1
 Requires PHP: 8.1
-Stable tag: 0.3.2
+Stable tag: 0.5.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -11,14 +11,23 @@ Local image optimization, storage analysis, verified recovery and resumable jobs
 
 == Description ==
 
-0.4.0 is a private release candidate until owner publication. The public stable
-tag above remains unchanged. Safe private recovery is automatically prepared on
+0.5.0 adds optional PNG to JPEG
+conversion requires local comparison and explicit administrator approval for
+one image. It never converts uploads or bulk selections automatically. Exact
+PNG recovery and old addresses remain until a separate confirmed deletion.
+
+Web Q90, Good quality Q94 and Best quality Q98 are measured per image. Pixel
+recommends the lightest available profile passing its quality guards, or none
+when none passes. A safe, beneficial profile failing these guards requires
+comparison, a clear warning and extra explicit server-enforced acknowledgement.
+
+Safe private recovery is automatically prepared on
 supported hosts; activation itself changes no image.
 Future upload processing defaults OFF. JPEG and bounded lossless PNG are opt-in;
 existing media require an explicit selected plan. Recovery occupies hosting space.
 Permanent deletion requires separate per-version approval and removes rollback.
 Provider quota remains unknown unless a complete live accounting adapter proves it.
-PNG: 8-bit non-interlaced, <=4 megapixels / 16 MiB; no format conversion.
+Ordinary lossless PNG: 8-bit non-interlaced, <=4 megapixels / 16 MiB; stays PNG.
 No automatic quarantine expiry. New storage operations stop at 10,000 records.
 See repository docs/V1-USER-GUIDE.md and docs/PNG-LOSSLESS.md for setup and limits.
 
@@ -79,6 +88,13 @@ No. They use protected postmeta, separate from WordPress public media details.
 WordPress still provides normal public derivative URLs for public attachments.
 
 == Changelog ==
+
+= 0.5.0 =
+Explicit single-image PNG to JPEG comparison and conversion, with retained
+originals and exact restore. Measured Q90/Q94/Q98 choices, lightest quality-passing
+recommendation and separate acknowledgement for non-validated manual choices.
+Provenance loss requires independent approval. No automatic format conversion.
+Safely reconcile proven unstarted historical review claims without encoding.
 
 = 0.4.0 =
 Verified native JPEG and lossless PNG storage replacement, private recovery,

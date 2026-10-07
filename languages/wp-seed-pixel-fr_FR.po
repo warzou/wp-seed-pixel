@@ -60,6 +60,9 @@ msgstr "Un contrôle de sécurité a échoué. Consultez les détails techniques
 msgid "Active image saving: %1$s (%2$s%%)."
 msgstr "Version utilisée : %1$s plus légère (%2$s %%)."
 
+msgid "Active saving: %1$s. Recovery: %2$s. Old URLs: %3$s. Net logical space freed: %4$s."
+msgstr "Gain actif : %1$s. Restauration : %2$s. Anciennes adresses : %3$s. Espace net libéré (octets de fichiers) : %4$s."
+
 msgid "Active source bytes saved"
 msgstr "Octets économisés sur les sources utilisées"
 
@@ -116,6 +119,9 @@ msgstr "Analyse uniquement. Les images et leurs données WordPress restent incha
 
 msgid "Analysis state could not be saved."
 msgstr "L’état de l’analyse n’a pas pu être enregistré."
+
+msgid "Analyze a JPEG version"
+msgstr "Analyser une version JPEG"
 
 msgid "Analyze image storage"
 msgstr "Analyser le stockage des images"
@@ -180,6 +186,9 @@ msgstr "ID de référence / activation UTC"
 msgid "Batch controls require JavaScript. Single-attachment processing and settings remain available."
 msgstr "Les commandes de traitement par lot nécessitent JavaScript. Le traitement d’un média et les réglages restent accessibles."
 
+msgid "Best quality"
+msgstr "Meilleure qualité"
+
 msgid "Blocked"
 msgstr "Bloqué"
 
@@ -222,6 +231,9 @@ msgstr "Choisir des médias existants"
 msgid "Choose the maximum temporary space per operation."
 msgstr "Choisissez l’espace temporaire maximal par opération."
 
+msgid "Choose the optimization level"
+msgstr "Choisissez le niveau d’optimisation"
+
 msgid "Choose whether to set an additional site-wide storage ceiling."
 msgstr "Choisissez si vous souhaitez un plafond supplémentaire pour l’ensemble du site."
 
@@ -233,6 +245,12 @@ msgstr "Le profil colorimétrique est vérifié avant traitement, jamais déduit
 
 msgid "Committed generation requires manual integrity review."
 msgstr "La génération enregistrée nécessite une vérification manuelle de son intégrité."
+
+msgid "Compare original and JPEG"
+msgstr "Comparer l’original et le JPEG"
+
+msgid "Compare this version and explicitly confirm the compression level before converting."
+msgstr "Comparez cette version et confirmez explicitement ce niveau de compression avant de convertir."
 
 msgid "Complete"
 msgstr "Terminé"
@@ -267,6 +285,9 @@ msgstr "Confirmez d’abord la sélection de toute la médiathèque."
 msgid "Consistent"
 msgstr "Cohérente"
 
+msgid "Content Credentials will not be preserved in the JPEG. I accept this; the exact PNG is retained."
+msgstr "Les informations de provenance (Content Credentials) ne seront pas conservées dans le JPEG. Je l’accepte ; le PNG exact reste conservé."
+
 msgid "Control how WP Seed Pixel uses disk space safely and keeps originals for restoration. Preparing storage does not optimize any image."
 msgstr "Cette page règle l’utilisation sûre de l’espace disque par WP Seed Pixel et la conservation des originaux pour restauration. Préparer le stockage n’optimise aucune image."
 
@@ -275,6 +296,9 @@ msgstr "L’enregistrement de contrôle n’a pas pu être vérifié."
 
 msgid "Controls require JavaScript. No work starts automatically."
 msgstr "Les commandes nécessitent JavaScript. Aucun traitement ne démarre automatiquement."
+
+msgid "Convert this image to JPEG"
+msgstr "Convertir cette image en JPEG"
 
 msgid "Could not persist the recovery journal."
 msgstr "Le journal de récupération n’a pas pu être enregistré."
@@ -351,6 +375,9 @@ msgstr "Exclu par les réglages choisis."
 msgid "Excluded from simulation"
 msgstr "Exclu de la simulation"
 
+msgid "Existing content still uses the PNG. Its original cannot be deleted."
+msgstr "Des contenus utilisent encore le PNG. Son original ne peut pas être supprimé."
+
 msgid "Expected a positive attachment ID and a derivative name."
 msgstr "Un identifiant de média positif et un nom de version dérivée sont requis."
 
@@ -411,11 +438,23 @@ msgstr "Format : %s"
 msgid "Generate native WordPress metadata before optimization."
 msgstr "Générez les métadonnées natives WordPress avant l’optimisation."
 
+msgid "Good quality"
+msgstr "Bonne qualité"
+
 msgid "History cleanup bookkeeping requires retry."
 msgstr "Le suivi du nettoyage de l’historique nécessite une nouvelle tentative."
 
 msgid "Hosting quota is unknown."
 msgstr "Le quota de l’hébergement est inconnu."
+
+msgid "I accept the JPEG and understand that deleting the original removes restoration."
+msgstr "Je valide le JPEG et je comprends que supprimer l’original rendra la restauration impossible."
+
+msgid "I compared the images and choose to convert this image to JPEG."
+msgstr "J’ai comparé les images et je choisis de convertir cette image en JPEG."
+
+msgid "I compared this version and want to use this compression level."
+msgstr "J'ai comparé cette version et je souhaite utiliser ce niveau de compression."
 
 msgid "I explicitly authorize processing the whole image library."
 msgstr "J’autorise explicitement le traitement de toute la médiathèque."
@@ -519,8 +558,17 @@ msgstr "Paquet de mise à jour invalide."
 msgid "Items requiring a fresh physical review"
 msgstr "Images nécessitant une nouvelle vérification physique"
 
+msgid "JPEG active. Original PNG and old URLs are retained; this storage has not been freed."
+msgstr "JPEG actif. Le PNG original et ses anciennes adresses sont conservés : cet espace n’est pas encore libéré."
+
 msgid "JPEG compression savings not measured"
 msgstr "Gain de compression JPEG non mesuré"
+
+msgid "JPEG conversion is optional. Compare a local candidate before deciding."
+msgstr "Une version JPEG peut être plus légère. Comparez-la avant de décider : cette conversion est facultative."
+
+msgid "JPEG may introduce a small visual difference. This conversion is optional."
+msgstr "Le JPEG peut présenter une légère différence visuelle. Cette conversion est facultative."
 
 msgid "JPEG stays JPEG. PNG stays PNG, without loss. Other formats are kept unchanged."
 msgstr "Le JPEG reste un JPEG. Le PNG reste un PNG, sans perte. Les autres formats restent inchangés."
@@ -539,6 +587,9 @@ msgstr "La version du traitement est incompatible. Une vérification est nécess
 
 msgid "Jobs"
 msgstr "Opérations"
+
+msgid "Keep PNG and discard comparison"
+msgstr "Garder le PNG et supprimer la comparaison"
 
 msgid "Kept without changes"
 msgstr "Conservée sans modification"
@@ -690,6 +741,9 @@ msgstr "Aucun nouveau fichier suivi."
 msgid "No processing started. Select images in the Media Library or confirm the whole library below."
 msgstr "Aucun traitement démarré. Sélectionnez des images dans la médiathèque ou confirmez ci-dessous le traitement de toute la médiathèque."
 
+msgid "No profile passed automatic quality validation. Choose a level explicitly to compare it; no conversion is selected by default."
+msgstr "Aucun profil n'a été validé automatiquement. Choisissez explicitement un niveau pour le comparer ; aucune conversion n'est sélectionnée par défaut."
+
 msgid "No retryable failures remain (maximum two retries per attachment)."
 msgstr "Aucun échec ne peut être réessayé (maximum de deux nouvelles tentatives par média)."
 
@@ -698,6 +752,9 @@ msgstr "Aucune version candidate nettoyée n’atteint le seuil de qualité. L�
 
 msgid "No simulation yet"
 msgstr "Aucune simulation"
+
+msgid "No useful JPEG saving. The PNG is unchanged."
+msgstr "Aucun gain JPEG utile. Le PNG est inchangé."
 
 msgid "No useful saving"
 msgstr "Aucun gain utile"
@@ -719,6 +776,9 @@ msgstr "Pas encore optimisée."
 
 msgid "Off"
 msgstr "Désactivé"
+
+msgid "Old PNG URLs will stop working. Unknown external links cannot be checked."
+msgstr "Les anciennes adresses PNG ne fonctionneront plus. Les liens externes inconnus ne peuvent pas être vérifiés."
 
 msgid "Open an image to review its details. Up to ten failed items are shown; others remain in the Media Library. Retrying is explicit, with at most two retries per image."
 msgstr "Ouvrez une image pour consulter ses détails. Jusqu’à dix images en échec sont affichées ; les autres restent dans la médiathèque. Une nouvelle tentative doit être demandée explicitement, avec un maximum de deux tentatives par image."
@@ -771,8 +831,14 @@ msgstr "Image WordPress optimisée"
 msgid "Optimized version"
 msgstr "Version optimisée"
 
+msgid "Optional PNG to JPEG conversion"
+msgstr "Conversion facultative du PNG en JPEG"
+
 msgid "Original"
 msgstr "Original"
+
+msgid "Original PNG"
+msgstr "PNG original"
 
 msgid "Original already suitable; reused without a new copy."
 msgstr "L’original convient déjà ; il est réutilisé sans nouvelle copie."
@@ -798,6 +864,9 @@ msgstr "Gain PNG sans perte non mesuré"
 msgid "PNG settings"
 msgstr "Réglages PNG"
 
+msgid "PNG: %1$s. Proposed JPEG: %2$s."
+msgstr "PNG : %1$s. JPEG proposé : %2$s."
+
 msgid "PNG: explicit lossless processing available"
 msgstr "PNG : traitement sans perte disponible sur demande"
 
@@ -818,6 +887,9 @@ msgstr "En pause"
 
 msgid "Paused; resume when ready"
 msgstr "En pause ; reprenez quand vous le souhaitez"
+
+msgid "Permanent deletion has started. Resume to finish removing the remaining PNG files."
+msgstr "La suppression définitive a commencé. Reprenez-la pour terminer la suppression des fichiers PNG restants."
 
 msgid "Permanent deletion is separate. Open retained versions to select one image and acknowledge the loss of restoration."
 msgstr "La suppression définitive est séparée. Ouvrez les versions conservées pour choisir une image et accepter la perte de sa restauration."
@@ -945,6 +1017,9 @@ msgstr "Le traitement n’a pas pu aboutir. Votre original est conservé."
 msgid "Processing is local; no image is sent to an external service."
 msgstr "Le traitement est local ; aucune image n’est envoyée à un service externe."
 
+msgid "Processing locally. No other image is changed."
+msgstr "Traitement local. Aucune autre image n’est modifiée."
+
 msgid "Processing stopped safely; retry after checking the local environment."
 msgstr "Le traitement a été arrêté sans risque ; réessayez après avoir vérifié l’environnement local."
 
@@ -953,6 +1028,9 @@ msgstr "Traitement en cours ; gardez cette page ouverte."
 
 msgid "Progress"
 msgstr "Progression"
+
+msgid "Proposed JPEG"
+msgstr "JPEG proposé"
 
 msgid "Protected history is ambiguous or malformed; no history files were deleted."
 msgstr "L’historique protégé est ambigu ou mal formé ; aucun fichier d’historique n’a été supprimé."
@@ -971,6 +1049,12 @@ msgstr "Stockage protégé des originaux"
 
 msgid "Provider quota (information only)"
 msgstr "Quota de l’hébergeur (information uniquement)"
+
+msgid "Quality automatically validated by Pixel."
+msgstr "Qualité validée automatiquement par Pixel."
+
+msgid "Quality not automatically validated by Pixel. This version is lighter but may show more visual differences. Compare it before confirming."
+msgstr "Qualité non validée automatiquement par Pixel. Cette version est plus légère mais peut présenter davantage de différences visuelles. Comparez-la avant de confirmer."
 
 msgid "Quarantine bytes still on disk"
 msgstr "Octets en quarantaine encore sur le disque"
@@ -1083,6 +1167,9 @@ msgstr "Le chemin résolu sort du répertoire d’importation."
 msgid "Restoration available"
 msgstr "Restauration disponible"
 
+msgid "Restoration is unavailable. Review the original evidence."
+msgstr "La restauration est indisponible. Vérifiez l’état de l’original."
+
 msgid "Restoration unavailable"
 msgstr "Restauration indisponible"
 
@@ -1098,8 +1185,17 @@ msgstr "Restauré à l’identique"
 msgid "Resume"
 msgstr "Reprendre"
 
+msgid "Resume JPEG analysis"
+msgstr "Reprendre l’analyse JPEG"
+
 msgid "Resume or finish the existing batch before starting another."
 msgstr "Reprenez ou terminez le lot existant avant d’en démarrer un autre."
+
+msgid "Resume original restoration"
+msgstr "Reprendre la restauration de l’original"
+
+msgid "Resume the confirmed conversion"
+msgstr "Reprendre la conversion confirmée"
 
 msgid "Retained bytes"
 msgstr "Espace occupé par les versions conservées"
@@ -1160,6 +1256,9 @@ msgstr "Enregistrer les limites d’espace"
 
 msgid "Saved evidence is inconsistent; review required."
 msgstr "Les preuves enregistrées sont incohérentes. Une vérification est nécessaire."
+
+msgid "Saving on this image"
+msgstr "Gain sur l’image"
 
 msgid "Scan storage could not be prepared."
 msgstr "Le stockage de l’analyse n’a pas pu être préparé."
@@ -1293,6 +1392,12 @@ msgstr "Détails techniques"
 msgid "The EXIF extension is required for this source orientation."
 msgstr "L’extension EXIF est requise pour l’orientation de cette source."
 
+msgid "The JPEG does not contain the original provenance information."
+msgstr "La version JPEG ne contient pas les informations de provenance de l’original."
+
+msgid "The JPEG quality is insufficient. The PNG is unchanged."
+msgstr "La qualité JPEG est insuffisante. Le PNG est inchangé."
+
 msgid "The atomic metadata update could not be verified."
 msgstr "La mise à jour atomique des métadonnées n’a pas pu être vérifiée."
 
@@ -1335,6 +1440,9 @@ msgstr "La correspondance native des tailles d’image a été modifiée par un 
 msgid "The next media item is no longer editable. Review the selection before resuming."
 msgstr "Le média suivant ne peut plus être modifié. Vérifiez la sélection avant de reprendre."
 
+msgid "The operation stopped safely. Review the technical details before resuming."
+msgstr "L’opération s’est arrêtée par sécurité. Consultez les détails techniques avant de reprendre."
+
 msgid "The optimized file did not pass the safety checks. The original has been preserved."
 msgstr "Le fichier optimisé n’a pas passé les contrôles de sécurité. L’original a été conservé."
 
@@ -1343,6 +1451,9 @@ msgstr "L’original et le fichier du média doivent partager un même répertoi
 
 msgid "The original cannot be kept safely for restoration. Optimization is blocked; see advanced diagnostics."
 msgstr "L’original ne peut pas être conservé de façon sûre pour restauration. L’optimisation est bloquée ; consulter les diagnostics avancés."
+
+msgid "The original contains provenance information not retained in the JPEG. It remains in the original kept for restoration."
+msgstr "L’original contient des informations de provenance qui ne sont pas conservées dans la version JPEG. Elles restent présentes dans l’original conservé pour restauration."
 
 msgid "The original will be permanently deleted. Restoration will no longer be possible; retained storage will then be released."
 msgstr "L’original sera supprimé définitivement. La restauration ne sera plus possible ; l’espace occupé par cette copie sera alors libéré."
@@ -1431,6 +1542,9 @@ msgstr "Cet hébergement ne permet pas de démontrer la protection des originaux
 msgid "This host explicitly disabled recovery processing. Pixel will not override that choice."
 msgstr "Cet hébergement a explicitement désactivé ce traitement. Pixel ne modifiera pas ce choix."
 
+msgid "This image contains unsupported color or metadata information. It is preserved."
+msgstr "Cette image contient des informations de couleur ou des métadonnées non prises en charge. Elle est conservée."
+
 msgid "This image was preserved because its format or image profile is not supported, or processing was excluded."
 msgstr "Cette image a été conservée car son format ou son profil d’image n’est pas pris en charge, ou parce que le traitement a été exclu."
 
@@ -1446,6 +1560,9 @@ msgstr "À configurer"
 msgid "Total bytes"
 msgstr "octets au total"
 
+msgid "Transparency or palette information must be preserved. JPEG conversion is unavailable."
+msgstr "La transparence ou la palette doit être préservée. La conversion JPEG n’est pas disponible."
+
 msgid "Twenty previous generations are retained. Back up and review cached URLs before explicitly pruning history with the PHP API."
 msgstr "Vingt générations précédentes sont conservées. Sauvegardez-les et vérifiez les URL en cache avant de nettoyer explicitement l’historique avec l’API PHP."
 
@@ -1454,6 +1571,9 @@ msgstr "Vingt opérations conservées par page. L’espace des fichiers exclut l
 
 msgid "Unattributed related files"
 msgstr "Fichiers liés non attribués"
+
+msgid "Unavailable for this image: insufficient saving."
+msgstr "Indisponible pour cette image : gain insuffisant."
 
 msgid "Uncertain or shared bytes"
 msgstr "Octets incertains ou partagés"
@@ -1539,6 +1659,9 @@ msgstr "En attente des données WordPress"
 msgid "Waiting for automatic processing"
 msgstr "En attente du traitement automatique"
 
+msgid "Web"
+msgstr "Web"
+
 msgid "Web versions"
 msgstr "Versions web"
 
@@ -1586,6 +1709,9 @@ msgstr "à vérifier"
 
 msgid "optimized"
 msgstr "optimisées"
+
+msgid "recommended"
+msgstr "recommandé"
 
 msgid "source"
 msgstr "source"
