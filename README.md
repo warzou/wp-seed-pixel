@@ -1,4 +1,20 @@
-# WP Seed Pixel 0.5.1
+# WP Seed Pixel 0.6.0
+
+Version 0.6.0 adds current-file metadata states and automatic privacy filtering for
+new native uploads. The setting defaults to ON on first administrator activation
+or upgrade initialization; an explicit OFF is preserved. Existing media are not
+automatically enrolled. Unsupported uploads remain valid and require review.
+Exact originals are retained privately; no automatic purge is introduced.
+See `docs/METADATA-UPLOADS.md`.
+
+Metadata anonymization removes recognized GPS, device, author and date/privacy
+metadata from the complete public graph without re-encoding JPEG scans or PNG
+IDAT. Pixels, dimensions, transparency, ICC and required color declarations are
+preserved. Unsupported orientation, provenance and unknown metadata fail closed.
+Attachment identity and WordPress editorial fields remain unchanged. Exact
+private originals may still contain their original metadata; restoration returns
+the complete pre-anonymization graph. Permanent purge is never automatic.
+See [metadata scope and certification gates](docs/METADATA-PRIVACY.md).
 
 Local WordPress image optimization and storage management. Images never leave
 the host: no external image service, telemetry, account or AI runtime.

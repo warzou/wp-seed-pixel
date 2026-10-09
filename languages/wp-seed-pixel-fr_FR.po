@@ -45,6 +45,9 @@ msgstr "Une nouvelle méthode ou un nouveau profil est disponible. La régénér
 msgid "A preset requires one to four derivatives."
 msgstr "Un profil nécessite entre une et quatre versions dérivées."
 
+msgid "A public version changed after analysis. Pixel stopped without applying the planned changes. Analyze the image again."
+msgstr "Une version publique a changé depuis l’analyse. Pixel s’est arrêté sans appliquer les changements prévus. Analysez à nouveau l’image."
+
 msgid "A referenced file cannot be read"
 msgstr "Un fichier référencé est illisible"
 
@@ -129,6 +132,9 @@ msgstr "Analyser le stockage des images"
 msgid "Analyze library"
 msgstr "Analyser la médiathèque"
 
+msgid "Analyze metadata"
+msgstr "Analyser les métadonnées"
+
 msgid "Analyze only"
 msgstr "Analyser uniquement"
 
@@ -141,6 +147,24 @@ msgstr "Analysé"
 msgid "Analyzing"
 msgstr "Analyse en cours"
 
+msgid "Anonymization in progress"
+msgstr "Anonymisation en cours"
+
+msgid "Anonymization was not performed because there is not enough storage for the recovery originals. The uploaded image is unchanged."
+msgstr "L’anonymisation n’a pas été effectuée car l’espace de stockage est insuffisant pour les originaux de récupération. L’image ajoutée est inchangée."
+
+msgid "Anonymize"
+msgstr "Anonymiser"
+
+msgid "Anonymize this image"
+msgstr "Anonymiser cette image"
+
+msgid "Anonymized"
+msgstr "Anonymisées"
+
+msgid "Anonymized version"
+msgstr "Version anonymisée"
+
 msgid "Another image optimizer is active. Both may process the same images. Review their automatic settings; nothing has been disabled."
 msgstr "Un autre optimiseur d’images est actif. Les deux extensions pourraient traiter les mêmes images. Vérifiez leurs réglages automatiques ; aucun réglage n’a été désactivé automatiquement."
 
@@ -152,6 +176,9 @@ msgstr "Une autre opération est en cours sur ce média."
 
 msgid "Another optimizer conflicts with this operation."
 msgstr "Un autre optimiseur est en conflit avec cette opération."
+
+msgid "Another public copy still contains metadata. This image has not been changed."
+msgstr "Une autre copie publique contient encore des métadonnées. L'image n'a pas été modifiée."
 
 msgid "Another worker owns this operation. Try later."
 msgstr "Une autre exécution détient cette opération. Réessayez plus tard."
@@ -168,8 +195,14 @@ msgstr "Les métadonnées du média ont été modifiées simultanément ou sont 
 msgid "Attachment not found."
 msgstr "Le média est introuvable."
 
+msgid "Author or contact"
+msgstr "Auteur ou coordonnées"
+
 msgid "Automatic optimization"
 msgstr "Optimisation automatique"
+
+msgid "Automatically anonymize new images"
+msgstr "Anonymiser automatiquement les nouvelles images"
 
 msgid "Available"
 msgstr "Disponible"
@@ -192,6 +225,18 @@ msgstr "Meilleure qualité"
 msgid "Blocked"
 msgstr "Bloqué"
 
+msgid "Blocked: orientation"
+msgstr "Bloquées : orientation"
+
+msgid "Blocked: provenance"
+msgstr "Bloquées : provenance"
+
+msgid "Blocked: public copy"
+msgstr "Bloquées : copie publique"
+
+msgid "Blocked: unknown metadata"
+msgstr "Bloquées : métadonnées inconnues"
+
 msgid "Build plan from latest analysis"
 msgstr "Préparer le plan de la dernière analyse"
 
@@ -200,6 +245,9 @@ msgstr "Réduction du stockage par lots"
 
 msgid "CMYK and non-RGB JPEGs are not supported."
 msgstr "Les JPEG CMJN ou non RVB ne sont pas pris en charge."
+
+msgid "Camera or device"
+msgstr "Appareil photo ou appareil"
 
 msgid "Cancel"
 msgstr "Annuler"
@@ -218,6 +266,9 @@ msgstr "Un répertoire privé de préparation ne peut pas être créé."
 
 msgid "Cannot establish the owned staging root."
 msgstr "Impossible de créer le dossier de préparation sécurisé."
+
+msgid "Capture date"
+msgstr "Date de prise de vue"
 
 msgid "Ceiling in decimal MB"
 msgstr "Plafond en Mo décimaux"
@@ -242,6 +293,12 @@ msgstr "Couleur ou orientation à vérifier"
 
 msgid "Color profile is checked before processing, not inferred from the file extension."
 msgstr "Le profil colorimétrique est vérifié avant traitement, jamais déduit de l’extension du fichier."
+
+msgid "Color profiles are kept and may contain descriptive information. This is not a guarantee of complete anonymity."
+msgstr "Les profils de couleur sont conservés et peuvent contenir des informations descriptives. Il ne s'agit pas d'une garantie d'anonymat complet."
+
+msgid "Comments"
+msgstr "Commentaires"
 
 msgid "Committed generation requires manual integrity review."
 msgstr "La génération enregistrée nécessite une vérification manuelle de son intégrité."
@@ -335,6 +392,9 @@ msgstr "L’intégrité de la version dérivée n’est pas conforme."
 
 msgid "Derivative not available."
 msgstr "La version dérivée n’est pas disponible."
+
+msgid "Description or keywords"
+msgstr "Description ou mots-clés"
 
 msgid "Diagnostics and advanced tools"
 msgstr "Diagnostics et outils avancés"
@@ -435,6 +495,9 @@ msgstr "Ce format n’est pas admissible au traitement"
 msgid "Format: %s"
 msgstr "Format : %s"
 
+msgid "GPS location"
+msgstr "Localisation GPS"
+
 msgid "Generate native WordPress metadata before optimization."
 msgstr "Générez les métadonnées natives WordPress avant l’optimisation."
 
@@ -449,6 +512,9 @@ msgstr "Le quota de l’hébergement est inconnu."
 
 msgid "I accept the JPEG and understand that deleting the original removes restoration."
 msgstr "Je valide le JPEG et je comprends que supprimer l’original rendra la restauration impossible."
+
+msgid "I choose to anonymize this image and keep its original for restoration."
+msgstr "Je choisis d'anonymiser cette image et de conserver son original pour restauration."
 
 msgid "I compared the images and choose to convert this image to JPEG."
 msgstr "J’ai comparé les images et je choisis de convertir cette image en JPEG."
@@ -467,6 +533,9 @@ msgstr "Je comprends que cette version ne pourra plus être restaurée par Pixel
 
 msgid "ICC conversion stopped safely. No profile stripping fallback was used."
 msgstr "La conversion ICC a été arrêtée sans risque. Aucun recours à la suppression du profil n’a été utilisé."
+
+msgid "IPTC descriptions or contact"
+msgstr "Descriptions ou coordonnées IPTC"
 
 msgid "Image ID"
 msgstr "ID du média"
@@ -503,6 +572,9 @@ msgstr "Imagick avec LittleCMS est requis ; aucune solution de repli non calibr�
 
 msgid "Incomplete ICC chunk sequence."
 msgstr "La séquence des segments ICC est incomplète."
+
+msgid "Information necessary to display the image correctly is preserved."
+msgstr "Les informations nécessaires à l'affichage correct de l'image sont conservées."
 
 msgid "Insufficient disk space."
 msgstr "Espace disque insuffisant."
@@ -588,8 +660,14 @@ msgstr "La version du traitement est incompatible. Une vérification est nécess
 msgid "Jobs"
 msgstr "Opérations"
 
+msgid "Keep"
+msgstr "Conserver"
+
 msgid "Keep PNG and discard comparison"
 msgstr "Garder le PNG et supprimer la comparaison"
+
+msgid "Kept"
+msgstr "Conservées"
 
 msgid "Kept without changes"
 msgstr "Conservée sans modification"
@@ -602,6 +680,9 @@ msgstr "Nombreuses références de fichiers : inventaire partiel"
 
 msgid "Large web view"
 msgstr "Grande vue web"
+
+msgid "Local candidate: replacement and restoration certification is still required. No image has been changed."
+msgstr "Candidat local : le remplacement et la restauration doivent encore être certifiés. L’image n’a pas été modifiée."
 
 msgid "Local image optimization and verified recovery."
 msgstr "Optimisation locale des images et restauration vérifiée."
@@ -675,6 +756,12 @@ msgstr "Les mesures concernent les sources utilisées du plan, pas les miniature
 msgid "Media"
 msgstr "Média"
 
+msgid "Metadata"
+msgstr "Métadonnées"
+
+msgid "Metadata removed: %d bytes. This is not image compression."
+msgstr "Métadonnées retirées : %d octets. Il ne s’agit pas d’une compression d’image."
+
 msgid "Metadata/orientation sanitization required; byte increase disclosed."
 msgstr "Le nettoyage des métadonnées ou de l’orientation est requis ; l’augmentation de taille est signalée."
 
@@ -738,6 +825,9 @@ msgstr "Aucun gain significatif ; source conservée"
 msgid "No new uploads tracked."
 msgstr "Aucun nouveau fichier suivi."
 
+msgid "No personal metadata detected"
+msgstr "Aucune métadonnée personnelle détectée"
+
 msgid "No processing started. Select images in the Media Library or confirm the whole library below."
 msgstr "Aucun traitement démarré. Sélectionnez des images dans la médiathèque ou confirmez ci-dessous le traitement de toute la médiathèque."
 
@@ -752,6 +842,12 @@ msgstr "Aucune version candidate nettoyée n’atteint le seuil de qualité. L�
 
 msgid "No simulation yet"
 msgstr "Aucune simulation"
+
+msgid "No supported private metadata remains in the public files checked."
+msgstr "Aucune métadonnée privée prise en charge ne subsiste dans les fichiers publics contrôlés."
+
+msgid "No supported private metadata was detected. The image is unchanged."
+msgstr "Aucune métadonnée privée prise en charge n'a été détectée. L'image est inchangée."
 
 msgid "No useful JPEG saving. The PNG is unchanged."
 msgstr "Aucun gain JPEG utile. Le PNG est inchangé."
@@ -855,6 +951,9 @@ msgstr "Original conservé pour restauration"
 msgid "Original retained for restoration. Its space has not yet been freed."
 msgstr "Original conservé pour restauration. L’espace n’est pas encore libéré."
 
+msgid "Originals are retained for restoration. This uses private storage; no automatic purge is performed."
+msgstr "Les originaux sont conservés pour permettre une restauration. Ils occupent un espace privé ; aucune purge automatique n’est effectuée."
+
 msgid "PNG guidance: 128 decimal MB covers the maximum temporary estimate for the supported PNG limits. This is a suggestion, not a preselected value. JPEG images may need more."
 msgstr "Repère PNG : 128 Mo décimaux couvrent l’estimation temporaire maximale des PNG pris en charge. C’est une suggestion, pas une valeur présélectionnée. Les JPEG peuvent demander davantage."
 
@@ -906,6 +1005,9 @@ msgstr "Version précédente supprimée définitivement"
 msgid "Permission denied."
 msgstr "Accès refusé."
 
+msgid "Personal metadata detected"
+msgstr "Des métadonnées personnelles ont été détectées."
+
 msgid "Photo album (compatibility)"
 msgstr "Album photo (compatibilité)"
 
@@ -920,6 +1022,9 @@ msgstr "Pixel - Simulation"
 
 msgid "Pixel - Storage saver"
 msgstr "Pixel - Réduction du stockage"
+
+msgid "Pixel cannot certify the current metadata state. Review the recovery information before resuming."
+msgstr "Pixel ne peut pas certifier l’état actuel des métadonnées. Consultez les informations de récupération avant de reprendre."
 
 msgid "Pixel could not confirm that this image can be optimized safely. The original is unchanged; review the technical details before retrying."
 msgstr "Pixel n’a pas pu confirmer que cette image peut être optimisée en toute sécurité. L’original est inchangé ; consultez les détails techniques avant de réessayer."
@@ -941,6 +1046,9 @@ msgstr "Rubriques Pixel"
 
 msgid "Pixel storage and new uploads"
 msgstr "Pixel : stockage et nouveaux téléversements"
+
+msgid "Pixel will remove:"
+msgstr "Pixel supprimera :"
 
 msgid "Plan"
 msgstr "Plan"
@@ -995,6 +1103,9 @@ msgstr "Anciennes versions Pixel : références à examiner"
 
 msgid "Previous operational image"
 msgstr "Ancienne image principale"
+
+msgid "Privacy runs first. Other processing may require restoring the retained original before starting."
+msgstr "La confidentialité est prioritaire. Un autre traitement peut nécessiter de restaurer d’abord l’original conservé."
 
 msgid "Private engine disabled or incompatible storage."
 msgstr "Moteur privé désactivé ou stockage incompatible."
@@ -1137,6 +1248,12 @@ msgstr "L’appartenance du fichier lié doit être vérifiée"
 msgid "Remove owned web versions and settings when uninstalling. Originals are always kept."
 msgstr "Supprimer les versions web créées par l’extension et ses réglages lors de la désinstallation. Les originaux sont toujours conservés."
 
+msgid "Removes information embedded in the file that may reveal location, device, author or capture date."
+msgstr "Supprime les informations intégrées au fichier pouvant révéler la localisation, l'appareil, l'auteur ou la date de prise de vue."
+
+msgid "Removes personal metadata from newly uploaded images when Pixel can preserve their appearance. Existing images are not processed."
+msgstr "Supprime les métadonnées personnelles des nouvelles images lorsque Pixel peut préserver leur apparence. Les images existantes ne sont pas traitées."
+
 msgid "Replace eligible JPEG and PNG images"
 msgstr "Remplacer les images JPEG et PNG autorisées"
 
@@ -1233,6 +1350,9 @@ msgstr "Réessayer l’échec"
 msgid "Return to WP Seed Pixel settings"
 msgstr "Retourner aux réglages WP Seed Pixel"
 
+msgid "Review required"
+msgstr "À vérifier"
+
 msgid "Review the invalid site storage limit."
 msgstr "Vérifiez la limite de stockage du site : sa valeur est invalide."
 
@@ -1322,6 +1442,9 @@ msgstr "Remplacement d’une image"
 
 msgid "Skipped"
 msgstr "Ignorée"
+
+msgid "Software history"
+msgstr "Historique logiciel"
 
 msgid "Source already bounded, light and metadata-safe."
 msgstr "La source respecte déjà les dimensions et la taille requises, sans métadonnées sensibles."
@@ -1485,6 +1608,9 @@ msgstr "La racine publique du site n’a pas pu être vérifiée. Aucun original
 msgid "The recovery location is no longer provably private. Optimization is blocked."
 msgstr "La protection de l’emplacement des originaux n’est plus démontrée. L’optimisation est bloquée."
 
+msgid "The recovery original still contains its metadata. Restoring it restores those metadata."
+msgstr "L'original conservé pour restauration contient encore ses métadonnées. Une restauration les rétablit."
+
 msgid "The request was interrupted."
 msgstr "La requête a été interrompue."
 
@@ -1542,8 +1668,14 @@ msgstr "Cet hébergement ne permet pas de démontrer la protection des originaux
 msgid "This host explicitly disabled recovery processing. Pixel will not override that choice."
 msgstr "Cet hébergement a explicitement désactivé ce traitement. Pixel ne modifiera pas ce choix."
 
+msgid "This image contains provenance or authenticity information. It will not be removed automatically."
+msgstr "Cette image contient des informations de provenance ou d'authenticité. Elles ne seront pas supprimées automatiquement."
+
 msgid "This image contains unsupported color or metadata information. It is preserved."
 msgstr "Cette image contient des informations de couleur ou des métadonnées non prises en charge. Elle est conservée."
+
+msgid "This image requires orientation information. Pixel cannot yet anonymize it without changing the image."
+msgstr "Cette image utilise des informations d'orientation nécessaires à son affichage. Pixel ne peut pas encore l'anonymiser sans modifier l'image."
 
 msgid "This image was preserved because its format or image profile is not supported, or processing was excluded."
 msgstr "Cette image a été conservée car son format ou son profil d’image n’est pas pris en charge, ou parce que le traitement a été exclu."
@@ -1682,6 +1814,9 @@ msgstr "Originaux conservés par WordPress"
 
 msgid "WordPress sizes"
 msgstr "Versions WordPress"
+
+msgid "XMP descriptions or contact"
+msgstr "Descriptions ou coordonnées XMP"
 
 msgid "Your original is kept."
 msgstr "Votre original est conservé."

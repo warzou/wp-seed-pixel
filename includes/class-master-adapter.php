@@ -81,8 +81,13 @@ final class WP_Seed_Pixel_Master_Adapter {
         if ($fresh['mode'] !== $before['mode'] || $fresh['uid'] !== $before['uid'] || $fresh['gid'] !== $before['gid']) { return new WP_Error('METADATA_CONFLICT'); }
         foreach ($before['files'] as $relative => $file) {
             if ($relative === ($record['retired_original']['relative'] ?? '') && !isset($fresh['files'][$relative])) { continue; }
-            if ($relative !== $before['relative'] && ($fresh['files'][$relative]['sha256'] ?? '') !== $file['sha256']) { return new WP_Error('SOURCE_CHANGED'); }
+            if (isset($record['graph_version'])) {
+                $e = $record['graph_plan']['files'][$relative] ?? null; $f = $fresh['files'][$relative] ?? null;
+                if (!$e || !$f || $f['roles'] !== $e['roles']
+                    || !in_array(array($f['sha256'], $f['bytes']), array(array($e['before_sha256'], $e['before_bytes']), array($e['after_sha256'], $e['after_bytes'])), true)) { return new WP_Error('METADATA_GRAPH_CHANGED'); }
+            } elseif ($relative !== $before['relative'] && ($fresh['files'][$relative]['sha256'] ?? '') !== $file['sha256']) { return new WP_Error('SOURCE_CHANGED'); }
         }
+        if (isset($record['graph_version']) && array_keys($fresh['files']) !== array_keys($before['files'])) { return new WP_Error('METADATA_GRAPH_CHANGED'); }
         $native = $fresh['rows']['_wp_attachment_metadata'];
         $after = isset($record['after']) ? array(maybe_serialize($record['after'])) : array();
         if ($native !== $before['rows']['_wp_attachment_metadata'] && $native !== $after) { return new WP_Error('METADATA_CONFLICT'); }

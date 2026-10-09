@@ -121,9 +121,22 @@ final class WP_Seed_Pixel_Format_Conversion {
             $install = WP_Seed_Pixel_Job_Store::install(); if (is_wp_error($install)) { return $install; }
             $claims = WP_Seed_Pixel_Jobs::review_claims($id);
             if (is_wp_error($claims)) { return $claims; }
+            $metadata_witness = get_post_meta($id, '_seed_pixel_master_state', true);
+            if (is_array($metadata_witness) && ($metadata_witness['engine'] ?? '') === WP_Seed_Pixel_Metadata_Graph_Transaction::VERSION
+                && WP_Seed_Pixel_Metadata_Admin::state($id) === 'anonymized') { return new WP_Error('CLAIM_CONFLICT'); }
             $before = WP_Seed_Pixel_Master_Adapter::snapshot($id); if (is_wp_error($before)) { return $before; }
             $meta = maybe_unserialize($before['rows']['_wp_attachment_metadata'][0]);
-            if ($before['mime'] !== 'image/png' || !empty($meta['original_image']) || $before['rows']['_seed_pixel_master_state']
+            $metadata_source = false;
+            if ($before['rows']['_seed_pixel_master_state']) {
+                $witness = maybe_unserialize($before['rows']['_seed_pixel_master_state'][0]);
+                if (is_array($witness) && ($witness['metadata'] ?? '') === 'anonymized' && WP_Seed_Pixel_Metadata_Admin::state($id) === 'anonymized') {
+                    $privacy = WP_Seed_Pixel_Metadata::graph($before);
+                    $metadata_source = !is_wp_error($privacy) && !$privacy['master']['categories'] && !$privacy['master']['removed_bytes'];
+                }
+            }
+            // Pipeline B: a verified, clean PNG may enter the existing conversion
+            // lifecycle. Restore conversion first, then the metadata operation.
+            if ($before['mime'] !== 'image/png' || !empty($meta['original_image']) || ($before['rows']['_seed_pixel_master_state'] && !$metadata_source)
                 || $before['rows']['_seed_pixel_manifest'] || $before['rows']['_seed_pixel_history']) { return new WP_Error('UNSUPPORTED_CONVERSION_STATE'); }
             $post_table = $wpdb->get_row($wpdb->prepare('SHOW TABLE STATUS WHERE Name=%s', $wpdb->posts), ARRAY_A);
             if (!$post_table || strtoupper($post_table['Engine']) !== 'INNODB') { return new WP_Error('UNSUPPORTED_STORAGE'); }

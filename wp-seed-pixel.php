@@ -2,8 +2,8 @@
 /**
  * Plugin Name: WP Seed Pixel
  * Description: Local image optimization, storage analysis and verified recovery jobs.
- * Version: 0.5.1
- * Build: 0.5.1
+ * Version: 0.6.0
+ * Build: 0.6.0
  * Update URI: false
  * Requires at least: 6.6
  * Requires PHP: 8.1
@@ -12,8 +12,8 @@
  * Text Domain: wp-seed-pixel
  */
 defined('ABSPATH') || exit;
-define('WP_SEED_PIXEL_VERSION', '0.5.1');
-define('WP_SEED_PIXEL_BUILD', '0.5.1');
+define('WP_SEED_PIXEL_VERSION', '0.6.0');
+define('WP_SEED_PIXEL_BUILD', '0.6.0');
 // The existing JPEG/PNG engines retain their certified generation identity.
 define('WP_SEED_PIXEL_ENGINE_VERSION', '0.3.1');
 define('WP_SEED_PIXEL_FILE', __FILE__);
@@ -32,6 +32,13 @@ require_once __DIR__ . '/includes/class-format-processor.php';
 require_once __DIR__ . '/includes/class-format-conversion.php';
 require_once __DIR__ . '/includes/class-format-admin.php';
 WP_Seed_Pixel_Format_Admin::boot();
+require_once __DIR__ . '/includes/class-metadata.php';
+require_once __DIR__ . '/includes/class-metadata-public-graph.php';
+require_once __DIR__ . '/includes/class-metadata-graph-transaction.php';
+require_once __DIR__ . '/includes/class-metadata-admin.php';
+WP_Seed_Pixel_Metadata_Admin::boot();
+require_once __DIR__ . '/includes/class-metadata-uploads.php';
+WP_Seed_Pixel_Metadata_Uploads::boot();
 add_action('plugins_loaded', array('WP_Seed_Pixel_Host_Admin', 'boot'));
 add_action('plugins_loaded', array('WP_Seed_Pixel_Bulk_Admin', 'boot'));
 add_action('plugins_loaded', array('WP_Seed_Pixel_Quarantine_Admin', 'boot'));

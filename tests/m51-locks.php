@@ -36,7 +36,7 @@ m51_check(!is_wp_error($recovery), 'SIGKILL releases SQL ownership within bounde
 
 global $wpdb;
 $old = WP_Seed_Pixel_Files::lock(95005); $connection = (int) $wpdb->get_var('SELECT CONNECTION_ID()');
-$killer = mysqli_init(); mysqli_real_connect($killer, 'localhost', 'root', '', 'pixel_m3', 0, getenv('PIXEL_M3_ROOT') . '/mysql.sock');
+$killer = mysqli_init(); mysqli_real_connect($killer, 'localhost', 'root', '', DB_NAME, 0, getenv('PIXEL_M3_ROOT') . '/mysql.sock');
 mysqli_query($killer, 'KILL ' . $connection); mysqli_close($killer);
 $wpdb->suppress_errors(true);
 m51_check(!WP_Seed_Pixel_Authority::valid(95005), 'Disconnected old owner fails closed after reconnect');
@@ -51,7 +51,16 @@ $id = m3_fixture('m3-small.jpeg', false); $path = get_attached_file($id); $im = 
 wp_update_attachment_metadata($id, array('file' => _wp_relative_upload_path($path), 'width' => $im[0], 'height' => $im[1], 'filesize' => filesize($path), 'sizes' => array()));
 $j1 = WP_Seed_Pixel_Jobs::replace_one($id, array('master' => 'replace_verified'), 1073741824);
 $j2 = WP_Seed_Pixel_Jobs::replace_one($id, array('master' => 'replace_verified'), 1073741824);
-m51_check(!is_wp_error($j1) && !is_wp_error($j2), 'Two jobs may plan one attachment');
+m51_check(!is_wp_error($j1) && is_wp_error($j2) && $j2->get_error_code()==='CLAIM_CONFLICT', 'Duplicate single-image admission fails closed');
+// Reproduce a legacy pair already persisted before the stricter admission gate.
+$legacy_job=WP_Seed_Pixel_Job_Store::job($j1['id']);
+$legacy_id=WP_Seed_Pixel_Job_Store::insert_job('replace',0,json_decode($legacy_job['policy'],true),1);
+m51_check(!is_wp_error($legacy_id),'Legacy concurrent job fixture');
+m51_check($wpdb->update(WP_Seed_Pixel_Job_Store::table('jobs'),array('engine'=>WP_Seed_Pixel_Master_Storage::ENGINE,'status'=>'running'),array('id'=>$legacy_id))===1,'Legacy execution attributes');
+$legacy_item=$wpdb->get_row($wpdb->prepare('SELECT * FROM '.WP_Seed_Pixel_Job_Store::table('items')." WHERE job_id=%d AND kind='operation'",$j1['id']),ARRAY_A);
+unset($legacy_item['id']);$legacy_item['job_id']=$legacy_id;
+m51_check($wpdb->insert(WP_Seed_Pixel_Job_Store::table('items'),$legacy_item)===1,'Legacy queued item fixture');
+$j2=array('id'=>$legacy_id);
 $item = $wpdb->get_row($wpdb->prepare('SELECT * FROM ' . WP_Seed_Pixel_Job_Store::table('items') . " WHERE job_id=%d AND kind='operation'", $j1['id']), ARRAY_A);
 $site = WP_Seed_Pixel_Files::lock(0); $media = WP_Seed_Pixel_Files::lock($id); $token = bin2hex(random_bytes(24));
 $wpdb->update(WP_Seed_Pixel_Job_Store::table('items'), array('lease' => $token, 'lease_until' => time() - 5), array('id' => $item['id']));

@@ -90,6 +90,9 @@ final class WP_Seed_Pixel_Future_Uploads {
     public static function run($id) {
         $s = self::settings(); $v = get_post_meta($id, self::META, true);
         if (($s['mode'] ?? 'off') === 'off' || !is_array($v) || ($v['generation'] ?? '') !== ($s['generation'] ?? '') || (int) $id <= ($s['cutoff_id'] ?? PHP_INT_MAX)) { return; }
+        if (class_exists('WP_Seed_Pixel_Metadata_Uploads') && WP_Seed_Pixel_Metadata_Uploads::blocks_optimizer($id)) {
+            self::review($id,'METADATA_RECOVERY_RETAINED',$s['generation']);return;
+        }
         $lock = WP_Seed_Pixel_Files::lock(0);
         if (is_wp_error($lock)) {
             if ($lock->get_error_code() === 'pixel_locked') { self::defer($id, $s); }

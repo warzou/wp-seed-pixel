@@ -132,6 +132,8 @@ final class WP_Seed_Pixel_Job_Store {
             'retained' => in_array($item['action'], array('replace', 'retire', 'convert'), true) ? array('retained', 'recovery_required', 'purge_intent') : array(),
             'purge_intent' => array('purged', 'retained', 'needs_review'),
             'recovery_required' => array('switch_intent', 'switched', 'verified', 'needs_review', 'rolled_back'));
+        if (class_exists('WP_Seed_Pixel_Metadata_Graph_Transaction') && WP_Seed_Pixel_Metadata_Graph_Transaction::is_item($item)
+            && in_array($item['stage'], array('queued','preparing','ready'), true) && $stage === 'recovery_required') { $allowed[$item['stage']][] = 'recovery_required'; }
         if (!in_array($stage, $allowed[$item['stage']] ?? array(), true)) { return new WP_Error('CLAIM_CONFLICT'); }
         $journal = json_decode((string) $item['journal'], true) ?: array('events' => array(), 'dropped' => 0);
         unset($journal['checksum']);

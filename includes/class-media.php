@@ -87,7 +87,7 @@ final class WP_Seed_Pixel_Media {
         return !empty($item['error_code']) ? $item['error_code'] : ($data['reason'] ?? '');
     }
 
-    private static function operation($id) {
+    public static function operation($id) {
         if (!current_user_can('edit_post', $id) || (int) get_option('wp_seed_pixel_job_schema') !== WP_Seed_Pixel_Job_Store::SCHEMA) { return null; }
         global $wpdb;
         return $wpdb->get_row($wpdb->prepare('SELECT * FROM ' . WP_Seed_Pixel_Job_Store::table('items') . " WHERE attachment_id=%d AND kind='operation' AND action='replace' ORDER BY id DESC LIMIT 1", $id), ARRAY_A);
@@ -103,23 +103,33 @@ final class WP_Seed_Pixel_Media {
         $item = self::operation($id);
         $record = $view = null;
         $witness = get_post_meta($id, '_seed_pixel_master_state', true);
+        $privacy = is_array($witness) && ($witness['metadata'] ?? '') === 'anonymized';
         if (is_array($witness) && !empty($witness['item_id']) && !empty($witness['job_id']) && $item && (int) $witness['item_id'] === (int) $item['id'] && (int) $witness['job_id'] === (int) $item['job_id']) {
             $record = WP_Seed_Pixel_Quarantine::record($item);
             $view = WP_Seed_Pixel_Quarantine::inspect($item);
         }
         $valid = is_array($record) && is_array($view) && ($view['active_delta'] ?? null) !== null;
+        $resume_graph_restore = false;
+        if ($item && $item['stage'] === 'recovery_required' && WP_Seed_Pixel_Metadata_Graph_Transaction::is_item($item)) {
+            $pending_graph = WP_Seed_Pixel_Quarantine::record($item);
+            $resume_graph_restore = is_array($pending_graph) && in_array($pending_graph['phase'], array('graph_rolling_back', 'graph_restored'), true);
+        }
         $format = strtoupper(str_replace('image/', '', (string) get_post_mime_type($id)));
         ob_start(); ?>
         <div class="pixel-media-panel" tabindex="-1" data-attachment="<?php echo (int) $id; ?>">
+            <?php echo WP_Seed_Pixel_Metadata_Admin::panel($id); ?>
+            <?php if ($resume_graph_restore) { ?>
+                <p><button type="button" class="button pixel-regenerate" data-id="<?php echo (int) $id; ?>" data-operation="image_restore"><?php esc_html_e('Restore original', 'wp-seed-pixel'); ?></button><span class="pixel-media-status" role="status" aria-live="polite"></span></p>
+            <?php } ?>
             <p class="pixel-media-current"><?php echo esc_html($format . ' · ' . (int) ($native['width'] ?? 0) . ' × ' . (int) ($native['height'] ?? 0) . ' · ' . ($bytes === null ? __('Unknown', 'wp-seed-pixel') : size_format($bytes, 2))); ?></p>
             <?php if ($valid) {
                 $before = $record['before']; $after = $record['candidate'];
                 $saved = max(0, $before['bytes'] - $after['bytes']); ?>
                 <dl class="pixel-media-comparison">
                     <div><dt><?php esc_html_e('Original', 'wp-seed-pixel'); ?></dt><dd><?php echo esc_html($before['width'] . ' × ' . $before['height'] . ' · ' . size_format($before['bytes'], 2)); ?></dd></div>
-                    <div><dt><?php esc_html_e('Optimized version', 'wp-seed-pixel'); ?></dt><dd><?php echo esc_html($after['width'] . ' × ' . $after['height'] . ' · ' . size_format($after['bytes'], 2)); ?></dd></div>
+                    <div><dt><?php echo esc_html($privacy ? __('Anonymized version','wp-seed-pixel') : __('Optimized version','wp-seed-pixel')); ?></dt><dd><?php echo esc_html($after['width'] . ' × ' . $after['height'] . ' · ' . size_format($after['bytes'], 2)); ?></dd></div>
                 </dl>
-                <p><?php echo esc_html(sprintf(__('Active image saving: %1$s (%2$s%%).', 'wp-seed-pixel'), size_format($saved, 2), number_format_i18n(100 * $saved / max(1, $before['bytes']), 1))); ?></p>
+                <?php if (!$privacy) { ?><p><?php echo esc_html(sprintf(__('Active image saving: %1$s (%2$s%%).', 'wp-seed-pixel'), size_format($saved, 2), number_format_i18n(100 * $saved / max(1, $before['bytes']), 1))); ?></p><?php } ?>
                 <?php if ($view['rollback_available']) { ?>
                     <p><?php esc_html_e('Original retained for restoration. Its space has not yet been freed.', 'wp-seed-pixel'); ?></p>
                     <p><button type="button" class="button pixel-regenerate" data-id="<?php echo (int) $id; ?>" data-operation="image_restore"><?php esc_html_e('Restore original', 'wp-seed-pixel'); ?></button><span class="pixel-media-status" role="status" aria-live="polite"></span></p>

@@ -64,6 +64,13 @@ final class WP_Seed_Pixel_Quarantine {
         $dir = WP_Seed_Pixel_Master_Storage::directory($item, false);
         if (is_wp_error($dir)) { return $dir; }
         $r = WP_Seed_Pixel_Master_Storage::load($dir, $item);
+        if (is_array($r) && isset($r['graph_version'])) {
+            $r = WP_Seed_Pixel_Metadata_Graph_Transaction::journal($item, $dir); if (is_wp_error($r)) { return $r; }
+            $anchor = json_decode($item['journal'], true)['quarantine_hash'] ?? '';
+            if (isset($r['quarantine']) && $anchor !== hash('sha256', wp_json_encode($r['quarantine']))
+                && !($enrollment && $anchor === '' && $item['stage'] === 'retained')) { return new WP_Error('EVIDENCE_INVALID'); }
+            return $r;
+        }
         if (is_wp_error($r) || !$r || !$r['candidate']) { return new WP_Error('EVIDENCE_INVALID'); }
         $data = json_decode($item['data'], true);
         if ($item['action'] === 'retire' && ($r['retired_original'] ?? null) !== ($data['original'] ?? null)) { return new WP_Error('EVIDENCE_INVALID'); }
@@ -110,6 +117,7 @@ final class WP_Seed_Pixel_Quarantine {
 
     public static function retain(array $item, array $r) {
         if (!self::mutation_allowed($item)) { return new WP_Error('PERMISSION_DENIED'); }
+        if (isset($r['graph_version'])) { return WP_Seed_Pixel_Metadata_Graph_Transaction::retain($item, $r); }
         $dir = WP_Seed_Pixel_Master_Storage::directory($item); if (is_wp_error($dir)) { return $dir; }
         $source = self::source($r); $path = $dir . '/recovery.jpg';
         if (!self::identity($path, $source, $r['quarantine'] ?? null)) { return new WP_Error('BACKUP_FAILED'); }
@@ -156,6 +164,7 @@ final class WP_Seed_Pixel_Quarantine {
     /** Read-only, live availability/accounting. Never trusts historical PURGED alone. */
     public static function inspect(array $item) {
         $r = self::record($item); if (is_wp_error($r)) { return $r; }
+        if (isset($r['graph_version'])) { return WP_Seed_Pixel_Metadata_Graph_Transaction::inspect($item, $r); }
         $dir = WP_Seed_Pixel_Master_Storage::directory($item, false); $path = $dir . '/recovery.jpg';
         $source = self::source($r); $q = $r['quarantine'] ?? null;
         $owned = $q && $q['version'] === self::ENGINE && $q['sha256'] === $source['sha256'] && $q['bytes'] === $source['bytes'] && self::identity($path, $source, $q);
@@ -194,6 +203,7 @@ final class WP_Seed_Pixel_Quarantine {
     public static function purge(array $item, array $approval) {
         if (!self::mutation_allowed($item)) { return new WP_Error('PERMISSION_DENIED'); }
         $r = self::record($item); if (is_wp_error($r)) { return $r; }
+        if (isset($r['graph_version'])) { return new WP_Error('PERMISSION_DENIED'); }
         $dir = WP_Seed_Pixel_Master_Storage::directory($item, false); $p = $dir . '/recovery.jpg';
         $view = self::inspect($item);
         if (($approval['version'] ?? '') !== self::AUTHORIZATION || ($approval['generation'] ?? '') !== ($view['generation'] ?? '') || ($approval['irreversible'] ?? false) !== true) { return new WP_Error('PERMISSION_DENIED'); }
@@ -236,6 +246,10 @@ final class WP_Seed_Pixel_Quarantine {
     public static function restore(array $item) {
         if (!self::mutation_allowed($item)) { return new WP_Error('PERMISSION_DENIED'); }
         $r = self::record($item); if (is_wp_error($r)) { return $r; }
+        if (isset($r['graph_version'])) {
+            $r = WP_Seed_Pixel_Metadata_Graph_Transaction::restore($item); if (is_wp_error($r)) { return $r; }
+            return WP_Seed_Pixel_Metadata_Graph_Transaction::cleanup($item, $r, true);
+        }
         if (in_array($r['phase'], array('purged', 'purge_intent'), true)) { return new WP_Error('RESTORE_UNAVAILABLE'); }
         if ($r['phase'] === 'restored') { return $r; }
         $dir = WP_Seed_Pixel_Master_Storage::directory($item, false);

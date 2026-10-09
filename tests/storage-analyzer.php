@@ -93,7 +93,7 @@ $paused = WP_Seed_Pixel_Scan::start(); $wpdb->update($scan_lease, array('lease' 
 scan_check('concurrent step refused', is_wp_error(WP_Seed_Pixel_Scan::step($paused['id'])));
 $wpdb->update($scan_lease, array('lease' => '', 'lease_until' => 0), array('id' => $paused['id'])); WP_Seed_Pixel_Scan::control($paused['id'], 'cancelled');
 scan_check('cancel retains results and stops work', WP_Seed_Pixel_Scan::step($paused['id'])['status'] === 'cancelled');
-$report = array('checks' => $checks, 'passed' => count($checks), 'wordpress' => $GLOBALS['wp_version'], 'php' => PHP_VERSION, 'database' => 'SQLite Integration', 'large_library' => 2008, 'large_seconds' => microtime(true) - $start, 'fixtures' => array('normal' => $normal, 'big' => $big, 'png' => $png, 'missing' => $missing, 'unsupported' => $unsupported, 'duplicate' => $duplicate, 'edited' => $edited, 'unsafe' => $unsafe), 'large_scan' => $large['id']);
+$report = array('checks' => $checks, 'passed' => count($checks), 'wordpress' => $GLOBALS['wp_version'], 'php' => PHP_VERSION, 'database' => $wpdb->db_version(), 'large_library' => 2008, 'large_seconds' => microtime(true) - $start, 'fixtures' => array('normal' => $normal, 'big' => $big, 'png' => $png, 'missing' => $missing, 'unsupported' => $unsupported, 'duplicate' => $duplicate, 'edited' => $edited, 'unsafe' => $unsafe), 'large_scan' => $large['id']);
 $dir = dirname(__DIR__) . '/reports/storage-m1'; if (!is_dir($dir)) { mkdir($dir, 0755, true); }
 file_put_contents($dir . '/integration.json', wp_json_encode($report, JSON_PRETTY_PRINT));
 echo wp_json_encode(array('passed' => count($checks), 'large_library' => 2008, 'large_seconds' => $report['large_seconds']), JSON_PRETTY_PRINT);

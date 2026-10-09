@@ -29,6 +29,10 @@ final class WP_Seed_Pixel_Admin {
         if (!current_user_can('manage_options')) { return new WP_Error('PERMISSION_DENIED'); }
         $preset = isset($input['preset']) && is_string($input['preset']) ? sanitize_key($input['preset']) : '';
         if (is_wp_error(WP_Seed_Pixel_Presets::get($preset))) { return new WP_Error('POLICY_INVALID'); }
+        if (!empty($input['metadata_privacy_settings'])) {
+            $r=WP_Seed_Pixel_Metadata_Uploads::configure(!empty($input['metadata_automatic']));
+            if (is_wp_error($r)) { return $r; }
+        }
         $future = WP_Seed_Pixel_Future_Uploads::settings();
         $png = !empty($input['png']);
         $jpeg = !empty($input['automatic']);
@@ -226,6 +230,14 @@ final class WP_Seed_Pixel_Admin {
             <form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>">
                 <input type="hidden" name="action" value="wp_seed_pixel_settings">
                 <?php wp_nonce_field('wp_seed_pixel_settings'); ?>
+                <?php if (!is_multisite()) { ?>
+                <input type="hidden" name="metadata_privacy_settings" value="1">
+                <h3><?php esc_html_e('Metadata','wp-seed-pixel'); ?></h3>
+                <p><label><input type="checkbox" name="metadata_automatic" <?php checked(WP_Seed_Pixel_Metadata_Uploads::settings()['enabled']); ?>> <?php esc_html_e('Automatically anonymize new images','wp-seed-pixel'); ?></label></p>
+                <p class="description"><?php esc_html_e('Removes personal metadata from newly uploaded images when Pixel can preserve their appearance. Existing images are not processed.','wp-seed-pixel'); ?></p>
+                <p class="description"><?php esc_html_e('Originals are retained for restoration. This uses private storage; no automatic purge is performed.','wp-seed-pixel'); ?></p>
+                <p class="description"><?php esc_html_e('Privacy runs first. Other processing may require restoring the retained original before starting.','wp-seed-pixel'); ?></p>
+                <?php } ?>
                 <p><label><input type="checkbox" name="automatic" <?php checked($settings['automatic'] || ($future['mode'] === 'process' && in_array('jpeg', $future['formats'], true))); ?>> <?php esc_html_e('Optimize new JPEG uploads automatically', 'wp-seed-pixel'); ?></label></p>
                 <p id="pixel-png"><label><input type="checkbox" name="png" <?php checked($png); ?>> <?php esc_html_e('Optimize new PNG uploads without loss', 'wp-seed-pixel'); ?></label></p>
                 <p class="description"><?php esc_html_e('Lossless optimization; transparency is preserved and PNG remains PNG. Existing media are not processed automatically.', 'wp-seed-pixel'); ?></p>

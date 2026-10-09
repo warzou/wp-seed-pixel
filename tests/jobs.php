@@ -116,7 +116,7 @@ $changed_before = job_snapshot(); job_ok(WP_Seed_Pixel_Jobs::step($stale['id']))
 job_check('stale source is review not execution', job_rows($stale['id'])[0]['error_code'] === 'SOURCE_CHANGED');
 job_check('stale detection does not write canonical data', job_snapshot() === $changed_before);
 update_post_meta($first, '_wp_attachment_metadata', $meta);
-$large_scan = json_decode(file_get_contents(dirname(__DIR__) . '/.runtime/m1-integration.json'), true)['large_scan'];
+$large_scan = json_decode(file_get_contents(dirname(__DIR__) . '/reports/storage-m1/integration.json'), true)['large_scan'];
 $start = microtime(true); $large = job_plan($large_scan); $large_job = job_ok(WP_Seed_Pixel_Jobs::start($large['id']));
 job_check('2008 structured M1 relations consumed without giant option', $large_job['total'] == 2008 && count(job_rows($large_job['id'])) === 2008);
 job_check('review and unsupported excluded from execution', WP_Seed_Pixel_Jobs::status($large_job['id'])['states']['skipped'] > 2000);
@@ -132,7 +132,7 @@ job_check('retention prunes only safe old terminal simulations', WP_Seed_Pixel_J
 wp_set_current_user(0);
 job_check('unauthorized PHP entry points rejected', is_wp_error(WP_Seed_Pixel_Jobs::plan($scan['id'])) && is_wp_error(WP_Seed_Pixel_Jobs::step($active['id'])) && is_wp_error(WP_Seed_Pixel_Jobs::results($active['id'])) && is_wp_error(WP_Seed_Pixel_Job_Store::prune(time())));
 wp_set_current_user(1);
-job_check('V1 arrival preserves derivative engine identity', WP_SEED_PIXEL_VERSION === '0.4.0' && WP_SEED_PIXEL_ENGINE_VERSION === '0.3.1');
+job_check('release preserves derivative engine identity', WP_SEED_PIXEL_VERSION === '0.6.0' && WP_SEED_PIXEL_ENGINE_VERSION === '0.3.1');
 $report = array('checks' => $checks, 'passed' => count($checks), 'large_seconds' => microtime(true) - $start, 'large_relations' => 2008, 'queries_for_page' => $listing_queries, 'scan_id' => $scan['id'], 'fixture_ids' => array($first, $second, $third), 'canonical_before' => $before, 'canonical_after' => job_snapshot(), 'php' => PHP_VERSION, 'wordpress' => $GLOBALS['wp_version']);
 $dir = dirname(__DIR__) . '/reports/storage-m2'; if (!is_dir($dir)) { mkdir($dir, 0755, true); }
 file_put_contents($dir . '/integration.json', wp_json_encode($report, JSON_PRETTY_PRINT));

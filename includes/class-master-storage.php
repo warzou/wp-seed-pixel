@@ -107,6 +107,9 @@ final class WP_Seed_Pixel_Master_Storage {
                 ? array('cleanup_unreplaced' => true, 'active_delta' => 0, 'recovery_bytes' => 0, 'audit_bytes' => 0, 'temporary_bytes' => 0) : $dir;
         }
         $r = self::load($dir, $item); if (is_wp_error($r) || !$r) { return new WP_Error('EVIDENCE_INVALID'); }
+        if (WP_Seed_Pixel_Metadata_Graph_Transaction::is_item($item)) {
+            return WP_Seed_Pixel_Metadata_Graph_Transaction::cleanup_unreplaced($item);
+        }
         if (!in_array($r['phase'], array('preparing', 'ready', 'cleanup_intent', 'cleaned'), true)) { return new WP_Error('RECOVERY_REQUIRED'); }
         $fresh = WP_Seed_Pixel_Master_Adapter::snapshot((int) $item['attachment_id']);
         if (is_wp_error($fresh) || $fresh !== $r['before']) { return new WP_Error('SOURCE_CHANGED'); }
@@ -163,6 +166,9 @@ final class WP_Seed_Pixel_Master_Storage {
         $dir = self::directory($item); if (is_wp_error($dir)) { return $dir; }
         $r = self::load($dir, $item); if (is_wp_error($r)) { return $r; }
         $data = json_decode($item['data'], true); $before = $data['before'];
+        if (($policy['intent']['metadata'] ?? '') === 'anonymize' && (!$r || !$r['candidate'])) {
+            $privacy = WP_Seed_Pixel_Metadata::graph($before); if (is_wp_error($privacy)) { return $privacy; }
+        }
         if (!$r) {
             $path = WP_Seed_Pixel_Master_Adapter::path($before); if (is_wp_error($path)) { return $path; }
             $fresh = WP_Seed_Pixel_Master_Adapter::snapshot($before['attachment_id']);
@@ -216,6 +222,12 @@ final class WP_Seed_Pixel_Master_Storage {
         $r['candidate'] = $candidate; $r['after'] = $after;
         $r['witness'] = array('engine' => self::ENGINE, 'item_id' => (int) $item['id'], 'job_id' => (int) $item['job_id'],
             'source_sha256' => $before['sha256'], 'sha256' => $candidate['sha256'], 'policy_hash' => $r['policy_hash']);
+        if (($candidate['processor'] ?? '') === WP_Seed_Pixel_Metadata::VERSION) {
+            $r['witness']['metadata'] = 'anonymized';
+            $r['witness']['metadata_categories'] = $candidate['categories'];
+            $r['witness']['metadata_removed_bytes'] = $before['bytes'] - $candidate['bytes'];
+            $r['witness']['recovery_metadata'] = 'conserved';
+        }
         $r = self::save($dir, $r); if (is_wp_error($r)) { return $r; }
         self::boundary('candidate', $item);
         $r['phase'] = 'ready'; $r = self::save($dir, $r);
@@ -235,6 +247,11 @@ final class WP_Seed_Pixel_Master_Storage {
         $r['phase'] = 'switch_intent'; $r = self::save($dir, $r); if (is_wp_error($r)) { return $r; }
         self::boundary('pre_swap', $item);
         $observed = WP_Seed_Pixel_Master_Adapter::observe($r); if (is_wp_error($observed) || $observed['hash'] !== $before['sha256']) { return new WP_Error('SOURCE_CHANGED'); }
+        if (($policy['intent']['metadata'] ?? '') === 'anonymize') {
+            $fresh = WP_Seed_Pixel_Master_Adapter::snapshot($before['attachment_id']);
+            if (is_wp_error($fresh) || $fresh !== $before) { return new WP_Error('SOURCE_CHANGED'); }
+            $privacy = WP_Seed_Pixel_Metadata::graph($fresh); if (is_wp_error($privacy)) { return $privacy; }
+        }
         if (is_link($dir . '/recovery.jpg') || hash_file('sha256', $dir . '/recovery.jpg') !== $before['sha256']) { return new WP_Error('BACKUP_FAILED'); }
         $swap = self::replace($candidate, $path, $r['candidate']['sha256'], $before['mode']); if (is_wp_error($swap)) { return $swap; }
         self::boundary('post_swap', $item);
@@ -259,6 +276,12 @@ final class WP_Seed_Pixel_Master_Storage {
         $expected = $restore ? $r['before'] : $r['candidate'];
         if ($o['hash'] !== $expected['sha256'] || (!$restore && (!$o['meta_after'] || !$o['witness_after']))) { return new WP_Error('VERIFY_FAILED'); }
         if ($restore && (!$o['meta_before'] || !$o['witness_before'])) { return new WP_Error('VERIFY_FAILED'); }
+        if (!$restore && ($r['candidate']['processor'] ?? '') === WP_Seed_Pixel_Metadata::VERSION) {
+            $fresh = WP_Seed_Pixel_Master_Adapter::snapshot($r['before']['attachment_id'], true);
+            if (is_wp_error($fresh) || array_keys($fresh['files']) !== array_keys($r['before']['files'])) { return new WP_Error('INVENTORY_INCOMPLETE'); }
+            $privacy = WP_Seed_Pixel_Metadata::graph($fresh);
+            if (is_wp_error($privacy) || $privacy['master']['categories']) { return new WP_Error('METADATA_PUBLIC_COPY'); }
+        }
         $id = $r['before']['attachment_id']; $src = wp_get_attachment_image_src($id, 'full');
         $path = WP_Seed_Pixel_Master_Adapter::path($r['before']);
         $info = @getimagesize($path);
@@ -273,6 +296,10 @@ final class WP_Seed_Pixel_Master_Storage {
     }
 
     public static function restore(array $item) {
+        if (WP_Seed_Pixel_Metadata_Graph_Transaction::is_item($item)) {
+            $r = WP_Seed_Pixel_Metadata_Graph_Transaction::restore($item); if (is_wp_error($r)) { return $r; }
+            return WP_Seed_Pixel_Metadata_Graph_Transaction::cleanup($item, $r, true);
+        }
         if (!WP_Seed_Pixel_Authority::valid(0) || !WP_Seed_Pixel_Authority::valid((int) $item['attachment_id'])) { return new WP_Error('LOCKED'); }
         $dir = self::directory($item); if (is_wp_error($dir)) { return $dir; }
         $r = self::load($dir, $item); if (is_wp_error($r) || !$r || !$r['candidate']) { return new WP_Error('EVIDENCE_INVALID'); }

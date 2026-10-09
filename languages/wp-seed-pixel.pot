@@ -45,6 +45,9 @@ msgstr ""
 msgid "A preset requires one to four derivatives."
 msgstr ""
 
+msgid "A public version changed after analysis. Pixel stopped without applying the planned changes. Analyze the image again."
+msgstr ""
+
 msgid "A referenced file cannot be read"
 msgstr ""
 
@@ -129,6 +132,9 @@ msgstr ""
 msgid "Analyze library"
 msgstr ""
 
+msgid "Analyze metadata"
+msgstr ""
+
 msgid "Analyze only"
 msgstr ""
 
@@ -141,6 +147,24 @@ msgstr ""
 msgid "Analyzing"
 msgstr ""
 
+msgid "Anonymization in progress"
+msgstr ""
+
+msgid "Anonymization was not performed because there is not enough storage for the recovery originals. The uploaded image is unchanged."
+msgstr ""
+
+msgid "Anonymize"
+msgstr ""
+
+msgid "Anonymize this image"
+msgstr ""
+
+msgid "Anonymized"
+msgstr ""
+
+msgid "Anonymized version"
+msgstr ""
+
 msgid "Another image optimizer is active. Both may process the same images. Review their automatic settings; nothing has been disabled."
 msgstr ""
 
@@ -151,6 +175,9 @@ msgid "Another operation owns the lock."
 msgstr ""
 
 msgid "Another optimizer conflicts with this operation."
+msgstr ""
+
+msgid "Another public copy still contains metadata. This image has not been changed."
 msgstr ""
 
 msgid "Another worker owns this operation. Try later."
@@ -168,7 +195,13 @@ msgstr ""
 msgid "Attachment not found."
 msgstr ""
 
+msgid "Author or contact"
+msgstr ""
+
 msgid "Automatic optimization"
+msgstr ""
+
+msgid "Automatically anonymize new images"
 msgstr ""
 
 msgid "Available"
@@ -192,6 +225,18 @@ msgstr ""
 msgid "Blocked"
 msgstr ""
 
+msgid "Blocked: orientation"
+msgstr ""
+
+msgid "Blocked: provenance"
+msgstr ""
+
+msgid "Blocked: public copy"
+msgstr ""
+
+msgid "Blocked: unknown metadata"
+msgstr ""
+
 msgid "Build plan from latest analysis"
 msgstr ""
 
@@ -199,6 +244,9 @@ msgid "Bulk storage saver"
 msgstr ""
 
 msgid "CMYK and non-RGB JPEGs are not supported."
+msgstr ""
+
+msgid "Camera or device"
 msgstr ""
 
 msgid "Cancel"
@@ -217,6 +265,9 @@ msgid "Cannot create a private staging directory."
 msgstr ""
 
 msgid "Cannot establish the owned staging root."
+msgstr ""
+
+msgid "Capture date"
 msgstr ""
 
 msgid "Ceiling in decimal MB"
@@ -241,6 +292,12 @@ msgid "Color or orientation needs review"
 msgstr ""
 
 msgid "Color profile is checked before processing, not inferred from the file extension."
+msgstr ""
+
+msgid "Color profiles are kept and may contain descriptive information. This is not a guarantee of complete anonymity."
+msgstr ""
+
+msgid "Comments"
 msgstr ""
 
 msgid "Committed generation requires manual integrity review."
@@ -334,6 +391,9 @@ msgid "Derivative integrity failed."
 msgstr ""
 
 msgid "Derivative not available."
+msgstr ""
+
+msgid "Description or keywords"
 msgstr ""
 
 msgid "Diagnostics and advanced tools"
@@ -435,6 +495,9 @@ msgstr ""
 msgid "Format: %s"
 msgstr ""
 
+msgid "GPS location"
+msgstr ""
+
 msgid "Generate native WordPress metadata before optimization."
 msgstr ""
 
@@ -448,6 +511,9 @@ msgid "Hosting quota is unknown."
 msgstr ""
 
 msgid "I accept the JPEG and understand that deleting the original removes restoration."
+msgstr ""
+
+msgid "I choose to anonymize this image and keep its original for restoration."
 msgstr ""
 
 msgid "I compared the images and choose to convert this image to JPEG."
@@ -466,6 +532,9 @@ msgid "I understand this version cannot be restored by Pixel after permanent del
 msgstr ""
 
 msgid "ICC conversion stopped safely. No profile stripping fallback was used."
+msgstr ""
+
+msgid "IPTC descriptions or contact"
 msgstr ""
 
 msgid "Image ID"
@@ -502,6 +571,9 @@ msgid "Imagick with LittleCMS is required; no uncalibrated fallback is allowed."
 msgstr ""
 
 msgid "Incomplete ICC chunk sequence."
+msgstr ""
+
+msgid "Information necessary to display the image correctly is preserved."
 msgstr ""
 
 msgid "Insufficient disk space."
@@ -588,7 +660,13 @@ msgstr ""
 msgid "Jobs"
 msgstr ""
 
+msgid "Keep"
+msgstr ""
+
 msgid "Keep PNG and discard comparison"
+msgstr ""
+
+msgid "Kept"
 msgstr ""
 
 msgid "Kept without changes"
@@ -601,6 +679,9 @@ msgid "Large file graph: inventory is partial"
 msgstr ""
 
 msgid "Large web view"
+msgstr ""
+
+msgid "Local candidate: replacement and restoration certification is still required. No image has been changed."
 msgstr ""
 
 msgid "Local image optimization and verified recovery."
@@ -675,6 +756,12 @@ msgstr ""
 msgid "Media"
 msgstr ""
 
+msgid "Metadata"
+msgstr ""
+
+msgid "Metadata removed: %d bytes. This is not image compression."
+msgstr ""
+
 msgid "Metadata/orientation sanitization required; byte increase disclosed."
 msgstr ""
 
@@ -738,6 +825,9 @@ msgstr ""
 msgid "No new uploads tracked."
 msgstr ""
 
+msgid "No personal metadata detected"
+msgstr ""
+
 msgid "No processing started. Select images in the Media Library or confirm the whole library below."
 msgstr ""
 
@@ -751,6 +841,12 @@ msgid "No sanitized candidate meets the quality floor. MASTER and existing mappi
 msgstr ""
 
 msgid "No simulation yet"
+msgstr ""
+
+msgid "No supported private metadata remains in the public files checked."
+msgstr ""
+
+msgid "No supported private metadata was detected. The image is unchanged."
 msgstr ""
 
 msgid "No useful JPEG saving. The PNG is unchanged."
@@ -855,6 +951,9 @@ msgstr ""
 msgid "Original retained for restoration. Its space has not yet been freed."
 msgstr ""
 
+msgid "Originals are retained for restoration. This uses private storage; no automatic purge is performed."
+msgstr ""
+
 msgid "PNG guidance: 128 decimal MB covers the maximum temporary estimate for the supported PNG limits. This is a suggestion, not a preselected value. JPEG images may need more."
 msgstr ""
 
@@ -906,6 +1005,9 @@ msgstr ""
 msgid "Permission denied."
 msgstr ""
 
+msgid "Personal metadata detected"
+msgstr ""
+
 msgid "Photo album (compatibility)"
 msgstr ""
 
@@ -919,6 +1021,9 @@ msgid "Pixel - Simulation"
 msgstr ""
 
 msgid "Pixel - Storage saver"
+msgstr ""
+
+msgid "Pixel cannot certify the current metadata state. Review the recovery information before resuming."
 msgstr ""
 
 msgid "Pixel could not confirm that this image can be optimized safely. The original is unchanged; review the technical details before retrying."
@@ -940,6 +1045,9 @@ msgid "Pixel sections"
 msgstr ""
 
 msgid "Pixel storage and new uploads"
+msgstr ""
+
+msgid "Pixel will remove:"
 msgstr ""
 
 msgid "Plan"
@@ -994,6 +1102,9 @@ msgid "Previous Pixel versions: review references"
 msgstr ""
 
 msgid "Previous operational image"
+msgstr ""
+
+msgid "Privacy runs first. Other processing may require restoring the retained original before starting."
 msgstr ""
 
 msgid "Private engine disabled or incompatible storage."
@@ -1137,6 +1248,12 @@ msgstr ""
 msgid "Remove owned web versions and settings when uninstalling. Originals are always kept."
 msgstr ""
 
+msgid "Removes information embedded in the file that may reveal location, device, author or capture date."
+msgstr ""
+
+msgid "Removes personal metadata from newly uploaded images when Pixel can preserve their appearance. Existing images are not processed."
+msgstr ""
+
 msgid "Replace eligible JPEG and PNG images"
 msgstr ""
 
@@ -1233,6 +1350,9 @@ msgstr ""
 msgid "Return to WP Seed Pixel settings"
 msgstr ""
 
+msgid "Review required"
+msgstr ""
+
 msgid "Review the invalid site storage limit."
 msgstr ""
 
@@ -1321,6 +1441,9 @@ msgid "Single-image replacement"
 msgstr ""
 
 msgid "Skipped"
+msgstr ""
+
+msgid "Software history"
 msgstr ""
 
 msgid "Source already bounded, light and metadata-safe."
@@ -1485,6 +1608,9 @@ msgstr ""
 msgid "The recovery location is no longer provably private. Optimization is blocked."
 msgstr ""
 
+msgid "The recovery original still contains its metadata. Restoring it restores those metadata."
+msgstr ""
+
 msgid "The request was interrupted."
 msgstr ""
 
@@ -1542,7 +1668,13 @@ msgstr ""
 msgid "This host explicitly disabled recovery processing. Pixel will not override that choice."
 msgstr ""
 
+msgid "This image contains provenance or authenticity information. It will not be removed automatically."
+msgstr ""
+
 msgid "This image contains unsupported color or metadata information. It is preserved."
+msgstr ""
+
+msgid "This image requires orientation information. Pixel cannot yet anonymize it without changing the image."
 msgstr ""
 
 msgid "This image was preserved because its format or image profile is not supported, or processing was excluded."
@@ -1681,6 +1813,9 @@ msgid "WordPress preserved originals"
 msgstr ""
 
 msgid "WordPress sizes"
+msgstr ""
+
+msgid "XMP descriptions or contact"
 msgstr ""
 
 msgid "Your original is kept."

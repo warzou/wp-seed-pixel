@@ -17,6 +17,11 @@ scenarios. Inspect actual screenshots; DOM checks alone are not visual QA.
 Never commit credentials, databases, licensed dependencies, private media,
 generated reports or browser profiles. Fixtures must be generated and redistributable.
 
+For authorized real pilots, capture exact before/after target attachment posts,
+postmeta and relevant Pixel authoritative rows privately. Aggregate hashes alone
+cannot attribute a later SQL divergence. See
+[real pilot SQL evidence](docs/REAL-PILOT-SQL-EVIDENCE.md).
+
 ## Distribution
 
 Run `python tools/package.py` from the repository root. The build uses an explicit

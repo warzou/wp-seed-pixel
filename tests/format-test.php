@@ -71,8 +71,10 @@ $srcset = wp_get_attachment_image_srcset($id, 'large'); fmt_ok($srcset && !str_c
 fmt_ok(get_post_meta($id, '_wp_attachment_image_alt', true) === 'Synthetic alt preserved' && (int) get_post_meta($id, '_synthetic_album', true) === 2023, 'ID alt membership stable');
 foreach ($before['files'] as $relative => $expected) { fmt_ok(hash_file('sha256', wp_upload_dir()['basedir'] . '/' . $relative) === $expected['sha256'], 'old URL exact ' . basename($relative)); }
 $duplicate = WP_Seed_Pixel_Format_Conversion::convert($id, $analysis['generation'], true, true); fmt_ok($duplicate['item_id'] === $converted['item_id'], 'duplicate conversion idempotent');
-$blocked = WP_Seed_Pixel_Format_Conversion::purge($id, $analysis['generation'], true, true);
-fmt_ok(is_wp_error($blocked) && $blocked->get_error_code() === 'OLD_URL_REFERENCED', 'known URL blocks purge');
+if (getenv('PIXEL_NO_PERMANENT_PURGE') !== '1') {
+    $blocked = WP_Seed_Pixel_Format_Conversion::purge($id, $analysis['generation'], true, true);
+    fmt_ok(is_wp_error($blocked) && $blocked->get_error_code() === 'OLD_URL_REFERENCED', 'known URL blocks purge');
+}
 $restored = WP_Seed_Pixel_Format_Conversion::restore($id, $analysis['generation']); fmt_ok($restored, 'restore');
 fmt_ok(WP_Seed_Pixel_Master_Adapter::snapshot($id) === $before, 'complete original state restored');
 fmt_ok($restored['recovery_bytes'] === 0 && $restored['temporary_bytes'] === 0, 'restore unnecessary copies cleaned');
@@ -81,11 +83,15 @@ fmt_ok(!str_contains((string) $panel, 'pixel-format-result') && !str_contains((s
 wp_delete_post($page, true);
 $next = WP_Seed_Pixel_Format_Conversion::analyze($id); fmt_ok($next, 'new analysis after restore');
 $next = WP_Seed_Pixel_Format_Conversion::convert($id, $next['generation'], true, true); fmt_ok($next, 'second conversion');
+if (getenv('PIXEL_NO_PERMANENT_PURGE') !== '1') {
 $purged = WP_Seed_Pixel_Format_Conversion::purge($id, $next['generation'], true, true); fmt_ok($purged, 'explicit final purge');
 fmt_ok($purged['recovery_bytes'] === 0 && $purged['compatibility_bytes'] === 0 && $purged['freed_bytes'] > 0 && !$purged['restore_available'], 'purge accounting and restore unavailable');
 fmt_ok(is_wp_error(WP_Seed_Pixel_Format_Conversion::restore($id, $next['generation'])), 'purge removes rollback');
 $panel = WP_Seed_Pixel_Format_Admin::panel($id);
 fmt_ok(str_contains($panel, 'pixel-format-result') && !str_contains($panel, 'data-operation="restore"') && !str_contains($panel, esc_html__('Original retained for restoration', 'wp-seed-pixel')), 'purged comparison truthful with no restore or retained claim');
+} else {
+    fmt_ok(WP_Seed_Pixel_Format_Conversion::restore($id, $next['generation']), 'purge excluded; exact restore instead');
+}
 $discard_id = fmt_upload($fixtures . '/photo.png'); $d = WP_Seed_Pixel_Format_Conversion::analyze($discard_id); fmt_ok($d, 'discard analysis');
 $discarded = WP_Seed_Pixel_Format_Conversion::discard($discard_id, $d['generation']); fmt_ok($discarded, 'discard');
 fmt_ok($discarded['phase'] === 'discarded' && $discarded['recovery_bytes'] === 0 && $discarded['temporary_bytes'] === 0 && get_post_mime_type($discard_id) === 'image/png', 'discard no source mutation');

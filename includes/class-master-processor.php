@@ -34,6 +34,7 @@ final class WP_Seed_Pixel_Master_Processor {
     }
 
     public static function create($source, $candidate, array $policy, $quality = 98) {
+        if (($policy['intent']['metadata'] ?? '') === 'anonymize') { return WP_Seed_Pixel_Metadata::create($source, $candidate); }
         $type = @getimagesize($source);
         if ($type && $type[2] === IMAGETYPE_PNG) { return WP_Seed_Pixel_PNG_Processor::create($source, $candidate, $policy); }
         $info = WP_Seed_Pixel_Files::jpeg($source);

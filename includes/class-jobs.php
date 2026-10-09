@@ -60,13 +60,14 @@ final class WP_Seed_Pixel_Jobs {
     private static function other_claim(array $item, $ignore_queued) {
         global $wpdb;
         $table = WP_Seed_Pixel_Job_Store::table('items');
-        $terminal = "'retained','purged','rolled_back','cancelled','skipped','failed'";
+        $terminal = "'purged','rolled_back','cancelled','skipped','failed'";
         if ($ignore_queued) { $terminal .= ",'queued'"; }
         $exclude = $ignore_queued ? 'job_id' : 'id';
         $rows = $wpdb->get_results($wpdb->prepare("SELECT * FROM $table WHERE attachment_id=%d AND kind='operation' AND $exclude<>%d AND stage NOT IN ($terminal) ORDER BY id LIMIT 101",
             $item['attachment_id'], $item[$exclude]), ARRAY_A);
         if (!is_array($rows) || $wpdb->last_error !== '' || count($rows) > 100) { return true; }
         foreach ($rows as $other) {
+            if ($other['stage'] === 'retained' && !WP_Seed_Pixel_Metadata_Graph_Transaction::is_item($other)) { continue; }
             if ($ignore_queued && $other['stage'] === 'needs_review' && !in_array($other['action'], array('replace', 'retire'), true)) { continue; }
             // A rejected plan with no snapshot or execution evidence never reserved the image.
             if (!self::unstarted_review($other)) { return true; }
@@ -105,15 +106,20 @@ final class WP_Seed_Pixel_Jobs {
     }
 
     /** Explicit single-item local development path. Not an admin/cron/HTTP action. */
-    public static function replace_one($attachment_id, array $input, $capacity_bytes, $future_generation = '') {
+    public static function replace_one($attachment_id, array $input, $capacity_bytes, $future_generation = '', $metadata_approval = '') {
         global $wpdb;
         if (!self::allowed() || !WP_Seed_Pixel_Master_Storage::enabled()) { return new WP_Error('PERMISSION_DENIED'); }
         $policy = WP_Seed_Pixel_Policy::normalize($input);
+        if (!is_wp_error($policy) && $policy['intent']['metadata'] === 'anonymize' && !WP_Seed_Pixel_Metadata_Graph_Transaction::enabled()) { return new WP_Error('METADATA_CERTIFICATION_REQUIRED'); }
+        if (!is_wp_error($policy) && $policy['intent']['metadata'] === 'anonymize' && $future_generation !== '') { return new WP_Error('POLICY_INVALID'); }
         if (is_wp_error($policy) || $policy['intent']['master'] !== 'replace_verified' || $policy['intent']['original'] !== 'keep'
             || $policy['intent']['purge'] || $policy['intent']['recovery'] !== 'local_quarantine' || !is_int($capacity_bytes) || $capacity_bytes <= 0) { return new WP_Error('POLICY_INVALID'); }
         $schema = WP_Seed_Pixel_Job_Store::install(); if (is_wp_error($schema)) { return $schema; }
         $lock = WP_Seed_Pixel_Files::lock(0); if (is_wp_error($lock)) { return new WP_Error('LOCKED'); }
+        $image_lock = null;
         try {
+            $image_lock = WP_Seed_Pixel_Files::lock((int) $attachment_id); if (is_wp_error($image_lock)) { $image_lock = null; return new WP_Error('LOCKED'); }
+            if (self::other_claim(array('id' => 0, 'job_id' => 0, 'attachment_id' => $attachment_id), false)) { return new WP_Error('CLAIM_CONFLICT'); }
             $enrollment = null;
             if ($future_generation !== '') {
                 $settings = WP_Seed_Pixel_Future_Uploads::settings();
@@ -124,10 +130,24 @@ final class WP_Seed_Pixel_Jobs {
                 if (!empty($enrollment['job_id'])) { return self::status((int) $enrollment['job_id']); }
             }
             $before = WP_Seed_Pixel_Master_Adapter::snapshot((int) $attachment_id); if (is_wp_error($before)) { return $before; }
+            $privacy = null;
+            if ($policy['intent']['metadata'] === 'anonymize') {
+                $conversion = WP_Seed_Pixel_Format_Conversion::record((int) $attachment_id);
+                if (is_wp_error($conversion)) { return $conversion; }
+                if ($conversion && !in_array($conversion['record']['phase'], array('restored', 'discarded'), true)) { return new WP_Error('METADATA_REVIEW'); }
+                $retained = $wpdb->get_var($wpdb->prepare('SELECT id FROM ' . WP_Seed_Pixel_Job_Store::table('items') . " WHERE attachment_id=%d AND kind='operation' AND stage='retained' LIMIT 1", (int) $attachment_id));
+                if ($wpdb->last_error) { return new WP_Error('STORE_FAILED'); }
+                if ($retained) { return new WP_Error('CLAIM_CONFLICT'); }
+                $privacy = WP_Seed_Pixel_Metadata_Public_Graph::analyze($before); if (is_wp_error($privacy)) { return $privacy; }
+                if (!is_string($metadata_approval) || !hash_equals($privacy['signature'], $metadata_approval)) { return new WP_Error('SOURCE_CHANGED'); }
+                if (!$privacy['master']['categories']) { return new WP_Error('METADATA_ALREADY_CLEAN'); }
+            }
             $policy['capability'] = WP_Seed_Pixel_Master_Storage::ENGINE; $policy['capacity_bytes'] = $capacity_bytes;
             if ($enrollment !== null) { $policy['future_upload_generation'] = $future_generation; }
             $policy['effective'] = array('simulation_only' => false, 'replace' => true, 'retire' => false, 'purge' => false);
-            $data = array('before' => $before, 'reason' => '', 'planned_bytes' => $before['bytes']); $json = wp_json_encode($data);
+            $data = array('before' => $before, 'reason' => '', 'planned_bytes' => $before['bytes']);
+            if ($privacy) { $data['metadata_graph'] = $privacy['plan']; $data['operation_type'] = 'metadata_anonymization'; }
+            $json = wp_json_encode($data);
             if ($wpdb->query('START TRANSACTION') === false) { return new WP_Error('STORE_FAILED'); }
             $id = WP_Seed_Pixel_Job_Store::insert_job('replace', 0, $policy, 1);
             if (is_wp_error($id)) { $wpdb->query('ROLLBACK'); return $id; }
@@ -141,7 +161,7 @@ final class WP_Seed_Pixel_Jobs {
             if (!$ok || !WP_Seed_Pixel_Authority::valid(0) || !$wpdb->update(WP_Seed_Pixel_Job_Store::table('jobs'), array('engine' => WP_Seed_Pixel_Master_Storage::ENGINE, 'status' => 'running'), array('id' => $id)) || $wpdb->query('COMMIT') === false) { $wpdb->query('ROLLBACK'); return new WP_Error('STORE_FAILED'); }
             if ($enrollment !== null) { wp_cache_delete($attachment_id, 'post_meta'); }
             return self::status($id);
-        } finally { WP_Seed_Pixel_Files::unlock($lock); }
+        } finally { if ($image_lock) { WP_Seed_Pixel_Files::unlock($image_lock); } WP_Seed_Pixel_Files::unlock($lock); }
     }
 
     public static function retire_original($attachment_id, $capacity_bytes, $acknowledge_original_url = false) {
@@ -240,6 +260,7 @@ final class WP_Seed_Pixel_Jobs {
 
     /** Explicit disposable-only authorization; existing plans never gain this capability. */
     public static function bulk_plan($scan_id, array $input, $capacity_bytes, $operation = 'replace', $lot_size = 1, $original_url_acknowledged = false, $selected_ids = null) {
+        if (($input['metadata'] ?? '') === 'anonymize') { return new WP_Error('POLICY_INVALID'); }
         global $wpdb;
         if (!self::allowed() || !WP_Seed_Pixel_Quarantine::enabled()) { return new WP_Error('PERMISSION_DENIED'); }
         if (!in_array($operation, array('replace', 'retire'), true) || !is_int($capacity_bytes) || $capacity_bytes <= 0
@@ -448,7 +469,9 @@ final class WP_Seed_Pixel_Jobs {
             if ($data['analysis_signature'] !== WP_Seed_Pixel_Policy::signature($fresh) || $data['source_sha256'] !== self::source_hash((int) $item['attachment_id'])) { return self::fail($job, $item, $token, 'SOURCE_CHANGED'); }
             }
             $executor = $job['kind'] === 'retire' ? new WP_Seed_Pixel_Original_Executor() : ($real ? new WP_Seed_Pixel_Master_Executor() : ($executor ?: new WP_Seed_Pixel_Simulated_Executor()));
-            if ($item['stage'] !== 'queued') {
+            $graph_started = WP_Seed_Pixel_Metadata_Graph_Transaction::is_item($item) && defined('WP_SEED_PIXEL_RECOVERY_ROOT')
+                && file_exists(WP_SEED_PIXEL_RECOVERY_ROOT . '/m3-' . (int) $item['job_id'] . '-' . (int) $item['id'] . '/journal.json');
+            if ($item['stage'] !== 'queued' || $graph_started) {
                 if ($item['stage'] === 'recovery_required') {
                     if ((int) $item['attempts'] >= 3) {
                         $blocked = WP_Seed_Pixel_Job_Store::transition($item, $token, 'needs_review', 'RETRY_EXHAUSTED');
@@ -459,6 +482,12 @@ final class WP_Seed_Pixel_Jobs {
                 }
                 $reconciled = $executor->reconcile($item, $policy);
                 if (is_wp_error($reconciled)) { return self::fail($job, $item, $token, $reconciled->get_error_code()); }
+                if ($reconciled === 'rolled_back' && WP_Seed_Pixel_Metadata_Graph_Transaction::is_item($item)) {
+                    if ($item['stage'] !== 'recovery_required') { $item = WP_Seed_Pixel_Job_Store::transition($item, $token, 'recovery_required'); }
+                    if (is_wp_error($item)) { return self::systemic($id, 'STORE_FAILED'); }
+                    $item = WP_Seed_Pixel_Job_Store::transition($item, $token, 'rolled_back');
+                    return is_wp_error($item) ? self::systemic($id, 'STORE_FAILED') : self::finish($id);
+                }
                 if (!in_array($reconciled, self::FLOW, true)) { return self::fail($job, $item, $token, 'EVIDENCE_INVALID'); }
                 if ($reconciled !== $item['stage']) {
                     $item = WP_Seed_Pixel_Job_Store::transition($item, $token, $reconciled);
@@ -488,7 +517,7 @@ final class WP_Seed_Pixel_Jobs {
                 if ($real && $next === 'retained' && WP_Seed_Pixel_Quarantine::enabled()) {
                     $dir = WP_Seed_Pixel_Master_Storage::directory($item, false);
                     $record = is_wp_error($dir) ? null : WP_Seed_Pixel_Master_Storage::load($dir, $item);
-                    if (isset($policy['bulk']) || isset($policy['future_upload_generation'])) {
+                    if (isset($policy['bulk']) || isset($policy['future_upload_generation']) || ($policy['intent']['metadata'] ?? '') === 'anonymize') {
                         if (!is_array($record)) { return self::fail($job, $item, $token, 'EVIDENCE_INVALID'); }
                         $record = WP_Seed_Pixel_Quarantine::retain($item, $record);
                         if (is_wp_error($record)) { return self::fail($job, $item, $token, $record->get_error_code()); }
@@ -556,6 +585,7 @@ final class WP_Seed_Pixel_Jobs {
         global $wpdb;
         $known = array('NO_BENEFIT', 'SOURCE_MISSING', 'SOURCE_CHANGED', 'SHARED_PATH', 'METADATA_CONFLICT', 'UNSUPPORTED_FORMAT', 'UNSUPPORTED_STORAGE', 'LOW_DISK', 'QUOTA_UNKNOWN', 'BACKEND_UNAVAILABLE', 'ICC_UNSAFE', 'CANDIDATE_INVALID', 'BACKUP_FAILED', 'SWAP_FAILED', 'VERIFY_FAILED', 'PURGE_FAILED', 'LOCKED', 'CONFLICTING_OPTIMIZER', 'REQUEST_INTERRUPTED', 'STORE_FAILED', 'EVIDENCE_INVALID', 'PERMISSION_DENIED', 'NEEDS_REVIEW', 'DIMENSION_CONFLICT');
         $known[] = 'CEILING_EXCEEDED';
+        $known = array_merge($known, array('METADATA_GRAPH_CHANGED', 'METADATA_PUBLIC_COPY', 'METADATA_ORIENTATION', 'METADATA_PROVENANCE', 'METADATA_REVIEW', 'METADATA_INVALID', 'RECOVERY_REQUIRED'));
         if (!in_array($code, $known, true)) { $code = 'EVIDENCE_INVALID'; }
         $class = WP_Seed_Pixel_Job_Store::error_class($code);
         $stage = in_array($class, array('retryable', 'systemic', 'conflict'), true) ? 'failed' : 'needs_review';

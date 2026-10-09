@@ -1,8 +1,10 @@
 <?php
 // Uses the real WordPress helpers, but intercepts transport for bounded failure injection.
 $root = getenv('PIXEL_UPDATER_LAB');
-if ($root !== '/home/warzy/.cache/wp-seed-pixel-051-updater-lab') { throw new RuntimeException('Owned local lab required'); }
-require $root . '/project/.runtime/wordpress/wp-load.php';
+$metadata_lab = $root === '/home/warzy/.cache/wp-seed-pixel-060-metadata-lab';
+if (!$metadata_lab && $root !== '/home/warzy/.cache/wp-seed-pixel-051-updater-lab') { throw new RuntimeException('Owned local lab required'); }
+if ($metadata_lab) { define('WP_INSTALLING',true); }
+require $root . ($metadata_lab ? '/project/wp-seed-pixel-m3-environment' : '/project') . '/.runtime/wordpress/wp-load.php';
 $source = getenv('PIXEL_UPDATER_SOURCE');
 require $source . '/includes/class-updater.php';
 define('WP_SEED_PIXEL_VERSION', '0.5.0');

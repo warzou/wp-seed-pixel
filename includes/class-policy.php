@@ -15,11 +15,12 @@ final class WP_Seed_Pixel_Policy {
             'dimensions' => array('keep', 'max_edge'), 'format' => array('keep'),
             'master' => array('keep', 'replace_verified'), 'original' => array('keep', 'retire_verified'),
             'recovery' => array('local_quarantine', 'external_verified', 'irreversible'),
-            'metadata' => array('preserve_required'), 'derivatives' => array('strip_sensitive', 'preserve'));
+            'metadata' => array('preserve_required', 'anonymize'), 'derivatives' => array('strip_sensitive', 'preserve'));
         foreach ($choices as $key => $values) { if (!in_array($p[$key], $values, true)) { return new WP_Error('POLICY_INVALID'); } }
         if (!is_int($p['max_edge']) || !is_bool($p['purge']) || ($p['dimensions'] === 'keep' && $p['max_edge'] !== 0)
             || ($p['dimensions'] === 'max_edge' && ($p['max_edge'] < 256 || $p['max_edge'] > 16000))
             || ($p['purge'] && $p['recovery'] === 'local_quarantine')) { return new WP_Error('POLICY_INVALID'); }
+        if ($p['metadata'] === 'anonymize' && ($p['dimensions'] !== 'keep' || $p['original'] !== 'keep' || $p['purge'])) { return new WP_Error('POLICY_INVALID'); }
         return array('version' => self::VERSION, 'intent' => $p,
             'effective' => array('simulation_only' => true, 'replace' => false, 'retire' => false, 'purge' => false));
     }

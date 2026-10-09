@@ -1,5 +1,51 @@
 # Changelog
 
+## 0.6.0 - 2026-10-09
+
+- Remove recognized privacy metadata across the complete public JPEG/PNG graph
+  without re-encoding; preserve pixels, color, transparency and editorial fields.
+- Anonymize safe new native uploads automatically by default, preserving explicit
+  OFF and leaving existing media untouched. Unsafe images remain valid for review.
+- Recognize current anonymized state, hide redundant actions and retain exact
+  private originals for whole-graph restoration. No automatic permanent purge.
+- Refuse unsupported orientation, provenance, ambiguous metadata and insufficient
+  recovery storage without weakening existing transaction and authority guards.
+
+## 0.6.0-private.4 - local status-aware upload candidate 2026-10-08
+
+- Derive metadata actions from fresh public graph identities and retained recovery.
+  Hide redundant actions on clean/anonymized images; exact restore refreshes state.
+- Default new native JPEG/PNG upload privacy to ON for fresh installs/upgrades,
+  preserving explicit OFF. Never enroll existing images or CLI/import/sideloads.
+- Complete privacy synchronously after native graph persistence, including core's
+  identical-update no-op, through existing Jobs and SQL authority. Retain exact
+  private originals; no re-encoding, implicit format conversion or automatic purge.
+- Preserve safe review on unsupported structures and insufficient storage. Privacy
+  takes priority over future optimization while independent recovery is retained.
+- Local candidate only; no DEV deployment or public distribution authorized.
+
+## 0.6.0-private.2 - local transaction candidate 2026-10-08
+
+- Use the existing SQL authority, immutable jobs, atomic master replacement and
+  private quarantine for explicit metadata anonymization. Reject duplicate
+  active admissions; retain exact originals and restore in the same lifecycle.
+- Record removed categories/bytes and public-versus-recovery privacy state;
+  refresh the existing restore controls without introducing another writer.
+- Allow pipeline B: verified anonymized PNG followed by separately authorized
+  PNG-to-JPEG conversion, with reverse-order exact restoration.
+- Local-only certification candidate. No bulk/future-upload anonymization,
+  new dependency, DEV deployment, permanent original deletion or stable feed change.
+
+## 0.6.0-private.1 - local candidate 2026-10-07
+
+- Deterministic bounded JPEG/PNG metadata classification and filtering without
+  image encoding. Orientation, color, provenance and public-copy gates fail closed.
+- Explicit category-only analysis in the existing attachment panel; Conserver
+  remains default. No automatic/bulk anonymization or new runtime dependency.
+- Transaction integration is prepared but server-gated pending real WordPress
+  replacement/recovery/restore and complete regression certification. PARTIAL,
+  not a release or deployment candidate. Official 0.5.1 stable feed unchanged.
+
 ## 0.5.1 - 2026-10-07
 
 - Built-in repository-bound GitHub stable manifest; explicit HTTPS private

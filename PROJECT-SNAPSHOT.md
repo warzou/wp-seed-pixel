@@ -1,5 +1,76 @@
 # WP Seed Pixel
 
+## 2026-10-08 - private.3 local runtime certification complete
+
+- Local candidate 0.6.0-private.3: READY FOR REAL DEV PILOT, not deployed.
+- Public graph transaction now loaded by the entry point and integrated with
+  existing Jobs, SQL authority/CAS, Adapter, Executor, Quarantine and attachment UI.
+- Multi-file recovery uses one existing item/journal, not a second orchestration
+  model. Independent metadata/optimization/conversion recoveries are serialized:
+  restore the current domain exactly before starting the next operation.
+- Pre-commit process death restores originals; committed graphs reconcile to the
+  filtered result. Foreign changes remain reserved for review without overwrite.
+- Targeted native proofs: graph118, admission502, serialized pipeline107,
+  review/false-conflict25, SQL authority31, process-death172 (13 SIGKILL points).
+  These counts are not, by themselves, two complete final cycles.
+- Two complete frozen-runtime regressions now pass 2244 assertions each,
+  separately from PHP8.4.23 lint47/47 and JavaScript syntax. Each includes real
+  WordPress/MariaDB, all 13 SIGKILL points, 32 isolated native attachment UI
+  checks, parser/planner/pixel comparisons and the 2008-media legacy library.
+  Native clean installation6/6 and exact-state 0.5.1 update5/5 subsequently PASS.
+- ZIP: 66 runtime files, 246254 bytes, SHA-256
+  dbab5d43439841ec41f43641c78ca9dec71a6f8ac40854e439cde287dff1b71d.
+  Report: reports/metadata-private3-runtime-20261008/REPORT.md.
+  Owned local lab/services/browser session and synthetic fixtures removed.
+- The stronger single-image admission rejects concurrent planning; existing
+  historical concurrent jobs still fail closed before destructive execution.
+- No DEV/production connection, media6594/6354 access, AskPass, permanent purge,
+  stable-manifest mutation, commit, push, tag or release.
+
+## 2026-10-08 - local metadata private.2 transaction certification
+
+- Version/build 0.6.0-private.2. Existing SQL authority, immutable jobs,
+  exact escrow, atomic master swap, quarantine and restore reused.
+- Explicit single-image admission only; duplicate active requests blocked.
+  Public/recovery privacy distinction stored in the existing witness.
+- Real disposable WordPress/MariaDB and synthetic media: exact restoration,
+  re-anonymization, SIGKILL recovery, public graph, malformed/no-op admission,
+  JPEG/PNG ordering and PNG-to-JPEG pipeline B (reverse-order restoration).
+- Two complete final cycles on the exact frozen runtime: 1653/1653 each,
+  plus PHP8.4.23 runtime lint45/45, JS syntax and package identity64/64.
+  Real WordPress7.1.2/MariaDB11.8.6/PHP8.5.4, native updater, storage/jobs,
+  crash recovery and isolated authenticated editor included. Active critical0,
+  major0. Local readiness only: READY FOR REAL DEV PILOT.
+- Repeated Windows runs exposed read-driven atime changes falsely reported as
+  SOURCE_CHANGED. Fixed fresh identity comparison excludes only atime; ten
+  parser repeats and both complete final cycles PASS. Superseded candidate and
+  interrupted harness attempts are excluded from these final cycle counts.
+- Final runtime ZIP: 64 files, 236583 bytes, SHA-256
+  0aeea15ae4bcfebc0bd8a929413f2e2a5b1982a8cba5278bd49af0e24344b888.
+  Evidence: ignored reports/metadata-private2-20261008/REPORT.md.
+  Lab services, ephemeral sessions and owned temporary fixtures removed.
+  Prior private.1 archive/report remain unchanged.
+- No DEV/production, attachment 6354, AskPass, permanent original deletion,
+  stable-feed change, commit, push, tag or release.
+
+## 2026-10-07 - local metadata private.1 implementation (PARTIAL)
+
+- Version/build 0.6.0-private.1, based on official 0.5.1. Local-only candidate;
+  no commit, push, tag, release, site access or stable manifest change.
+- Bounded JPEG marker/TIFF/IPTC/XMP and PNG chunk/text/eXIf classifier. Exact
+  image-critical bytes and color chunks are retained; GD is used to validate
+  decoding, never to encode anonymization. No new runtime dependency.
+- Orientation other than 1, provenance and unclassified structures refuse.
+  Dirty public derivatives/compatibility copies block before replacement.
+- Existing explicit replacement engine has integration hooks, but its metadata
+  write admission remains closed (WRITE_CERTIFIED=false). Real WordPress
+  atomic switch, crash/recovery/restore and complete regression gates are not
+  certified by parser or synthetic UI tests. No READY claim.
+- Default Conserver; no bulk/upload anonymization. Analysis shows categories,
+  not private values. Private recovery retains metadata and must be disclosed.
+- Reproducible tests: tests/metadata*. Evidence and local runtime-only ZIP are
+  ignored in reports/metadata-private1-20261007. See docs/METADATA-PRIVACY.md.
+
 ## 2026-10-07 - official 0.5.1 release gate
 
 - Owner authorizes source commit, annotated tag, official GitHub release,
@@ -818,3 +889,79 @@ commit, push, tag or public release.
 - Local release-preparation commit only after final hygiene gates. Push/tag/public
   release/endpoint publication/consumer deployment require separate authorization.
   Evidence: ignored reports/release-0.5.0-20261007/final.
+
+## 2026-10-08 - metadata public graph planning, not write-certified
+
+- Real dedicated DEV test6594 exposed privacy-bearing native derivatives.
+  Private.2 refused before processing; DEV Pixel0.5.1 was restored exactly.
+- Added read-only per-file A-G classification/approval planning, not registered
+  in the runtime entry point; existing METADATA_PUBLIC_COPY guard unchanged.
+- Two local planning/parser runs: 123 planning assertions, 336 parser assertions
+  and 26 independent payload/color checks each; PHP lint46/46. These are NOT the
+  two required complete transaction/regression cycles.
+- Multi-file journal/swap/reconciliation/recovery/quarantine/UI integration
+  remains unfinished. No private.3 ZIP or new write certification exists.
+- Architecture and remaining gates: docs/METADATA-PUBLIC-GRAPH.md. No DEV access,
+  AskPass, 6354 access, image operation, commit, push, tag or release in this lot.
+
+## 2026-10-08 - public graph transaction prototype, still PARTIAL
+
+- Added an unregistered, disabled multi-file graph transaction prototype. Frozen
+  plan and bundle manifest guards; exact B-file originals; deterministic filtered
+  candidates; per-file rename intent/effect; whole-graph verification; conservative
+  pre-commit rollback and exact restore; unexpected bytes retain repair evidence.
+- Two targeted synthetic filesystem runs: 198 assertions each. WordPress,
+  journal storage and authority are explicit doubles; no native SQL certification.
+  11 forward interruption and 2 restore boundaries use exceptions, not SIGKILL.
+  Planner123, parser336 and independent comparisons26 PASS; PHP lint47/47.
+- Existing source version/private.2 package unchanged. No private.3 package or
+  certification flag promotion. Existing runtime METADATA_PUBLIC_COPY stays intact.
+- Native Jobs/Executor/Adapter/Quarantine/UI wiring and lifecycle tests, actual
+  SQL claim/crash coverage, two complete cycles and install/upgrade remain open.
+  Evidence: reports/metadata-public-graph-private3-20261008/TRANSACTION-PROGRESS.md.
+- No remote access or AskPass; no real media accessed; no Git publication.
+
+## 2026-10-08 - private.4 status-aware metadata and new-upload privacy
+
+- Current public-graph hashes and verified recovery determine actionable UI.
+  Clean/anonymized/blocked states do not offer ordinary anonymization; exact restore
+  and external replacement refresh state. Pixel AJAX needs no editorial save.
+- New-upload privacy defaults ON for fresh installs and absent upgrade settings;
+  explicit OFF survives. Old media are never enrolled. Native multipart JPEG/PNG
+  uploads use existing SQL/Jobs transactions after WordPress derivative persistence,
+  including its identical-update no-op. CLI/import/sideload are excluded.
+- Exact private recovery is budgeted; no automatic purge or format conversion.
+  Unsafe uploads remain accepted but require review. Retained privacy recovery
+  defers optimization; already-clean uploads retain their normal scheduler.
+- Two frozen-runtime cycles: 2335 checks each, PHP lint48/48; native upgrade5/5
+  and clean installation8/8. Headless UI47/cycle, keyboard, 1440/820/390/320,
+  200% zoom. No critical or major finding remains.
+- Private.4 ZIP: 250829 bytes, 67 runtime files, SHA-256
+  28e2c206fb440a6e4bb12d550eb691beb83e3db9dcc70824b47b4152e9e10212.
+  Frozen private.3 and official stable manifest remain unchanged.
+- Report: reports/metadata-private4-20261008/REPORT.md. LOCAL REVIEW ONLY;
+  no DEV/production connection, AskPass, real-media access or Git publication.
+
+## 2026-10-09 - 0.6.0 official local release gate
+
+- Guillaume Human Pass accepted for private.4 metadata/privacy behavior. Promote
+  only header/constants and public documentation to0.6.0; all67 runtime files
+  match the frozen250829-byte private.4 archive except version entry and README/
+  readme. No feature, UI, parser, recovery, purge or provenance policy change.
+- Default new native upload privacy ON; explicit OFF survives native0.5.1 update.
+  Existing media are not enrolled. Private originals/whole-graph restore remain;
+  no automatic permanent purge. Real6594/6600 evidence preserved, no rerun.
+- Old aggregate SQL divergence is an evidence limitation, not a demonstrated
+  Pixel bug. Future exact posts/postmeta/authority before-after rule documented
+  in docs/REAL-PILOT-SQL-EVIDENCE.md and CONTRIBUTING.md.
+- Two exact final-runtime cycles:2335 unique assertions each, runtime PHP lint
+ 48/48 each; isolated headless UI47/cycle,1440/820/390/320 and zoom200 inspected.
+  Native exact ZIP: fresh install8 checks; absent->ON and OFF->OFF upgrades7 each;
+  installed67-file/header/build identity69 checks per target. Existing-media
+  jobs created by upgrade0; updater and representative SIGKILL reconciliation PASS.
+- Final ZIP250976 bytes/67 files, SHA-256
+ 109f21697c80a9b631243ef95adf87a496df9c5622b89741cad122f7d4b5bb8a.
+  Two fixed-metadata builds byte-identical. Stable manifest remains official0.5.1.
+- Release source and legitimate reproducible tests only; report/evidence/archive
+  kept in ignored reports/release-0.6.0-20261009. Local release commit authorized
+  after hygiene gates only. No push/tag/GitHub release/DEV update/production access.

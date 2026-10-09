@@ -20,6 +20,7 @@ final class WP_Seed_Pixel_Plugin {
     }
 
     public static function uploaded($meta_id, $id, $key, $value) {
+        if (class_exists('WP_Seed_Pixel_Metadata_Uploads') && WP_Seed_Pixel_Metadata_Uploads::blocks_optimizer($id)) { return; }
         $future = WP_Seed_Pixel_Future_Uploads::settings();
         if ($future['mode'] !== 'off' && in_array('jpeg', $future['formats'], true)) { return; }
         if ($key !== '_wp_attachment_metadata' || !self::settings()['automatic'] || get_post_mime_type($id) !== 'image/jpeg' || wp_next_scheduled('wp_seed_pixel_auto', array((int) $id))) {
@@ -30,6 +31,7 @@ final class WP_Seed_Pixel_Plugin {
     }
 
     public static function automatic($id) {
+        if (class_exists('WP_Seed_Pixel_Metadata_Uploads') && WP_Seed_Pixel_Metadata_Uploads::blocks_optimizer($id)) { return; }
         $future = WP_Seed_Pixel_Future_Uploads::settings();
         if ($future['mode'] !== 'off' && in_array('jpeg', $future['formats'], true)) { return; }
         $settings = self::settings();
@@ -53,6 +55,7 @@ final class WP_Seed_Pixel_Plugin {
             wp_die(esc_html__('Network activation is not supported. Activate separately on each site.', 'wp-seed-pixel'));
         }
         add_option('wp_seed_pixel_settings', array('automatic' => false, 'preset' => 'balanced', 'cleanup_on_uninstall' => false), '', false);
+        if (class_exists('WP_Seed_Pixel_Metadata_Uploads')) { WP_Seed_Pixel_Metadata_Uploads::initialize(); }
     }
 
     public static function deactivate() {

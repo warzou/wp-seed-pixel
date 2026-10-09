@@ -3,13 +3,23 @@ Tags: images, jpeg, png, media, optimization
 Requires at least: 6.6
 Tested up to: 7.1
 Requires PHP: 8.1
-Stable tag: 0.5.1
+Stable tag: 0.6.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
 Local image optimization, storage analysis, verified recovery and resumable jobs.
 
 == Description ==
+
+Version 0.6.0 removes recognized privacy metadata (GPS, device, author and date)
+from the complete public JPEG/PNG graph without re-encoding image data. Pixels,
+dimensions, transparency, ICC and required color declarations are preserved.
+Safe new native uploads are anonymized automatically by default. Explicit OFF
+is preserved on upgrade; existing images are not automatically processed.
+Unsupported orientation, provenance, unknown metadata and insufficient recovery
+storage require review without unsafe modification. WordPress editorial fields
+stay unchanged. Exact originals remain privately recoverable, including their
+original metadata; whole-graph restore is available. No automatic permanent purge.
 
 0.5.0 adds optional PNG to JPEG
 conversion requires local comparison and explicit administrator approval for
@@ -23,7 +33,8 @@ comparison, a clear warning and extra explicit server-enforced acknowledgement.
 
 Safe private recovery is automatically prepared on
 supported hosts; activation itself changes no image.
-Future upload processing defaults OFF. JPEG and bounded lossless PNG are opt-in;
+Future image optimization defaults OFF (separate from metadata privacy ON).
+JPEG and bounded lossless PNG optimization are opt-in;
 existing media require an explicit selected plan. Recovery occupies hosting space.
 Permanent deletion requires separate per-version approval and removes rollback.
 Provider quota remains unknown unless a complete live accounting adapter proves it.

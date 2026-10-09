@@ -1,0 +1,7 @@
+.pixel-metadata { margin-block: 16px; border-top: 1px solid #c3c4c7; padding-top: 12px; }
+.pixel-metadata fieldset { margin: 0; padding: 0; border: 0; }
+.pixel-metadata legend { font-weight: 600; margin-bottom: 8px; }
+.pixel-metadata fieldset label { display: inline-flex; align-items: center; gap: 6px; margin: 0 16px 8px 0; }
+.pixel-metadata p, .pixel-metadata label { overflow-wrap: anywhere; }
+.pixel-metadata .button { max-width: 100%; white-space: normal; min-height: 32px; }
+.pixel-metadata button:focus-visible, .pixel-metadata input:focus-visible { outline: 2px solid #135e96; outline-offset: 3px; }
