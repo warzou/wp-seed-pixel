@@ -2,8 +2,8 @@
 /**
  * Plugin Name: WP Seed Pixel
  * Description: Local image optimization, storage analysis and verified recovery jobs.
- * Version: 0.6.0
- * Build: 0.6.0
+ * Version: 0.6.1
+ * Build: 0.6.1
  * Update URI: false
  * Requires at least: 6.6
  * Requires PHP: 8.1
@@ -12,8 +12,8 @@
  * Text Domain: wp-seed-pixel
  */
 defined('ABSPATH') || exit;
-define('WP_SEED_PIXEL_VERSION', '0.6.0');
-define('WP_SEED_PIXEL_BUILD', '0.6.0');
+define('WP_SEED_PIXEL_VERSION', '0.6.1');
+define('WP_SEED_PIXEL_BUILD', '0.6.1');
 // The existing JPEG/PNG engines retain their certified generation identity.
 define('WP_SEED_PIXEL_ENGINE_VERSION', '0.3.1');
 define('WP_SEED_PIXEL_FILE', __FILE__);

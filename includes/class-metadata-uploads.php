@@ -83,7 +83,7 @@ final class WP_Seed_Pixel_Metadata_Uploads {
     private static function status($id,array $old,$state,$reason='',$job=0) {
         $next=$old;$next['state']=$state;$next['reason']=$reason;$next['job_id']=(int)$job;
         if ($state==='review') {
-            $before=WP_Seed_Pixel_Master_Adapter::snapshot($id,true);
+            $before=WP_Seed_Pixel_Master_Adapter::snapshot($id,true,true);
             if (!is_wp_error($before)) { $next['review_identity']=hash('sha256',wp_json_encode($before)); }
         }
         update_post_meta($id,self::META,$next,$old);
@@ -91,7 +91,7 @@ final class WP_Seed_Pixel_Metadata_Uploads {
     public static function review_reason($id) {
         $v=get_post_meta($id,self::META,true);
         if (!is_array($v) || ($v['state']??'')!=='review' || empty($v['review_identity'])) { return ''; }
-        $before=WP_Seed_Pixel_Master_Adapter::snapshot($id,true);
+        $before=WP_Seed_Pixel_Master_Adapter::snapshot($id,true,true);
         if (is_wp_error($before) || !hash_equals($v['review_identity'],hash('sha256',wp_json_encode($before)))) { return ''; }
         return is_string($v['reason']??null)?$v['reason']:'METADATA_REVIEW';
     }

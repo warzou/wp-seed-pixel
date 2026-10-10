@@ -57,8 +57,8 @@ final class WP_Seed_Pixel_Metadata_Admin {
         $conversion=WP_Seed_Pixel_Format_Conversion::record($id);
         if (is_wp_error($conversion)) { return $conversion; }
         if ($conversion && !in_array($conversion['record']['phase'],array('restored','discarded'),true)) { return new WP_Error('METADATA_REVIEW'); }
-        $before=WP_Seed_Pixel_Master_Adapter::snapshot($id,true); if (is_wp_error($before)) { return $before; }
-        // Transitional snapshots are useful for reviewing retained results, but not unknown ownership.
+        $before=WP_Seed_Pixel_Master_Adapter::snapshot($id,false,true); if (is_wp_error($before)) { return $before; }
+        // Metadata-only aliases still require healthy ownership and exact public witnesses.
         $analysis=WP_Seed_Pixel_Analyzer::analyze($id);
         if (is_wp_error($analysis) || $analysis['health']!=='healthy') { return new WP_Error('INVENTORY_INCOMPLETE'); }
         $key=hash('sha256',wp_json_encode($before));
@@ -75,7 +75,7 @@ final class WP_Seed_Pixel_Metadata_Admin {
         if (!WP_Seed_Pixel_Metadata_Graph_Transaction::enabled()) { wp_send_json_error(array('code'=>'METADATA_CERTIFICATION_REQUIRED','message'=>__('Local candidate: replacement and restoration certification is still required. No image has been changed.','wp-seed-pixel')),409); }
         if ($operation==='start' && ($_POST['confirmed']??'')==='1' && ($_POST['metadata']??'')==='anonymize') {
             $signature=is_string($_POST['signature']??null)?wp_unslash($_POST['signature']):'';
-            $before=WP_Seed_Pixel_Master_Adapter::snapshot($id); $plan=is_wp_error($before)?$before:WP_Seed_Pixel_Metadata_Public_Graph::plan($before);
+            $before=WP_Seed_Pixel_Master_Adapter::snapshot($id,false,true); $plan=is_wp_error($before)?$before:WP_Seed_Pixel_Metadata_Public_Graph::plan($before);
             $capacity=is_wp_error($plan)?$plan:WP_Seed_Pixel_Metadata_Graph_Transaction::capacity($plan);
             $result=is_wp_error($capacity)?$capacity:WP_Seed_Pixel_Jobs::replace_one($id,array('master'=>'replace_verified','metadata'=>'anonymize'),$capacity,'',$signature);
         } elseif ($operation==='step') {

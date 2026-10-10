@@ -86,7 +86,7 @@ final class WP_Seed_Pixel_Metadata_Graph_Transaction {
     public static function freshness(array $item) {
         $p = self::frozen($item); if (is_wp_error($p)) { return $p; }
         $data = json_decode($item['data'], true);
-        $fresh = WP_Seed_Pixel_Master_Adapter::snapshot((int) $item['attachment_id']);
+        $fresh = WP_Seed_Pixel_Master_Adapter::snapshot((int) $item['attachment_id'], false, true);
         if (is_wp_error($fresh) || $fresh !== $data['before']) { return new WP_Error('METADATA_GRAPH_CHANGED'); }
         $again = WP_Seed_Pixel_Metadata_Public_Graph::plan($fresh);
         return !is_wp_error($again) && $again['admissible'] && hash_equals($p['signature'], $again['signature'])
@@ -175,12 +175,14 @@ final class WP_Seed_Pixel_Metadata_Graph_Transaction {
         return self::identity($path, $sha, $bytes) ? true : new WP_Error('VERIFY_FAILED');
     }
     public static function verify(array $item, array $r, $original = false) {
-        $fresh = WP_Seed_Pixel_Master_Adapter::snapshot((int) $item['attachment_id'], true);
+        $fresh = WP_Seed_Pixel_Master_Adapter::snapshot((int) $item['attachment_id'], true, true);
         if (is_wp_error($fresh) || array_keys($fresh['files']) !== array_keys($r['before']['files'])
             || $fresh['url'] !== $r['before']['url'] || $fresh['guid'] !== $r['before']['guid']) { return new WP_Error('METADATA_GRAPH_CHANGED'); }
         if (isset($r['witness'])) {
             $observed = WP_Seed_Pixel_Master_Adapter::observe($r);
             if (is_wp_error($observed)) { return $observed; }
+            if (($r['phase'] ?? '') === 'graph_committed' && (!$observed['meta_after'] || !$observed['witness_after'] || !$observed['references_after'])) { return new WP_Error('METADATA_CONFLICT'); }
+            if (($r['phase'] ?? '') === 'graph_restored' && (!$observed['meta_before'] || !$observed['witness_before'] || !$observed['references_before'])) { return new WP_Error('METADATA_CONFLICT'); }
         } elseif ($fresh['rows'] !== $r['before']['rows']) { return new WP_Error('METADATA_GRAPH_CHANGED'); }
         foreach ($r['graph_plan']['files'] as $relative => $e) {
             $path = self::path($relative); if (is_wp_error($path)) { return $path; }
@@ -223,6 +225,7 @@ final class WP_Seed_Pixel_Metadata_Graph_Transaction {
         self::boundary('before_commit', $item);
         if (isset($r['witness'])) {
             $db = WP_Seed_Pixel_Master_Adapter::reconcile($r); if (is_wp_error($db)) { return self::rollback_error($item, $db); }
+            if (!$db['meta_after'] || !$db['witness_after'] || !$db['references_after']) { return self::rollback_error($item, new WP_Error('METADATA_CONFLICT')); }
             $v = self::verify($item, $r); if (is_wp_error($v)) { return self::rollback_error($item, $v); }
             self::boundary('after_metadata', $item);
         }
@@ -256,6 +259,7 @@ final class WP_Seed_Pixel_Metadata_Graph_Transaction {
         $v = self::verify($item, $r, true); if (is_wp_error($v)) { return self::review($dir, $r, $v); }
         if (isset($r['witness'])) {
             $db = WP_Seed_Pixel_Master_Adapter::reconcile($r, true); if (is_wp_error($db)) { return self::review($dir, $r, $db); }
+            if (!$db['meta_before'] || !$db['witness_before'] || !$db['references_before']) { return self::review($dir, $r, new WP_Error('METADATA_CONFLICT')); }
         }
         return self::persist($dir, $r, 'graph_restored');
     }
@@ -283,7 +287,7 @@ final class WP_Seed_Pixel_Metadata_Graph_Transaction {
         if (is_wp_error($r) || !$r) { return new WP_Error('EVIDENCE_INVALID'); }
         if (!in_array($r['phase'], array('graph_preparing', 'graph_prepared', 'graph_restored'), true)
             || array_filter($r['graph_effects'], static function($effect) { return $effect !== 'restored'; })) { return new WP_Error('RECOVERY_REQUIRED'); }
-        $fresh = WP_Seed_Pixel_Master_Adapter::snapshot((int) $item['attachment_id']);
+        $fresh = WP_Seed_Pixel_Master_Adapter::snapshot((int) $item['attachment_id'], false, true);
         if (is_wp_error($fresh) || $fresh !== $r['before']) { return new WP_Error('METADATA_GRAPH_CHANGED'); }
         $r = self::restore($item); if (is_wp_error($r)) { return $r; }
         $r = self::cleanup($item, $r, true); if (is_wp_error($r)) { return $r; }

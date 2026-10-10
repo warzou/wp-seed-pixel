@@ -129,7 +129,7 @@ final class WP_Seed_Pixel_Jobs {
                     || (int) $attachment_id <= ($settings['cutoff_id'] ?? PHP_INT_MAX)) { return new WP_Error('SOURCE_CHANGED'); }
                 if (!empty($enrollment['job_id'])) { return self::status((int) $enrollment['job_id']); }
             }
-            $before = WP_Seed_Pixel_Master_Adapter::snapshot((int) $attachment_id); if (is_wp_error($before)) { return $before; }
+            $before = WP_Seed_Pixel_Master_Adapter::snapshot((int) $attachment_id, false, $policy['intent']['metadata'] === 'anonymize'); if (is_wp_error($before)) { return $before; }
             $privacy = null;
             if ($policy['intent']['metadata'] === 'anonymize') {
                 $conversion = WP_Seed_Pixel_Format_Conversion::record((int) $attachment_id);
@@ -796,7 +796,7 @@ final class WP_Seed_Pixel_Jobs {
                         if ($v['removed_bytes'] && $v['allocated_bytes'] === null) { $out['allocated_reclaimed_bytes'] = null; }
                         elseif ($out['allocated_reclaimed_bytes'] !== null) { $out['allocated_reclaimed_bytes'] += (int) $v['allocated_bytes']; }
                     } else {
-                        $fresh = WP_Seed_Pixel_Master_Adapter::snapshot($item['attachment_id']);
+                        $fresh = WP_Seed_Pixel_Master_Adapter::snapshot($item['attachment_id'], false, WP_Seed_Pixel_Metadata_Graph_Transaction::is_item($item));
                         if (is_wp_error($fresh) || $fresh !== $before) { $out['unknown_items']++; continue; }
                         $pending = WP_Seed_Pixel_Quarantine::pending_overhead($item);
                         if (is_wp_error($pending)) { $out['unknown_items']++; continue; }

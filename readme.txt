@@ -3,13 +3,18 @@ Tags: images, jpeg, png, media, optimization
 Requires at least: 6.6
 Tested up to: 7.1
 Requires PHP: 8.1
-Stable tag: 0.6.0
+Stable tag: 0.6.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
 Local image optimization, storage analysis, verified recovery and resumable jobs.
 
 == Description ==
+
+Version 0.6.1 fixes verified physical master/display aliases. Metadata-only
+operations admit verified master/display aliases and reconcile their integrity
+witnesses using the existing transaction and restore lifecycle. Existing
+private.1 jobs, policies, image generations and recovery remain compatible.
 
 Version 0.6.0 removes recognized privacy metadata (GPS, device, author and date)
 from the complete public JPEG/PNG graph without re-encoding image data. Pixels,

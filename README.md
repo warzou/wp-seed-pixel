@@ -1,4 +1,12 @@
-# WP Seed Pixel 0.6.0
+# WP Seed Pixel 0.6.1
+
+Version 0.6.1 fixes verified master/display aliases during metadata-only graph
+analysis, anonymization and exact restoration. One physical file retains every
+logical role; integrity witnesses reconcile through the existing SQL authority.
+Conflicting ownership and ordinary JPEG replacement still fail closed. Clean
+graphs create no needless job or encoding. Upgrading from 0.6.1-private.1 does
+not change image generations, settings or existing recovery records.
+See [physical aliases](docs/METADATA-PHYSICAL-ALIASES.md).
 
 Version 0.6.0 adds current-file metadata states and automatic privacy filtering for
 new native uploads. The setting defaults to ON on first administrator activation

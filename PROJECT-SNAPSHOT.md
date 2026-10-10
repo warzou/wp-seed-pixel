@@ -965,3 +965,42 @@ commit, push, tag or public release.
 - Release source and legitimate reproducible tests only; report/evidence/archive
   kept in ignored reports/release-0.6.0-20261009. Local release commit authorized
   after hygiene gates only. No push/tag/GitHub release/DEV update/production access.
+
+## 2026-10-10 - Local 0.6.1 metadata physical-alias candidate
+
+- Existing adaptive master/display reuse is valid; a legacy master-replacement
+  guard incorrectly blocked metadata-only graph admission. Preserve that guard
+  for JPEG replacement and explicitly admit only verified metadata graph aliases.
+- Analyzer's physical deduplication is reused. Resource names/roles/paths remain;
+  native sizes and manifest/history integrity witnesses reconcile through the
+  existing InnoDB CAS and restore their exact serialized originals.
+- Conflicting ownership, SHA, size, dimensions, rows or claims still fail closed.
+  Already-clean complete graphs create no needless job or encoding.
+- Native WordPress/MariaDB alias and clean no-op tests PASS; five alias-specific
+  SIGKILL boundaries restore/idempotently reconcile after natural lease expiry.
+  Public graph, admission, pipeline, runtime-state and generic crash regressions
+  PASS. Only owned synthetic media in an explicitly authorized local laboratory.
+- Candidate 0.6.1-private.1 and evidence remain in ignored
+  reports/metadata-alias-0.6.1-20261010. Released 0.6.0 ZIP unchanged.
+  No DEV/production connection, AskPass, real-media access or Git publication.
+
+## 2026-10-10 - Stable 0.6.1 release gate
+
+- Human authorization: publish the certified physical-alias patch as 0.6.1,
+  then replace the private.1 DEV runtime without processing any existing media.
+- Main checked against candidate base; no unexpected divergence. The five changed
+  runtime includes remain byte-identical to the certified private.1 package.
+- Existing 1801 assertions and controlled live pilot retained as evidence;
+  targeted alias/parser/graph/updater and packaging checks repeated for stable.
+- Fresh gates: 748 metadata assertions, 11 updater assertions, 48 PHP runtime
+  lint checks PASS. All 64 functional runtime files match private.1 exactly;
+  only README, readme and plugin version/build identity differ in the package.
+- Reproducible ZIP: 252257 bytes, 67 files, SHA-256
+  18efe078e591863b366d8e4e8bbc06471a697d0e01c197397507d7e1acd3d16e.
+- PHP's ordering of the private suffix requires native ZIP replacement for
+  private.1 -> stable. Official 0.6.0 -> 0.6.1 update and current-version
+  no-update checks pass without changing the certified updater.
+- Only version/build and release documentation change during promotion; schema,
+  engine identity, public paths, jobs, settings and recovery format unchanged.
+- Release evidence and archive excluded from Git. Existing 0.6.0 release and
+  its checksum remain immutable. Production is outside the authorized scope.

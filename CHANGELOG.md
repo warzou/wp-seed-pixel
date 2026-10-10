@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.6.1 - 2026-10-10
+
+- Admit verified physical master/display aliases only for metadata graph
+  operations, retaining all roles and one verification/backup per physical file.
+- Reconcile native sizes and current/history integrity witnesses through the
+  existing InnoDB CAS; restore exact original serialized rows and public files.
+- Preserve fail-closed ownership, SHA, dimensions, claims and JPEG replacement
+  guards. Already-clean graphs create no unnecessary job or recompression.
+- Promote the certified private.1 runtime without a schema, engine, policy or
+  recovery-format change; no automatic processing of existing media on upgrade.
+
 ## 0.6.0 - 2026-10-09
 
 - Remove recognized privacy metadata across the complete public JPEG/PNG graph
