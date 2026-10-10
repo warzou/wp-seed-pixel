@@ -2,12 +2,12 @@
   "schema": 1,
   "slug": "wp-seed-pixel",
   "channel": "stable",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "requires": "6.6",
   "tested": "7.1",
   "requires_php": "8.1",
-  "package": "https://github.com/warzou/wp-seed-pixel/releases/download/v0.6.0/wp-seed-pixel-0.6.0.zip",
-  "sha256": "109f21697c80a9b631243ef95adf87a496df9c5622b89741cad122f7d4b5bb8a",
-  "released": "2026-10-09",
-  "notes_url": "https://github.com/warzou/wp-seed-pixel/releases/tag/v0.6.0"
+  "package": "https://github.com/warzou/wp-seed-pixel/releases/download/v0.6.1/wp-seed-pixel-0.6.1.zip",
+  "sha256": "18efe078e591863b366d8e4e8bbc06471a697d0e01c197397507d7e1acd3d16e",
+  "released": "2026-10-10",
+  "notes_url": "https://github.com/warzou/wp-seed-pixel/releases/tag/v0.6.1"
 }
