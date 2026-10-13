@@ -68,6 +68,13 @@ final class WP_Seed_Pixel_Metadata_Uploads {
             // A later identical update emits no post-meta hook; certify that no-op here.
             if (hash_equals($next['metadata_hash'],hash('sha256',wp_json_encode(wp_get_attachment_metadata($id))))) {
                 self::saved(0,$id,'_wp_attachment_metadata',$metadata);
+                // A synchronous transaction updates filesize witnesses. Do not let
+                // the caller's final core update overwrite them with its old graph.
+                $current=get_post_meta($id,self::META,true);
+                if (($current['state']??'')==='anonymized' && WP_Seed_Pixel_Metadata_Admin::state($id)==='anonymized') {
+                    $committed=wp_get_attachment_metadata($id);
+                    if (is_array($committed)) { return $committed; }
+                }
             }
         }
         return $metadata;

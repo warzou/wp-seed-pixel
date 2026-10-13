@@ -3,13 +3,20 @@ Tags: images, jpeg, png, media, optimization
 Requires at least: 6.6
 Tested up to: 7.1
 Requires PHP: 8.1
-Stable tag: 0.6.1
+Stable tag: 0.7.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
 Local image optimization, storage analysis, verified recovery and resumable jobs.
 
 == Description ==
+
+Version 0.7.0 adds verified migration evidence and independent destination binding
+without resetting existing recovery storage, jobs or image engine generations.
+Migration source proofs remain immutable; incomplete or unsupported migrations
+fail closed. See docs/MIGRATION.md for the supported scope and operator procedure.
+Automatic privacy uploads preserve committed filesize witnesses when core
+persists the final generated metadata after synchronous anonymization.
 
 Version 0.6.1 fixes verified physical master/display aliases. Metadata-only
 operations admit verified master/display aliases and reconcile their integrity
@@ -63,10 +70,12 @@ Unprofiled RGB JPEGs and validated RGB ICC JPEGs with Imagick/LittleCMS.
 ICC conversion uses a lossless sRGB working reference; MASTER stays byte-exact.
 GD-only hosts skip ICC safely. CMYK, grayscale and other formats are skipped.
 Local uploads only. No offloaded storage or network activation support.
-This release is a Tech Preview with owner acceptance completed, not a universal
-production certification. PHP 8.4.23 / GD / Windows / SQLite / WordPress 7.1.2
-were tested. RGB ICC conversion was also tested with Imagick 3.8.1 / LittleCMS
-on Windows. Other platforms and production hosting remain uncertified.
+Legacy derivatives were tested on PHP 8.4 / GD / Windows / SQLite. Recovery and
+migration require the separate supported Linux/InnoDB host contract. The 0.7.0
+candidate was tested locally on WordPress 7.1.2 / PHP 8.5 and in a private Linux
+host pilot on WordPress 7.1.3 / PHP 8.4.24. This is not universal production,
+multisite or host certification. RGB ICC conversion was also tested with
+Imagick 3.8.1 / LittleCMS on Windows.
 
 == Installation ==
 
@@ -104,6 +113,14 @@ No. They use protected postmeta, separate from WordPress public media details.
 WordPress still provides normal public derivative URLs for public attachments.
 
 == Changelog ==
+
+= 0.7.0 =
+Verified migration evidence and independent destination binding preserve exact
+originals and immutable source provenance. Explicit CLI and standalone read-only
+export tools, with conservative engine/identity/SQL guards and exact restore.
+Automatic privacy uploads preserve committed filesize witnesses after a native
+metadata no-op. No schema or engine-generation reset, automatic migration,
+reprocessing of existing media or permanent purge.
 
 = 0.5.1 =
 Repository-bound GitHub stable updates by default, explicit private override,

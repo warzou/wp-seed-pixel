@@ -1,4 +1,18 @@
-# WP Seed Pixel 0.6.1
+# WP Seed Pixel 0.7.0
+
+Version 0.7.0 adds verified migration evidence and independent-destination
+binding for supported recovery engines. Immutable source proofs and originals
+are retained separately from destination operational identities and journals.
+Changed paths and physical identities require explicit verification, never an
+automatic reset or bypass. Unknown or incomplete states stop safely.
+See [migration protocol and supported scope](docs/MIGRATION.md).
+
+Automatic privacy uploads return the committed native metadata after synchronous
+anonymization, preventing a final core write from restoring stale filesize
+witnesses. Existing settings, SQL schema and image engine generations remain
+unchanged. Updating does not process existing media or migrate a site by itself.
+The rc.2 runtime was verified in an isolated real-host pilot before stable
+promotion; this is not universal host, multisite or migration certification.
 
 Version 0.6.1 fixes verified master/display aliases during metadata-only graph
 analysis, anonymization and exact restoration. One physical file retains every

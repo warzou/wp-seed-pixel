@@ -140,11 +140,56 @@ final class WP_Seed_Pixel_Recovery_Setup {
         define('WP_SEED_PIXEL_STORAGE_ENABLED', true);
     }
 
+    /** Authorized clone enrollment; the immutable source option is retained in its evidence bundle. */
+    private static function migration_cas(array $old, array $next) {
+        global $wpdb;
+        if (!WP_Seed_Pixel_Authority::valid(0)) { return false; }
+        $current = $wpdb->get_var($wpdb->prepare("SELECT option_value FROM {$wpdb->options} WHERE option_name=%s", self::OPTION));
+        if ($wpdb->last_error || $current !== maybe_serialize($old)) { return false; }
+        $ok = $old === $next || $wpdb->query($wpdb->prepare("UPDATE {$wpdb->options} SET option_value=%s WHERE option_name=%s AND option_value=%s",
+            maybe_serialize($next), self::OPTION, maybe_serialize($old))) === 1;
+        wp_cache_delete(self::OPTION, 'options'); wp_cache_delete('alloptions', 'options');
+        return $ok && get_option(self::OPTION) === $next && WP_Seed_Pixel_Authority::valid(0);
+    }
+
+    public static function migration_prepare(array $source, $digest) {
+        if (!current_user_can('manage_options') || !WP_Seed_Pixel_Authority::valid(0)
+            || !is_string($digest) || !preg_match('/^[a-f0-9]{64}$/D', $digest)) { return new WP_Error('PERMISSION_DENIED'); }
+        $existing = get_option(self::OPTION, null);
+        if (is_array($existing) && ($existing['migration'] ?? '') === $digest) {
+            return self::verify($existing);
+        }
+        if ($existing !== $source || defined('WP_SEED_PIXEL_RECOVERY_ROOT') || defined('WP_SEED_PIXEL_STORAGE_ENABLED')) { return new WP_Error('MIGRATION_TARGET_CONFLICT'); }
+        $s = self::candidate(); if (is_wp_error($s)) { return $s; }
+        if ($s['site'] === ($source['site'] ?? '') || $s['path'] === ($source['path'] ?? '')
+            || file_exists($s['path']) || is_link($s['path'])) { return new WP_Error('FOREIGN_DIRECTORY'); }
+        $s['token'] = bin2hex(random_bytes(24)); $s['state'] = 'migration_pending'; $s['migration'] = $digest;
+        if (!self::migration_cas($source, $s)) { return new WP_Error('STORE_FAILED'); }
+        if (!mkdir($s['path'], 0700)) { return new WP_Error('CREATE_FAILED'); }
+        $prior = $s; $st = lstat($s['path']); $s['dev'] = $st['dev']; $s['ino'] = $st['ino']; $s['uid'] = $st['uid'];
+        if (!self::migration_cas($prior, $s)) { return new WP_Error('STORE_FAILED'); }
+        $marker = array('version'=>1,'site'=>$s['site'],'token'=>$s['token'],'dev'=>$s['dev'],'ino'=>$s['ino'],'uid'=>$s['uid']);
+        $old = umask(0077);
+        try { $f = @fopen($s['path'] . '/.pixel-owner.json', 'xb'); } finally { umask($old); }
+        if (!$f) { return new WP_Error('CREATE_FAILED'); }
+        $json = wp_json_encode($marker);
+        try { $ok = fwrite($f, $json) === strlen($json) && fflush($f) && fsync($f); } finally { fclose($f); }
+        return $ok && WP_Seed_Pixel_Master_Storage::sync_directory($s['path']) ? self::verify($s) : new WP_Error('VERIFY_FAILED');
+    }
+
+    public static function migration_ready(array $pending, $ready) {
+        if (!WP_Seed_Pixel_Authority::valid(0) || is_wp_error(self::verify($pending))
+            || get_option(self::OPTION) !== $pending || !isset($pending['migration'])) { return new WP_Error('MIGRATION_TARGET_CONFLICT'); }
+        $next = $pending; $next['state'] = $ready ? 'ready' : 'migration_pending';
+        return self::migration_cas($pending, $next) ? $next : new WP_Error('STORE_FAILED');
+    }
+
     public static function gate() {
         $s = get_option(self::OPTION, null);
         if ($s === null) { return true; } // Existing, explicitly configured hosts keep their accepted contract.
         return !is_wp_error(self::verify($s)) && ($s['state'] ?? '') === 'ready'
-            && defined('WP_SEED_PIXEL_RECOVERY_ROOT') && WP_SEED_PIXEL_RECOVERY_ROOT === $s['path'];
+            && defined('WP_SEED_PIXEL_RECOVERY_ROOT') && WP_SEED_PIXEL_RECOVERY_ROOT === $s['path']
+            && (!isset($s['migration']) || (class_exists('WP_Seed_Pixel_Migration_Binding') && WP_Seed_Pixel_Migration_Binding::gate($s)));
     }
 
     public static function png_requirements() {

@@ -61,6 +61,10 @@ final class WP_Seed_Pixel_Master_Storage {
         if (!hash_equals($hash, hash('sha256', wp_json_encode($r))) || $r['item_id'] !== (int) $item['id'] || $r['job_id'] !== (int) $item['job_id']
             || !hash_equals($item['snapshot_hash'], hash('sha256', $item['data'])) || !$job || $r['policy_hash'] !== $job['policy_hash']
             || ($r['before'] ?? null) !== ($data['before'] ?? null)) { return new WP_Error('EVIDENCE_INVALID'); }
+        if (class_exists('WP_Seed_Pixel_Migration_Binding')) {
+            $binding = WP_Seed_Pixel_Migration_Binding::verify_journal($dir,$r,$item);
+            if (is_wp_error($binding)) { return $binding; }
+        }
         return $r;
     }
 

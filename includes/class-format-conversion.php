@@ -685,6 +685,14 @@ final class WP_Seed_Pixel_Format_Conversion {
         $wpdb->update(WP_Seed_Pixel_Job_Store::table('jobs'), array('status' => 'completed', 'updated' => time(), 'lease' => '', 'lease_until' => 0), array('id' => $item['job_id'], 'lease' => $item['lease']));
     }
 
+    /** Read-only migration certification of an irreversible historical state, never a restore override. */
+    public static function migration_terminal(array $item, array $r, $dir) {
+        if (!WP_Seed_Pixel_Authority::valid(0) || !WP_Seed_Pixel_Authority::valid((int)$item['attachment_id'])
+            || !current_user_can('manage_options') || !current_user_can('edit_post',$item['attachment_id'])) { return new WP_Error('LOCKED'); }
+        return $item['stage'] === 'purged' && $r['phase'] === 'purged' && self::observe($r) === 'after'
+            && !is_wp_error(self::new_files($r,$dir));
+    }
+
     public static function view(array $item, array $r, $dir) {
         $old = array_sum(array_column($r['before']['files'], 'bytes'));
         $new = array_sum(array_column($r['new_files'], 'bytes'));

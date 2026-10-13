@@ -2,8 +2,8 @@
 /**
  * Plugin Name: WP Seed Pixel
  * Description: Local image optimization, storage analysis and verified recovery jobs.
- * Version: 0.6.1
- * Build: 0.6.1
+ * Version: 0.7.0
+ * Build: 0.7.0
  * Update URI: false
  * Requires at least: 6.6
  * Requires PHP: 8.1
@@ -12,8 +12,8 @@
  * Text Domain: wp-seed-pixel
  */
 defined('ABSPATH') || exit;
-define('WP_SEED_PIXEL_VERSION', '0.6.1');
-define('WP_SEED_PIXEL_BUILD', '0.6.1');
+define('WP_SEED_PIXEL_VERSION', '0.7.0');
+define('WP_SEED_PIXEL_BUILD', '0.7.0');
 // The existing JPEG/PNG engines retain their certified generation identity.
 define('WP_SEED_PIXEL_ENGINE_VERSION', '0.3.1');
 define('WP_SEED_PIXEL_FILE', __FILE__);
@@ -25,6 +25,9 @@ require_once __DIR__ . '/includes/class-quarantine-admin.php';
 require_once __DIR__ . '/includes/class-bulk-admin.php';
 require_once __DIR__ . '/includes/class-host-admin.php';
 require_once __DIR__ . '/includes/class-recovery-setup.php';
+require_once __DIR__ . '/includes/class-migration-evidence.php';
+require_once __DIR__ . '/includes/class-migration-binding.php';
+require_once __DIR__ . '/includes/class-migration-cli.php';
 WP_Seed_Pixel_Recovery_Setup::apply();
 require_once __DIR__ . '/includes/class-selected-admin.php';
 require_once __DIR__ . '/includes/class-workflow.php';

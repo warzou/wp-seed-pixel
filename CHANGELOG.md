@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.7.0 - 2026-10-13
+
+- Export immutable migration evidence and bind verified recoveries to an
+  independent destination through the existing SQL authority and exact CAS.
+  Preserve original bytes, source journals and separate destination identities.
+- Support the certified metadata JPEG/PNG, ordinary replacement, explicit
+  PNG-to-JPEG and terminal/mixed-history migration adapters. Unknown engines,
+  active operations, missing originals and ambiguous identities fail closed.
+- Provide explicit migration CLI commands and a read-only standalone source
+  exporter without installing the destination runtime on the source site.
+- Preserve committed upload filesize witnesses after synchronous privacy
+  filtering; prevent the caller's final native update from writing stale values.
+- Promote the certified rc.2 runtime without a schema, policy, engine-generation
+  or recovery-format change. No automatic migration, reprocessing or purge.
+
 ## 0.6.1 - 2026-10-10
 
 - Admit verified physical master/display aliases only for metadata graph
